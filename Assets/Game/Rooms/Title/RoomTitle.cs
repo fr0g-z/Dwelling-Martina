@@ -23,8 +23,8 @@ public class RoomTitle : RoomScript<RoomTitle>
 		E.StartCutscene();
 		
 		// Fade in the title prop
-		Prop("Title").Visible = true;
-		yield return Prop("Title").Fade(0,1,1.0f);
+		Prop("TestTitle").Visible = true;
+		yield return Prop("TestTitle").Fade(0,1,1.0f);
 		
 		// Wait a moment
 		yield return E.Wait(0.5f);

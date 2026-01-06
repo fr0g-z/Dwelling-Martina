@@ -13,4 +13,10 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 		yield return C.Plr.ChangeRoom(R.Hallway_2);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotLivingroom( IHotspot hotspot )
+	{
+		yield return C.Plr.ChangeRoom(R.Livingroom);
+		yield return E.Break;
+	}
 }

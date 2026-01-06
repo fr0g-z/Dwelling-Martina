@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: RoomTitleAtlas
+  m_Name: RoomLivingroomAtlas
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -15,24 +15,12 @@ SpriteAtlas:
       compressionQuality: 50
       maxTextureSize: 2048
       textureCompression: 0
-      filterMode: 0
+      filterMode: 1
       generateMipMaps: 0
       readable: 0
       crunchedCompression: 0
       sRGB: 1
-    platformSettings:
-    - serializedVersion: 3
-      m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 2048
-      m_ResizeAlgorithm: 0
-      m_TextureFormat: -1
-      m_TextureCompression: 0
-      m_CompressionQuality: 50
-      m_CrunchedCompression: 0
-      m_AllowsAlphaSplitting: 0
-      m_Overridden: 0
-      m_AndroidETC2FallbackOverride: 0
-      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    platformSettings: []
     packingSettings:
       serializedVersion: 2
       padding: 4
@@ -43,17 +31,15 @@ SpriteAtlas:
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 1069cc9c70cfb6f4db0ca4f2b2b14fae, type: 3}
+    - {fileID: 102900000, guid: 33790b799f87233419a9c11d5503242a, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: 34037dc2e657f614f892704a26663ca5, type: 3}
-  - {fileID: 21300000, guid: 1a2ab3fd5685b10489336fb75330da0a, type: 3}
+  - {fileID: 21300000, guid: 3daf6edefa87c2b4caefdf535d0d354d, type: 3}
   m_PackedSpriteNamesToIndex:
-  - Title_0
-  - Back_0
+  - living room
   m_RenderDataMap: {}
-  m_Tag: RoomTitleAtlas
+  m_Tag: RoomLivingroomAtlas
   m_IsVariant: 0

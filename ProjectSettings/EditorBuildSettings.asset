@@ -35,4 +35,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/Closet/SceneRoomCloset.unity
     guid: 9e83236340cf9c7499871dca8a132eca
+  - enabled: 1
+    path: Assets/Game/Rooms/Livingroom/SceneRoomLivingroom.unity
+    guid: 795c4a17a1e19d84c867c3c53ec8452c
   m_configObjects: {}
