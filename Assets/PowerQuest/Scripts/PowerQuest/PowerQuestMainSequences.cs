@@ -153,10 +153,12 @@ public partial class PowerQuest
 		Debug.Assert(roomInstance != null, "Failed to find room instance in scene");
 		string roomName = roomInstance.GetData().ScriptName;
 		// Find the room's data
-		Room room = QuestUtils.FindScriptable(m_rooms, roomName);
+		Room room = QuestUtils.FindScriptableFast(m_rooms, roomName);
 		Debug.Assert(room != null, "Failed to load room '"+roomName+"'");
 		m_currentRoom = room;
 		room.SetInstance(roomInstance);
+
+		ClearEnumCache(true);
 		
 		// Load the rooms atlas if it's in resources. Now done in Room transition as game is fading out
 		//LoadAtlas(room.ScriptName,false);
@@ -314,14 +316,41 @@ public partial class PowerQuest
 			//
 			SetAutoLoadScript( this, "OnEnterRoomAfterFade", onEnter != null, false );
 			if ( onEnter != null )
+			{ 					
+				bool setCurrent = m_currentSequence == null;
+				if ( setCurrent )
+				{ 
+					m_currentSequenceIsOnEnter=true; // Setting this could still causes freeze in loop below when starting in nested onenters- so checking that explicitly
+					m_currentSequence = onEnter; // Setting this so any gui functions will be queued rather than set up immediately. Maybe will break things... lets see!
+				}
 				yield return onEnter;
+				if ( setCurrent )
+				{
+					m_currentSequenceIsOnEnter=false;
+					m_currentSequence = null;
+				}
+			}
 
 			if ( room != null && room.GetScript() != null )
 			{
 				//onEnterRoom = StartScriptInteractionCoroutine(room.GetScript(), "OnEnterRoomAfterFade"); // moved above 
 				SetAutoLoadScript( room, "OnEnterRoomAfterFade", onEnterRoom != null, false );
 				if ( onEnterRoom != null )
+				{ 					
+					bool setCurrent = m_currentSequence == null;
+					if ( setCurrent )
+					{ 
+						m_currentSequenceIsOnEnter=true; // Setting this could still causes freeze in loop below when starting in nested onenters- so checking that explicitly
+						m_currentSequence = onEnterRoom; // Setting this so any gui functions will be queued rather than set up immediately. Maybe will break things... lets see!
+					}
 					yield return onEnterRoom;
+					if ( setCurrent )
+					{ 
+					
+						m_currentSequenceIsOnEnter=false;
+						m_currentSequence = null;
+					}
+				}
 			}
 			Unblock();
 		}
@@ -333,12 +362,21 @@ public partial class PowerQuest
 
 		// There might be a previous current sequenced running, stopping the previous main loop from stopping. In which case we don't want to start the new loop yet.
 		Block();
-		while ( m_currentSequence != null )
-			yield return null;
+		while ( m_currentSequence != null && m_currentSequenceIsOnEnter == false )			
+		{ 
+			// NB: We had a soft lock here- when running OnEnterAfterFade and clicking menu gui buttons that set the m_currentSequence.
+			//		Gui expects CoroutineWaitForCurrentSequence() to be run, but can't do that here, for nested room changes...
+			//		Gui sequences probably shouldn't be setting m_currentSequence, just queuing it... but leaving that for now.			
+			// Debug.Log("Blocking after OnEnterAfterFade");
+			yield return null; 
+		}
+		
 		Unblock();
 
 		m_coroutineMainLoop = StartCoroutine( MainLoop() );
 	}
+
+	bool m_currentSequenceIsOnEnter = false;
 
 	#endregion
 	#region Coroutine: Main loop

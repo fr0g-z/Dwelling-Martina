@@ -1,6 +1,5 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Unlit alpha-blended shader.
+// Unlit alpha-blended shader with pixel anti-aliasing. 
+// - Used in PowerQuest for the pixel camera
 // - no lighting
 // - no lightmap support
 // - no per-material color

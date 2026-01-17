@@ -1,5 +1,4 @@
-﻿#define SET_ALL_FONTS
-#define FONT_SNAPPING 
+﻿#define FONT_SNAPPING 
 
 using UnityEngine;
 using System.Collections;
@@ -35,14 +34,17 @@ public class TextOutline
 
 [ExecuteInEditMode]
 [RequireComponent(typeof(TextMesh))]
-public class QuestText : MonoBehaviour 
+public partial class QuestText : MonoBehaviour 
 {
 	#if FONT_SNAPPING
 	static readonly string STR_SHADER_PIXEL = "Powerhoof/Pixel Text Shader";
+	static readonly string STR_SHADER_PIXEL_AA = "Powerhoof/Pixel Text Shader AA"; // if AA- then can use bilinear filtering
 	#else
 	static readonly string STR_SHADER_PIXEL = "Powerhoof/Sharp Text Shader";
+	static readonly string STR_SHADER_PIXEL_AA = "Powerhoof/Sharp Text Shader AA"; // if AA- then can use bilinear filtering
 	#endif
-	static readonly string STR_SHADER = "GUI/Text Shader";
+	static readonly string STR_SHADER = "GUI/Text Shader";//"Powerhoof/Sharp Text Shader AA";	
+	static readonly string STR_PROPERTY_OFFSET = "_Offset";
 
 	static readonly Vector3[] SHADOW_OFFSETS = new Vector3[]	
 	{
@@ -56,8 +58,22 @@ public class QuestText : MonoBehaviour
 		Vector3.down + Vector3.right,
 	};
 	
+	static readonly Vector3[] SHADOW_OFFSETS_HD = new Vector3[]	
+	{
+		Vector3.up, 
+		Vector3.down, 
+		Vector3.left, 
+		Vector3.right,
+		(Vector3.up + Vector3.left) * 0.70711f,
+		(Vector3.up + Vector3.right) * 0.70711f,
+		(Vector3.down + Vector3.left) * 0.70711f,
+		(Vector3.down + Vector3.right) * 0.70711f,
+	};
+	
 	static readonly string STR_COLOR_START = "<color=#fff0>";
 	static readonly string STR_COLOR_END = "</color>";
+
+	public enum eFontPixelStyle { Auto, Pixel, HD, PixelAntiAliased }
 
 	[System.Serializable]	
 	public class TextSpriteData
@@ -69,6 +85,7 @@ public class QuestText : MonoBehaviour
 
 		public override string ToString(){ return m_tag; }
 	}
+	
 
 	[Multiline]
 	[SerializeField] string m_text = "";
@@ -95,8 +112,14 @@ public class QuestText : MonoBehaviour
 	[SerializeField] TextOutline m_outline = null;	
 	[Tooltip("Set for a typewriter effect, in characters per second. 0.05 is a good starting value.")]
 	[SerializeField] float m_typeSpeed = 0;
-	
-	static Shader s_shader = null;
+
+	[SerializeField] eFontPixelStyle m_fontPixelStyle = eFontPixelStyle.Auto;
+
+	static Shader s_shaderPixel = null;
+	static Shader s_shaderHD = null;
+	static Shader s_shaderPixelAA = null;
+	Shader m_shader = null;
+
 	bool m_materialSet = false;
 
 	TextMesh m_mesh = null;
@@ -105,9 +128,9 @@ public class QuestText : MonoBehaviour
 
 	Transform m_attachObject = null;          // If set, text will follow this object
 	Vector2 m_attachObjOffset = Vector2.zero; // If m_attachObject is set, this will be offset from that transform. Different than "offset" which is the camera-space offset.
-	Vector2 m_attachWorldPos = Vector2.zero;  // Used to attach to a world pos but show on a gui camera. 
-	Vector2 m_attachOffset = Vector2.zero;    // Offset from the "camera space", to make text map smoothly from pixel to non-pixel cameras.
-
+	Vector2 m_attachWorldPos = Vector2.zero;  // Used to attach to a world pos but show on a gui camera. 	
+	Vector2 m_attachOffset = Vector2.zero;    // Offset from the "camera space", to make text map smoothly from pixel to non-pixel cameras. // CURRENTLY DISABLED
+	
 	bool m_editorRefresh = false; // Required, since can't delete outline text in OnValidate. Maybe better not to delete, just to hide (unless not in editor)
 
 	// Use the saved unlocalized text to update the text when translation changes
@@ -123,10 +146,19 @@ public class QuestText : MonoBehaviour
 
 	static string s_textSpritePlatform = string.Empty;
 
+	Vector2 m_guiSpacePosition = Vector2.zero;
+	
+	public bool IsPixelStyle => ((PowerQuest.Get == null || PowerQuest.Get.GetSnapToPixel()) && m_fontPixelStyle == eFontPixelStyle.Auto) || m_fontPixelStyle == eFontPixelStyle.Pixel || m_fontPixelStyle == eFontPixelStyle.PixelAntiAliased;
+
 	// Callback if you want to add sound to typing in another component or something.
 	public System.Action CallbackOnTypeCharacter = null;	
+	public System.Action CallbackOnSetText = null;	
 
 	public string text { get { return m_text; } set { SetText(value); } }
+	public Font font
+	{ 
+		get { return CheckTextMesh() ? m_mesh.font : null; } 
+	}
 	public Color color 
 	{	
 		get { return CheckTextMesh() ? m_mesh.color : Color.white; } 
@@ -221,6 +253,31 @@ public class QuestText : MonoBehaviour
 
 	/// The text sprite platform is for having text sprites that change depending on platform or controller
 	public static void SetTextSpritePlatform(string platform) { s_textSpritePlatform = platform; }
+	
+	// Calculates the width of specified text
+	public float CalcWidth(string text, Vector2 position)
+	{	
+		text = SystemText.Localize( text );		
+		text = ParseImages(text);
+
+		if ( m_textWrapper == null  )
+			m_textWrapper = new TextWrapper(m_mesh);
+				
+		if ( m_wrapWidth > 0.0f && m_keepOnScreen )
+		{
+			// Work out how to best keep the text on screen
+			RectCentered cameraBounds;
+			text = WrapToKeepTextOnScreen(text, position, out cameraBounds);
+		}
+		else 
+		{ 
+			text = WrapText(text,m_wrapWidth);
+		}
+
+		return m_textWrapper.GetTextWidth(text);	
+	}
+	
+	public eFontPixelStyle FontPixelStyle => m_fontPixelStyle;
 
 	// Use this for initialization
 	void Start() 
@@ -230,6 +287,7 @@ public class QuestText : MonoBehaviour
 			CheckMaterial();
 			RefreshText();
 		}
+		m_guiSpacePosition = transform.position;
 	}
 
 
@@ -240,7 +298,6 @@ public class QuestText : MonoBehaviour
 
 	public void SetText(string text)
 	{
-		// Don't bother if text is the same
 		if (text == null) 
 			text = string.Empty;
 		m_unlocalizedText = text;		
@@ -263,61 +320,21 @@ public class QuestText : MonoBehaviour
 					m_textWrapper = new TextWrapper(m_mesh);
 				
 				if ( m_keepOnScreen == false )
-				{
-					if ( m_truncate )
-						text = m_textWrapper.Truncate(m_text, m_wrapWidth);
-					else if ( m_wrapUniformLineWidth )
-						text = m_textWrapper.WrapTextMinimiseWidth(m_text, m_wrapWidth, m_wrapWidthMin);
-					else 
-						text = m_textWrapper.WrapText(m_text, m_wrapWidth);
+				{				
+					text = WrapText(m_text,m_wrapWidth);
 				}
 				else
 				{
-					// Work out how to best keep the text on screen
-
-					float finalWidth = m_wrapWidth;
-					RectCentered bounds = new RectCentered( transform.position, transform.position );
-					RectCentered cameraBounds = new RectCentered();
-
-					if ( Application.isPlaying && PowerQuest.Exists )
-					{
-						// First, adjust wrap width so that it's on screen if possible
-						Camera camera = PowerQuest.Get.GetCameraGui();
-						bounds.Width = m_wrapWidth;
-						if ( m_mesh.anchor == TextAnchor.LowerLeft || m_mesh.anchor == TextAnchor.MiddleLeft || m_mesh.anchor == TextAnchor.UpperLeft )
-							bounds.CenterX = bounds.MaxX;
-						else if ( m_mesh.anchor == TextAnchor.LowerRight || m_mesh.anchor == TextAnchor.MiddleRight || m_mesh.anchor == TextAnchor.UpperRight )
-							bounds.CenterX = bounds.MaxX;
-
-						cameraBounds = new RectCentered(camera.transform.position.x, camera.transform.position.y, camera.orthographicSize * 2.0f * camera.aspect, camera.orthographicSize * 2.0f);
-						cameraBounds.RemovePadding(m_screenPadding);
-
-						// If wrap width is adjustable, shrink it 
-						if ( m_wrapWidthMin > 0 )
-						{
-							if ( bounds.MinX < cameraBounds.MinX )
-								finalWidth -= cameraBounds.MinX -  bounds.MinX;
-							if ( bounds.MaxX > cameraBounds.MaxX )
-								finalWidth -= bounds.MaxX - cameraBounds.MaxX;
-							finalWidth = Mathf.Max(m_wrapWidthMin+1, finalWidth);
-						}
-					}
-
-					//
-					// Now offset bounds so that they're on screen
-					//
-					if ( m_truncate )
-						text = m_textWrapper.Truncate(m_text, finalWidth);
-					else if ( m_wrapUniformLineWidth )
-						text = m_textWrapper.WrapTextMinimiseWidth(m_text, finalWidth, m_wrapWidthMin);
-					else 
-						text = m_textWrapper.WrapText(m_text, finalWidth);
-					
+					// Work out how to best keep the text on screen					
+					RectCentered cameraBounds;					
+					text = WrapToKeepTextOnScreen(text, transform.position, out cameraBounds);
+										
 					m_mesh.text = text;
+
+					RectCentered bounds = new RectCentered(m_textWrapper.Bounds);
 
 					if ( Application.isPlaying )
 					{
-						bounds = new RectCentered(m_textWrapper.Bounds);
 
 						// Get the text height from the textwrapper
 						Vector2 offset = Vector2.zero;
@@ -357,74 +374,130 @@ public class QuestText : MonoBehaviour
 			m_mesh.text = text;
 		}
 
+		if ( CallbackOnSetText != null )
+			CallbackOnSetText.Invoke();
+	}
+
+	// When keeping text on screen and it's near the edge, shorten the wrapping to the minimum
+	string WrapToKeepTextOnScreen(string text, Vector2 position, out RectCentered cameraBounds)
+	{ 	
+		float finalWidth = m_wrapWidth;
+		RectCentered bounds = new RectCentered( position, position );
+		cameraBounds = new RectCentered();
+
+		if ( Application.isPlaying && PowerQuest.Exists )
+		{
+			// First, adjust wrap width so that it's on screen if possible
+			Camera camera = PowerQuest.Get.GetCameraGui();
+			bounds.Width = m_wrapWidth;
+			if ( m_mesh.anchor == TextAnchor.LowerLeft || m_mesh.anchor == TextAnchor.MiddleLeft || m_mesh.anchor == TextAnchor.UpperLeft )
+				bounds.CenterX = bounds.MaxX;
+			else if ( m_mesh.anchor == TextAnchor.LowerRight || m_mesh.anchor == TextAnchor.MiddleRight || m_mesh.anchor == TextAnchor.UpperRight )
+				bounds.CenterX = bounds.MaxX;
+
+			cameraBounds = new RectCentered(camera.transform.position.x, camera.transform.position.y, camera.orthographicSize * 2.0f * camera.aspect, camera.orthographicSize * 2.0f);
+			cameraBounds.RemovePadding(m_screenPadding);
+
+			// If wrap width is adjustable, shrink it 
+			if ( m_wrapWidthMin > 0 )
+			{
+				if ( bounds.MinX < cameraBounds.MinX )
+					finalWidth -= cameraBounds.MinX -  bounds.MinX;
+				if ( bounds.MaxX > cameraBounds.MaxX )
+					finalWidth -= bounds.MaxX - cameraBounds.MaxX;
+				finalWidth = Mathf.Max(m_wrapWidthMin+1, finalWidth);
+			}
+		}
+
+		//
+		// Now offset bounds so that they're on screen
+		//
+		return WrapText(text,finalWidth);
+	}
+
+	// returns wrapped text based on settings like Truncate and WrapUniformLineWidth
+	string WrapText(string text, float width)
+	{ 
+		if ( width > 0 )
+		{ 
+			if ( m_truncate )
+				text = m_textWrapper.Truncate(text, width);
+			else if ( m_wrapUniformLineWidth )
+				text = m_textWrapper.WrapTextMinimiseWidth(text, width, m_wrapWidthMin);
+			else 
+				text = m_textWrapper.WrapText(text, width);
+		}
+		return text;
 	}
 
 	void UpdateOutline(string text)
 	{
+		if ( m_outline == null || m_outline.m_directions == 0 || gameObject.scene.IsValid() == false )
+			return;
 
-		// Update outline
-		if ( m_outline != null && m_outline.m_directions != 0 && gameObject.scene.IsValid() )
+		
+
+		// Meshes may have been deleted, so remove them if they have
+		for ( int i = m_outlineMeshes.Count - 1; i >= 0; i-- ) 
 		{
-
-			// Meshes may have been deleted, so remove them if they have
-			for ( int i = m_outlineMeshes.Count - 1; i >= 0; i-- ) 
-			{
-				if ( m_outlineMeshes[i] == null )
-					m_outlineMeshes.RemoveAt(i);
-			}
-
-			// loop through all potential outline angles
-			int meshId = 0;
-			for ( int i = 0; i < 8; ++i ) 
-			{
-				if ( PowerTools.Quest.Text.BitMask.IsSet(m_outline.m_directions, i)  )
-				{
-					if ( m_outlineMeshes == null )
-						m_outlineMeshes = new List<TextMesh>();
-
-					if ( meshId >= m_outlineMeshes.Count )
-					{
-						GameObject obj = new GameObject(((TextOutline.eDirection)(1<<i)).ToString(), m_mesh.GetType() ) as GameObject;
-						obj.hideFlags = HideFlags.HideAndDontSave;
-						obj.transform.SetParent(transform,false);
-						
-						obj.transform.localPosition = SHADOW_OFFSETS[i] * m_outline.m_width;
-						obj.layer = gameObject.layer;
-
-						MeshRenderer newShadowRenderer = obj.GetComponent<MeshRenderer>();
-						newShadowRenderer.sharedMaterial = m_meshRenderer.sharedMaterial;//new Material(m_meshRenderer.material);
-						newShadowRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-						newShadowRenderer.receiveShadows = false;
-						newShadowRenderer.sortingLayerID = m_meshRenderer.sortingLayerID;
-						newShadowRenderer.sortingLayerName = m_meshRenderer.sortingLayerName;
-						newShadowRenderer.sortingOrder = m_meshRenderer.sortingOrder;// - 1;
-
-						TextMesh newShadowMesh = obj.GetComponent<TextMesh>();
-						newShadowMesh.offsetZ = m_mesh.offsetZ + 0.1f;
-
-
-						m_outlineMeshes.Add(newShadowMesh);
-					}
-					TextMesh shadowMesh = m_outlineMeshes[meshId];
-					
-					shadowMesh.text = text;
-					shadowMesh.color = m_outline.m_color.WithAlpha(m_outline.m_color.a * color.a);
-
-					// used to only do this first time, but sometimes you want to chnages any or all of these. hopefully not slow!
-					shadowMesh.alignment = m_mesh.alignment;
-					shadowMesh.anchor = m_mesh.anchor;
-					shadowMesh.characterSize = m_mesh.characterSize;
-					shadowMesh.font = m_mesh.font;
-					shadowMesh.fontSize = m_mesh.fontSize;
-					shadowMesh.fontStyle = m_mesh.fontStyle;
-					shadowMesh.richText = m_mesh.richText;
-					shadowMesh.lineSpacing = m_mesh.lineSpacing;
-					shadowMesh.tabSize= m_mesh.tabSize;
-
-					meshId++;
-				}
-			}
+			if ( m_outlineMeshes[i] == null )
+				m_outlineMeshes.RemoveAt(i);
 		}
+
+		// loop through all potential outline angles
+		int meshId = 0;
+		bool pixel = IsPixelStyle;
+		for ( int i = 0; i < 8; ++i ) 
+		{
+			if ( PowerTools.Quest.Text.BitMask.IsSet(m_outline.m_directions, i)  )
+			{
+				if ( m_outlineMeshes == null )
+					m_outlineMeshes = new List<TextMesh>();
+
+				if ( meshId >= m_outlineMeshes.Count )
+				{
+					GameObject obj = new GameObject(((TextOutline.eDirection)(1<<i)).ToString(), m_mesh.GetType() ) as GameObject;
+					obj.hideFlags = HideFlags.HideAndDontSave;
+					obj.transform.SetParent(transform,false);
+						
+						
+					obj.transform.localPosition = (pixel ? SHADOW_OFFSETS : SHADOW_OFFSETS_HD)[i] * m_outline.m_width;
+					obj.layer = gameObject.layer;
+
+					MeshRenderer newShadowRenderer = obj.GetComponent<MeshRenderer>();
+					newShadowRenderer.sharedMaterial = m_meshRenderer.sharedMaterial;//new Material(m_meshRenderer.material);
+					newShadowRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+					newShadowRenderer.receiveShadows = false;
+					newShadowRenderer.sortingLayerID = m_meshRenderer.sortingLayerID;
+					newShadowRenderer.sortingLayerName = m_meshRenderer.sortingLayerName;
+					newShadowRenderer.sortingOrder = m_meshRenderer.sortingOrder;// - 1;
+
+					TextMesh newShadowMesh = obj.GetComponent<TextMesh>();
+					newShadowMesh.offsetZ = m_mesh.offsetZ + 0.1f;
+
+					newShadowRenderer.enabled = m_meshRenderer.enabled;
+
+					m_outlineMeshes.Add(newShadowMesh);
+				}
+				TextMesh shadowMesh = m_outlineMeshes[meshId];
+					
+				shadowMesh.text = text;
+				shadowMesh.color = m_outline.m_color.WithAlpha(m_outline.m_color.a * color.a);
+
+				// used to only do this first time, but sometimes you want to chnages any or all of these. hopefully not slow!
+				shadowMesh.alignment = m_mesh.alignment;
+				shadowMesh.anchor = m_mesh.anchor;
+				shadowMesh.characterSize = m_mesh.characterSize;
+				shadowMesh.font = m_mesh.font;
+				shadowMesh.fontSize = m_mesh.fontSize;
+				shadowMesh.fontStyle = m_mesh.fontStyle;
+				shadowMesh.richText = m_mesh.richText;
+				shadowMesh.lineSpacing = m_mesh.lineSpacing;
+				shadowMesh.tabSize= m_mesh.tabSize;
+
+				meshId++;
+			}
+		}		
 	}
 
 	public void AttachTo(Vector2 worldPosition)
@@ -449,6 +522,9 @@ public class QuestText : MonoBehaviour
 
 		m_attachObject = obj;	
 		m_attachObjOffset = worldPosition-(Vector2)obj.transform.position;
+		// Unscale attachment offset by current local scale so can re-scale at runtime
+		if ( obj.lossyScale.x != 0 && obj.lossyScale.y != 0 )
+			m_attachObjOffset.Scale(new Vector2(1f/obj.lossyScale.x, 1f/obj.lossyScale.y)); 
 		LateUpdate();
 	}
 	
@@ -468,7 +544,7 @@ public class QuestText : MonoBehaviour
 
 	// Message sent to quest text when editor has changed the text
 	void EditorUpdate()
-	{ 
+	{
 		SetText(m_text);
 	}
 
@@ -493,6 +569,7 @@ public class QuestText : MonoBehaviour
 		}
 	}
 
+
 	void LateUpdate()
 	{
 		//if ( Application.isPlaying == false )
@@ -507,32 +584,34 @@ public class QuestText : MonoBehaviour
 			Camera cam = questCam.GetInstance().GetComponent<Camera>();
 			Camera guiCam = PowerQuest.Get.GetCameraGui();
 			
-			if ( m_attachObject != null )
-				m_attachWorldPos = m_attachObjOffset + Utils.SnapRound((Vector2)m_attachObject.position, PowerQuest.Get.SnapAmount);
+			// Scale offset by current world scale, add to object position
+			if ( m_attachObject != null )			
+				m_attachWorldPos = m_attachObjOffset.Scaled(m_attachObject.lossyScale) + Utils.SnapRound((Vector2)m_attachObject.position, PowerQuest.Get.SnapAmount);  
 
 			// Need to add the difference between camera offset and actual position to account for the amount the camera has snapped.
 			Vector2 camSnapOffset = ((Vector2)cam.transform.position - questCam.GetPosition());
-			Vector2 guiSpacePosition = (Vector2)guiCam.ViewportToWorldPoint( cam.WorldToViewportPoint(m_attachWorldPos) ) + m_attachOffset + camSnapOffset;
+			m_guiSpacePosition = (Vector2)guiCam.ViewportToWorldPoint( cam.WorldToViewportPoint(m_attachWorldPos) ) + m_attachOffset + camSnapOffset;
 			
 			// Keep gametext on-screen
-			guiSpacePosition = GetOnScreenPosition(guiSpacePosition);			
+			m_guiSpacePosition = GetOnScreenPosition(m_guiSpacePosition);			
 
 			#if FONT_SNAPPING
 
-			if ( PowerQuest.Get.GetSnapToPixel() )
+			bool snap = IsPixelStyle;
+			if ( snap )
 			{
 				// finally we snap so that the text verts don't jiggle around
 				// The snap amount is modified by the current camera zoom to account for resolution differences in the game camera and the gui camera (stops pixel text jiggling)
-				float snapAmount = PowerQuest.Get.SnapAmount * Mathf.Max(questCam.GetZoom(),1);
-				transform.position = Utils.SnapRound(guiSpacePosition, snapAmount )+new Vector2(0.001f,0.001f);
+				float snapAmount = PowerQuest.Get.SnapAmount * Mathf.Max(questCam.GetZoom(),1);				
+				transform.position = Utils.SnapRound(m_guiSpacePosition, snapAmount )+new Vector2(0.001f,0.001f);
 			
 				// Offset by amount camera has moved so vertexes snap internally, but text still scrolls smoothly
-				Vector2 offset = guiSpacePosition-(Vector2)transform.position;
-				m_meshRenderer.material.SetVector("_Offset", offset);			
+				Vector2 offset = m_guiSpacePosition-(Vector2)transform.position;
+				m_meshRenderer.material.SetVector(STR_PROPERTY_OFFSET, offset);
 			}
 			else 
 			{
-				transform.position = guiSpacePosition;
+				transform.position = m_guiSpacePosition;
 			}
 
 			#else
@@ -553,6 +632,7 @@ public class QuestText : MonoBehaviour
 			m_wasRendererEnabled = m_meshRenderer.enabled;
 		}
 	}
+
 
 	public void StartTyping(float speedOverride = -1)
 	{
@@ -580,6 +660,9 @@ public class QuestText : MonoBehaviour
 		UpdateOutline(text);
 		m_mesh.text = text;
 	}
+	
+	public bool Attached => m_attachObject != null;
+	public Vector2 GuiSpacePosition => m_guiSpacePosition;
 
 	void UpdateTyping()
 	{
@@ -633,6 +716,7 @@ public class QuestText : MonoBehaviour
 		return position+offset;
 	}
 
+
 	bool CheckTextMesh() 
 	{
 		if ( m_mesh == null )
@@ -654,64 +738,69 @@ public class QuestText : MonoBehaviour
 		if ( m_mesh == null || m_meshRenderer == null )
 			return false;
 			
-		bool snap = true;
+		bool pixelFilter = m_fontPixelStyle == eFontPixelStyle.Auto || m_fontPixelStyle == eFontPixelStyle.Pixel;
 		if ( Application.isPlaying && PowerQuest.Exists )
-			snap = PowerQuest.Get.GetSnapToPixel();
-
-		if ( s_shader == null )
-			s_shader = Shader.Find(snap ? STR_SHADER_PIXEL : STR_SHADER);		
+			pixelFilter = (PowerQuest.Get.GetSnapToPixel() && m_fontPixelStyle == eFontPixelStyle.Auto) || m_fontPixelStyle == eFontPixelStyle.Pixel;
 		
-		if ( s_shader == null )
-			return false;
+		if ( s_shaderPixel == null )
+			s_shaderPixel = Shader.Find(STR_SHADER_PIXEL);
+		if ( s_shaderPixelAA == null )
+			s_shaderPixelAA = Shader.Find(STR_SHADER_PIXEL_AA);
+		if ( s_shaderHD == null )
+			s_shaderHD = Shader.Find(STR_SHADER);
+	
 		
 		Material mat = Application.isPlaying ? m_meshRenderer.material : m_meshRenderer.sharedMaterial;
 		
-		if ( m_shaderOverride != null && mat != null && mat.shader != m_shaderOverride )
+		if ( m_shaderOverride != null )
 		{
-			if ( mat.shader != m_shaderOverride )
+			//if ( mat.shader != m_shaderOverride )// now doing this every time
 			{
 				mat = new Material(mat);
-				mat.shader = m_shaderOverride;
-				mat.mainTexture.filterMode = snap && m_setFiltering ? FilterMode.Point : FilterMode.Bilinear;
-				mat.mainTexture. anisoLevel = snap && m_setFiltering ? 0 : 1;
+				mat.shader = m_shaderOverride;				
+				mat.SetVector(STR_PROPERTY_OFFSET, Vector2.zero);
+				mat.mainTexture.filterMode = pixelFilter && m_setFiltering ? FilterMode.Point : FilterMode.Bilinear;
+				mat.mainTexture. anisoLevel = pixelFilter && m_setFiltering ? 0 : 1;
 				if ( Application.isPlaying )
 					m_meshRenderer.material = mat;
-
 			}
-			if ( Application.isPlaying == false )
+			if ( Application.isPlaying )
 				m_materialSet = mat != null;
-			return m_materialSet;
+			return mat != null;
 		}
 		else 
 		{
+			m_shader = pixelFilter ? s_shaderPixel : m_fontPixelStyle == eFontPixelStyle.PixelAntiAliased ? s_shaderPixelAA : s_shaderHD;
 			
-			#if SET_ALL_FONTS
-				// Set all fonts to use the shader
-				if ( m_mesh.font.material.shader != s_shader || Application.isPlaying == false )
-				{					
-					m_mesh.font.material.shader = s_shader;
-					m_mesh.font.material.mainTexture.filterMode = snap && m_setFiltering ? FilterMode.Point : FilterMode.Bilinear;
-					m_mesh.font.material.mainTexture.anisoLevel = snap && m_setFiltering ? 0 : 1;
-				}
-				if ( Application.isPlaying == false )
-					m_materialSet = true;
-			return true;
-			#else			
-				Material mat = m_meshRenderer.sharedMaterial;
-				if ( mat.shader != s_shader )
-				{
-					mat = new Material(mat);
-					mat.shader = s_shader;
-					mat.mainTexture.filterMode = snap ? FilterMode.Point : FilterMode.Bilinear;
-					mat.mainTexture. anisoLevel = snap ? 0 : 1;
-					m_meshRenderer.sharedMaterial = mat;
-					
-				}			
-				if ( Application.isPlaying == false )
-					m_materialSet = mat != null;
-				return m_materialSet;
-			#endif
+			if ( mat != null )
+			{
+				mat = new Material(mat);
+				mat.shader = m_shader;
+				mat.SetVector(STR_PROPERTY_OFFSET, Vector2.zero);
+				mat.mainTexture.filterMode = pixelFilter && m_setFiltering ? FilterMode.Point : FilterMode.Bilinear;
+				mat.mainTexture.anisoLevel = pixelFilter && m_setFiltering ? 0 : 1;
+				if ( Application.isPlaying )
+					m_meshRenderer.material = mat;
+			}
+			if ( Application.isPlaying )
+				m_materialSet = mat != null;
+			return mat != null;
 		}
+		/*/
+		else 
+		{
+			// Set this fonts material to use the shader (will apply to all with this font))
+			if ( m_mesh.font.material.shader != m_shader || Application.isPlaying == false )
+			{					
+				m_mesh.font.material.shader = m_shader;
+				m_mesh.font.material.mainTexture.filterMode = pixelFilter && m_setFiltering ? FilterMode.Point : FilterMode.Bilinear;
+				m_mesh.font.material.mainTexture.anisoLevel = pixelFilter && m_setFiltering ? 0 : 1;
+			}
+			if ( Application.isPlaying )
+				m_materialSet = true;
+			return true;
+		}
+		/**/
 	}
 
 	private List<Material> m_tempMaterials = new List<Material>();
@@ -781,15 +870,13 @@ public class QuestText : MonoBehaviour
 		Sprite sprite = data.m_sprite;
 
 		Material material = null;
+				
 		// Check if material exists in guitext already
-
 		MeshRenderer renderer = GetComponent<MeshRenderer>();
 		int matIndex = -1;
-
 		for (int index = 0; index < renderer.materials.Length; index++) 
 		{
 			var m = renderer.materials[index];
-
 			if (m.mainTexture == sprite.texture) 
 			{
 				matIndex = index;
@@ -807,15 +894,15 @@ public class QuestText : MonoBehaviour
 			materials[matIndex] = material;
 			renderer.materials = materials;
 		}
-		material = renderer.materials[matIndex];
-		material.SetVector("_Offset",new Vector2(0,data.m_offsetY));
-		result = string.Format(TAG_QUAD, matIndex, sprite.textureRect.height, sprite.textureRect.x/sprite.texture.width, sprite.textureRect.y/sprite.texture.height, sprite.textureRect.width/sprite.texture.width, sprite.textureRect.height/sprite.texture.height);
-		//result = string.Format(TAG_QUAD, matIndex, m_mesh.fontSize*2, sprite.textureRect.x/sprite.texture.width, sprite.textureRect.y/sprite.texture.height, sprite.textureRect.width/sprite.texture.width, sprite.textureRect.height/sprite.texture.height);
 
+		float scale =  m_mesh != null ? 10f/m_mesh.characterSize : 1f;
+		material = renderer.materials[matIndex];
+		material.SetVector(STR_PROPERTY_OFFSET,new Vector2(0,data.m_offsetY));		
+		result = string.Format(TAG_QUAD, matIndex, sprite.textureRect.height*scale, (sprite.textureRect.x)/sprite.texture.width, (sprite.textureRect.y)/sprite.texture.height, (sprite.textureRect.width)/sprite.texture.width, (sprite.textureRect.height)/sprite.texture.height);
+		
 		return result;
 
 	}
-		
 
 }
 }

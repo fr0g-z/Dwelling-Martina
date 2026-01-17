@@ -43,7 +43,7 @@ public class PowerQuestEditorSettingsEditor : Editor
 {	
 	public override void OnInspectorGUI()
 	{
-		EditorGUILayout.LabelField("Lets roawk", EditorStyles.boldLabel);
+		EditorGUILayout.LabelField("Let's roawk", EditorStyles.boldLabel);
 		DrawDefaultInspector();
 		PowerQuestEditorSettings component = (PowerQuestEditorSettings)target;
     }

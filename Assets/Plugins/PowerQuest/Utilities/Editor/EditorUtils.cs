@@ -698,7 +698,7 @@ public class ObjectReferenceDrawer : PropertyDrawer
 
 	Usage:
 		// init wiht gui's rect
-		LayoutRect layout = new LayoutRect(rect);
+		EditorLayouter layout = new EditorLayouter(rect);
 
 		// Set up fields. Chained together like this...
 		// This example has a 40px field, a little space, then a field that takes up 20% of spare space, another 20px field, and another that uses the remaining.

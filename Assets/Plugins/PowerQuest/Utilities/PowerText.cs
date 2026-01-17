@@ -670,7 +670,7 @@ public class ShuffledIndex
 
 public static class Utils
 {
-    // Extention method to shuffle an array
+    // Extension method to shuffle an array
    public static void Shuffle<T>( this T[] list )
    {
         T temp;

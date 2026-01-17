@@ -58,7 +58,7 @@ public class RoomComponentEditor : Editor
 		ScriptButton("On Parser", "OnParser");
 		ScriptButton("On Any Click", "OnAnyClick");
 		ScriptButton("After Any Click", "AfterAnyClick");
-		ScriptButton("On Walk To", "OnWalkTo");
+		ScriptButton("On Walk To", "OnWalkTo", " Vector2 position ");
 		ScriptButton("Post-Restore Game (BG)", "OnPostRestore", " int version ", false);			
 		ScriptButton("Unhandled Interact", "UnhandledInteract", " IQuestClickable mouseOver ");
 		ScriptButton("Unhandled Look At", "UnhandledLookAt", " IQuestClickable mouseOver ");

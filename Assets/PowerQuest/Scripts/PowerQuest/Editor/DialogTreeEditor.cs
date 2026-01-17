@@ -103,8 +103,7 @@ public class DialogTreeComponentEditor : Editor
 	}
 
 	void DrawOptionHeader(Rect rect)
-	{
-
+	{	
 		float offset = rect.x+12;
 		EditorGUI.LabelField(new Rect(offset, rect.y, 80, EditorGUIUtility.singleLineHeight), "Id" );
 		offset += 65;
@@ -123,11 +122,16 @@ public class DialogTreeComponentEditor : Editor
 			return;
 		
 		rect.y += 2;
-
-		float totalFixedWidth = 82+20+50;//+34+34+20;
-		float offset = rect.x;		
+		rect.height = EditorGUIUtility.singleLineHeight;
+		
+		EditorLayouter layout = new EditorLayouter(rect);
+		layout.Fixed(80).Space.Space.Fixed(20).Stretched.Fixed(50);
+		if ( Application.isPlaying )
+			layout.Fixed(50);
+	
 		string newName = option.Name;
-		newName = EditorGUI.DelayedTextField(new Rect(offset, rect.y,80, EditorGUIUtility.singleLineHeight), option.Name ).Trim();
+		newName = EditorGUI.DelayedTextField(layout, option.Name ).Trim();
+
 		// Check newName != option.Name
 		if ( newName != option.Name )
 		{
@@ -166,23 +170,25 @@ public class DialogTreeComponentEditor : Editor
 			}			
 		}
 
-		offset += 82;
-		option.Visible = GUI.Toggle(new Rect(offset, rect.y, 20, EditorGUIUtility.singleLineHeight), option.Visible,"" );
-		offset += 20;
-		option.Text = EditorGUI.TextField(new Rect(offset, rect.y, rect.width-totalFixedWidth, EditorGUIUtility.singleLineHeight), option.Text );
-		offset += rect.width - totalFixedWidth;
-		if ( GUI.Button(new Rect(offset, rect.y, 50, EditorGUIUtility.singleLineHeight), "Script", EditorStyles.miniButton ) )
+		option.Visible = GUI.Toggle(layout, option.Visible,"" );
+		option.Text = EditorGUI.TextField(layout, option.Text );
+		if ( GUI.Button(layout, "Script", EditorStyles.miniButton ) )
 		{
 			QuestScriptEditor.Open( component, PowerQuest.SCRIPT_FUNCTION_DIALOG_OPTION+option.Name, " IDialogOption option " );
 		}
-		offset += 50;
+
+		if ( Application.isPlaying && GUI.Button(layout, "Test", EditorStyles.miniButton ) )
+		{
+			PowerQuest.Get.StartDialog(component.GetData().ScriptName);			
+			// NB: have to get dialog tree rather than use this component so use counts are applied to in-game ones
+			PowerQuest.Get.OnDialogOptionClick(PowerQuest.Get.GetDialogTree(component.GetData().ScriptName).GetOption(option.Name) as DialogOption);			
+		}
 		/*
-		if ( GUI.Button(new Rect(offset, rect.y, 20, EditorGUIUtility.singleLineHeight), "x", EditorStyles.miniButtonRight ) )
+		if ( GUI.Button(layout, "x", EditorStyles.miniButtonRight ) )
 		{
 			// Delete
 			DeleteOption(index);
 		}
-		offset += 20;
 		*/
 	}
 

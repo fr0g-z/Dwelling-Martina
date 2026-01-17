@@ -17,6 +17,7 @@ public class AlignToScreen : MonoBehaviour
 	[Header("With offset...")]
 	[SerializeField] Vector2 m_offset = Vector2.zero;
 	[SerializeField] Vector2 m_offsetRatio = Vector2.zero;
+	[SerializeField] bool m_snapToPixel = false;
 	[Header("Optional camera override")]
 	[SerializeField] Camera m_camera = null;
 		
@@ -85,9 +86,13 @@ public class AlignToScreen : MonoBehaviour
 		position += (Vector3)offsetRatioFinal;
 		
 		position = m_camera.ScreenToWorldPoint(position);
+
+		if ( m_snapToPixel )
+			position = Utils.SnapRound(position, Application.isPlaying ? PowerQuest.Get.SnapAmount : 1 );
+
 		position += (Vector3)m_offset;		
 		if ( PowerQuest.GetValid() && PowerQuest.Get.GetSnapToPixel() )
-			position = position.Snap(PowerQuest.Get.SnapAmount);
+			position = position.SnapRound(PowerQuest.Get.SnapAmount);
 		position.z = transform.position.z;
 		transform.position = new Vector3( 
 			(m_horizontal == eAlignHorizontal.None) ? transform.position.x :  position.x,

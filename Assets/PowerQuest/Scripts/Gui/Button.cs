@@ -546,7 +546,7 @@ public partial class Button : GuiControl, IButton
 	#region Implementing IQuestClickable
 	
 	public override string Description { get{ return m_description;} set{m_description = value;} }
-	public override bool Clickable { get{ return m_clickable;} set{ m_clickable = value; } }
+	public override bool Clickable { get{ return m_clickable && m_visible;} set{ m_clickable = value; } }
 	public override string Cursor { get { return m_cursor; } set { m_cursor = value; }  }
 	
 	#endregion

@@ -14,6 +14,10 @@ public partial class GuiControl : MonoBehaviour, IQuestClickable, IQuestScriptab
 
 	public enum eAlignHorizontal { None, Left, Center, Right }
 	public enum eAlignVertical { None, Top, Middle, Bottom }
+	
+	static readonly Regex REGEX_SANITIZE = new Regex(@"(\W|_)+", RegexOptions.Compiled);
+	static readonly string REGEX_REPLACE = "";
+	static readonly string STR_UNINSTNATIATED = "UninstantiatedGui";
 
 	#region Vars: Editor
 
@@ -39,6 +43,10 @@ public partial class GuiControl : MonoBehaviour, IQuestClickable, IQuestScriptab
 	protected Gui m_gui = null;
 	protected GuiComponent m_guiComponent = null;
 	protected GuiNavigation m_navComponent = null;
+	
+	// ScriptName/GO name cached for optimisation
+	string m_cachedScriptName = null; 
+	string m_cachedGOName = null;
 
 	#endregion
 	#region Funcs: For inheritors to implement
@@ -366,20 +374,20 @@ public partial class GuiControl : MonoBehaviour, IQuestClickable, IQuestScriptab
 	public virtual string Anim { get { return null; } set{} }
 	public virtual Color Color { get { return Color.white; } set{} }
 
-
 	public eQuestClickableType ClickableType { get {return eQuestClickableType.Gui; } }
 	public MonoBehaviour Instance { get{ return this; } }
-
-	static readonly Regex REGEX_SANITIZE = new Regex(@"(\W|_)+", RegexOptions.Compiled);
-	static readonly string REGEX_REPLACE = "";
-	static readonly string STR_UNINSTNATIATED = "UninstantiatedGui";
-	
+		
 	// Use a cleaned up version of the game objects's name as the script name. NB this is probably rather expensive, probably need to change it later
 	public string ScriptName { get 
 	{
 		if ( gameObject == null )
 			return STR_UNINSTNATIATED;
-		return REGEX_SANITIZE.Replace(gameObject.name,REGEX_REPLACE);
+		if ( m_cachedGOName != gameObject.name )
+		{ 
+			m_cachedGOName = gameObject.name;
+			m_cachedScriptName = REGEX_SANITIZE.Replace(m_cachedGOName,REGEX_REPLACE);
+		}
+		return m_cachedScriptName;
 	} }
 	public Vector2 WalkToPoint { get { return Vector2.zero;} set{} }
 	public Vector2 LookAtPoint { get { return Vector2.zero;} set{} }

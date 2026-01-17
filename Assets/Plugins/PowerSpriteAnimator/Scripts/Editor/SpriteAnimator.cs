@@ -1434,6 +1434,28 @@ public partial class SpriteAnimator : EditorWindow
 	        ApplyChanges();
 	    }
 	}
+	
+	/// Moves any currently selected frames to after the specified index
+	void ReverseSelectedFrames()
+	{
+		// Sort selected items by time so they can be moved in correct order
+		m_selectedFrames.Sort( (a,b) => a.m_time.CompareTo(b.m_time) );
+
+		for ( int i = 0, j = m_selectedFrames.Count-1; i < j; ++i, --j )
+		{
+			// Swap i and j	
+			int iFrame = m_frames.FindIndex( item=>item==m_selectedFrames[i] );
+			int jFrame = m_frames.FindIndex( item=>item==m_selectedFrames[j] );
+			
+			AnimFrame swap = m_frames[iFrame];
+			m_frames[iFrame]=m_frames[jFrame];
+			m_frames[jFrame]=swap;
+		}
+
+		RecalcFrameTimes();
+		Repaint();
+		ApplyChanges();
+	}
 
 	/// Creates a new event on the timeline at a specific time.
 	void InsertEvent(float eventTime, bool shouldSelect )

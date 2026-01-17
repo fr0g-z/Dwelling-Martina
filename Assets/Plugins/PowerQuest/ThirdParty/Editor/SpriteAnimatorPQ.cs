@@ -1,5 +1,5 @@
 //-----------------------------------------
-// Sprite Animator extentions for PowerQuest
+// Sprite Animator extensions for PowerQuest
 //----------------------------------------
 
 using UnityEditor;

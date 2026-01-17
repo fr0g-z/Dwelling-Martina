@@ -1,4 +1,8 @@
+
+ //#define SCRIPT_LINK_ALTS
+
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Text.RegularExpressions;
@@ -28,6 +32,8 @@ public class SystemTextEditor : Editor
 	[SerializeField] bool m_foldoutScript = false;
 	[SerializeField] bool m_foldoutCSV = false;
 	[SerializeField] bool m_foldoutLipSync = false;
+
+	TextAsset m_volsFile = null;
 		
 	enum eProcessTextMode
 	{
@@ -83,43 +89,29 @@ public class SystemTextEditor : Editor
 	// Used for removing ids from text
 	static readonly string REPLACE_DIALOG_NOID = "{0}\"{1}\")"; // C.Jon.Say("hi")
 	static readonly string REPLACE_ASSIGN_NOID = "{0}\"{1}\""; // C.Jon.Description = "hi"
+	
+	
+	static readonly string SCRIPT_DIALOG_HEADER_PATH = "Assets/PowerQuest/Scripts/PowerQuest/Editor/ScriptHeader.html";
 
-	static readonly string SCRIPT_DIALOG_FILE_START = @"<html><head><style>
-		body{ text-align: center; }
-		ul {
-			margin-top: 20px;
-			margin-bottom: 20px;
-			margin-right: auto;
-			margin-left: auto;
-
-			list-style: none;
-			max-width: 700px;
-			background: #fff;
-			padding: 5px 14px;
-			text-align: left;
-		}
-		li { font: 12px/14px Courier, fixed; }
-		.action {  font-style: italic; }
-		.sceneheader, .action, .character { padding-top: 1.5ex; }
-		.sceneheader  { font-weight: bold; text-transform:uppercase; }
-		.action { padding-right: 5%; font- }
-		.character {  margin-left: 40%; text-transform:uppercase;  }
-		.dialogue { margin-left: 25%; min-width: 320px; padding-right: 5%; }
-		.parenthetical { margin-left: 32%; padding-right: 10%; }
-		/* special case: dialogue followed by a parenthetical; the extra line needs to be suppressed */
-		.dialogue + .parenthetical { padding-bottom: 0; }
-		.dialogue.recorded { color:#aaa; }
-		.transition { padding-top: 3ex; margin-left: 65%; padding-bottom: 1.5ex; }
-		.id { float:left; padding-right: 0; color:#aaa; text-align: right; width: 23%; }
-		a:hover {text-decoration: underline; cursor: pointer;}
-		</style>
-		<script> function play(name) {(new Audio('./Voice/'+name+'.wav')).play(); } </script>"+"\n</head>\n<body><code><ul>";
 	static readonly string SCRIPT_DIALOG_FILE_END = "</ul></code></body></html>";
 	static readonly string SCRIPT_DIALOG_CHARACTER = "\t\t\t<li class=\"character\"><b>{0}</b></li>\n";
 	static readonly string SCRIPT_DIALOG_CHARACTER_HIGHLIGHTED = "\t\t\t<li class=\"character\"><span style=\"background-color: #{0};\"><b>{1}</b></span></li>\n";
-	static readonly string SCRIPT_DIALOG_LINE = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a>)</li><li class=\"dialogue\">{2}</li>\n";
+
+	static readonly string SCRIPT_DIALOG_LINE = "\t\t\t<li class=\"id\">({0}{1})</li><li class=\"dialogue\">{2}</li>\n";
 	//static readonly string SCRIPT_DIALOG_LINE = "\t\t\t<li class=\"character\"><b>{0}</b> {1}</li><li class=\"dialogue\">{2}</li>\n";
-	static readonly string SCRIPT_DIALOG_RECORDED_LINE = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a>)</li><li class=\"dialogue recorded\">{2}</li>\n";
+	#if SCRIPT_LINK_ALTS
+	static readonly string SCRIPT_DIALOG_LINE_LINKS = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a><a onclick=\"play('{0}{1}b')\">-B</a><a onclick=\"play('{0}{1}c')\">C</a><a onclick=\"play('{0}{1}d')\">D</a><a onclick=\"play('{0}{1}x')\">X</a><a onclick=\"play('{0}{1}xx')\">X</a>)</li><li class=\"dialogue\">{2}</li>\n";
+	#else
+	static readonly string SCRIPT_DIALOG_LINE_LINKS = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a>)</li><li class=\"dialogue\">{2}</li>\n";
+	#endif
+
+	static readonly string SCRIPT_DIALOG_RECORDED_LINE = "\t\t\t<li class=\"id\">({0}{1})</li><li class=\"dialogue recorded\">{2}</li>\n";
+	#if SCRIPT_LINK_ALTS
+	static readonly string SCRIPT_DIALOG_RECORDED_LINE_LINKS = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a><a onclick=\"play('{0}{1}b')\">-B</a><a onclick=\"play('{0}{1}C')\">c</a><a onclick=\"play('{0}{1}d')\">D</a><a onclick=\"play('{0}{1}x')\">X</a><a onclick=\"play('{0}{1}xx')\">X</a>)</li><li class=\"dialogue recorded\">{2}</li>\n";
+	#else
+	static readonly string SCRIPT_DIALOG_RECORDED_LINE_LINKS = "\t\t\t<li class=\"id\">(<a onclick=\"play('{0}{1}')\">{0}{1}</a>)</li><li class=\"dialogue recorded\">{2}</li>\n";	
+	#endif
+
 	static readonly string SCRIPT_FILE_LINE = "\n\t<li class=\"sceneheader\">{0}</li>\n\n";
 	static readonly string SCRIPT_FUNCTION_LINE = "\n\t\t<li class=\"action\">{0}</li>\n\n";
 
@@ -152,11 +144,12 @@ public class SystemTextEditor : Editor
 	//[Tooltip("If enabled, only spoken dialog lines are processed. Disable if you're planning on translating all game text")]
 	[SerializeField] bool m_processDialogOnly = true;
 	//[Tooltip("If enabled, when a section or function has been fully recorded, it will be omitted from the output script")]
-	[SerializeField] bool m_skipFullyRecordedSections = false;
+	[SerializeField] bool m_skipFullyRecordedSections = true;
+	[SerializeField] bool m_enablePreviewHyperlinks = true;
 	//[Tooltip("Specify specific characters to export, comma seperated. Sections not including the character will be skipped. Specify 'Narr' for narrator.")]
 	[SerializeField] string[] m_exportCharacters = null;
 	//[Tooltip("Highlight specified characters names in the script to make them easier to see.")]
-	[SerializeField] bool m_highlightCharacter = false;
+	[SerializeField] bool m_highlightCharacter = true;
 	//[Tooltip("Specify specific quest object names to export, comma seperated. Others will be skipped. eg 'Forest, GlobalScript, Barney', also note special cases: 'characters, guis, items'")]
 	[SerializeField] string[] m_exportScripts = null;	
 	//[Tooltip("Comma separated list of language codes. Case sensitive, use the same case you put in Languages' codes")]
@@ -172,15 +165,24 @@ public class SystemTextEditor : Editor
 		Excel,
 		GoogleSheets
 	}
-	[SerializeField] eCsvEncoding m_csvEncoding = eCsvEncoding.Excel;
+	[SerializeField] eCsvEncoding m_csvEncoding = eCsvEncoding.GoogleSheets;
 
 	string m_currSourceFile = null;
 
 	string m_sectionsOrder = null;
 
+	public void OnEnable()
+	{
+		m_volsFile = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Audio/VoVolumeTweaks.txt");
+	}
+
 	public override void OnInspectorGUI()
 	{
 		m_component = (SystemText)target;
+		
+		bool processText = false;
+		bool processRemoveTextIds = false;
+		bool updateVoVols = false;
 		
 		//EditorGUILayout.LabelField("Settings",EditorStyles.boldLabel);		
 		m_foldoutSettings = EditorGUILayout.Foldout(m_foldoutSettings,"Settings", true, m_foldoutSettings ? new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold }: EditorStyles.foldout);
@@ -200,15 +202,13 @@ public class SystemTextEditor : Editor
 				);
 
 			if (languagesProperty != null)
-			{
 				EditorGUILayout.PropertyField(languagesProperty);
-			}
+				
 			GUILayout.Space(10);	
+
 		}
 
 
-		bool processText = false;
-		bool processRemoveTextIds = false;
 
 		//EditorGUILayout.LabelField("Process Game Text",EditorStyles.boldLabel);
 		
@@ -301,6 +301,11 @@ public class SystemTextEditor : Editor
 				new GUIContent("Skip Recorded Sections", "If this is enabled, sections where all the lines have been recorded will be omitted (recorded lines will not have their character names highlighted, if Highlight Character has been enabled), all lines except those that need to be recorded by the VA are greyed out"),
 				m_skipFullyRecordedSections
 			);
+
+			m_enablePreviewHyperlinks = EditorGUILayout.Toggle(
+				new GUIContent("Enable Preview Hyperlinks", "If enabled, turns on hyperlinks when you click script ids. Eg. clicking Narr123 will play /Voice/Narr123.wav"),
+				m_enablePreviewHyperlinks
+			);
 				
 			
 			if ( GUILayout.Button("Get Section Order"))
@@ -356,7 +361,7 @@ public class SystemTextEditor : Editor
 				EditorUtility.ClearProgressBar();
 			
 				// If import successful, ask about updating game text too.
-				if ( importSuccess && m_component.EditorGetShouldImportDefaultStringFromCSV() )
+				if ( importSuccess /*&& m_component.EditorGetShouldImportDefaultStringFromCSV()*/ )
 				{
 					if ( EditorUtility.DisplayDialog("CSV Import Succeeded","Success!\n\nDo you also want to update the text in your game code/scripts and prefabs?\n\n(Backup highly recommended!)","Update Scripts and Prefabs","No thanks") )
 						processUpdateGameTextFromImport = true;
@@ -403,6 +408,13 @@ public class SystemTextEditor : Editor
 			GUILayout.Space(10);
 		}
 
+		
+		if ( m_volsFile != null )
+		{ 
+			updateVoVols = GUILayout.Button("Parse Vo Volumes File");
+			GUILayout.Space(10);
+		}
+
 		if ( processText )
 		{
 			EditorUtility.DisplayProgressBar("Processing text", "Processing text",0);
@@ -446,13 +458,45 @@ public class SystemTextEditor : Editor
 			AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
 			EditorUtility.ClearProgressBar();
 		}
+		else if ( updateVoVols && m_volsFile != null )
+		{
+			// force update of vols file						
+			AssetDatabase.ImportAsset("Assets/Audio/VoVolumeTweaks.txt");
+			m_volsFile = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Audio/VoVolumeTweaks.txt");
+			m_component.EditorSetVoTweaksFile(m_volsFile);
 
+			string logs=null; 
+			string errors=null;
+			m_component.ParseVoVolTweaks(m_volsFile, ref logs, ref errors);
+			if ( string.IsNullOrEmpty(errors) == false )
+			{ 
+				Debug.LogError("Errors found parsing Vo Volume Tweaks file\n"+errors);
+				EditorUtility.DisplayDialog("Error!", errors, "Dangit");
+			}
+			else 
+			{ 
+				Debug.Log("Succesfully parsed Vo Volume Tweaks file\n"+logs);
+				//EditorUtility.DisplayDialog("Success", "Parsed VO volume tweaks!", "Aww yiss");		
+			}
+
+			if ( Application.isPlaying )
+			{ 
+				// Also update in-game
+				SystemText.Get.ParseVoVolTweaks(m_volsFile, ref logs, ref errors);
+			}
+			EditorUtility.SetDirty(target);			
+		}
+		else if ( GUI.changed )
+		{ 
+			serializedObject.ApplyModifiedProperties();	
+			EditorUtility.SetDirty(target);				
+		}
 	}
 
 
 
 	static void GetFilePaths(string startingDirectory, string extention, ref List<string> paths)
-  	{
+	{
 		try
 		{
 			string[] files = Directory.GetFiles(startingDirectory);
@@ -658,6 +702,9 @@ public class SystemTextEditor : Editor
 			// Look for [QuestLocalizable] attribute. I assume this will be suuuuuuper slow lol.
 			ProcessLocalizableFieldAttributes();
 		}
+
+		// Remove duplicates
+		m_component.EditorRemoveDuplicates();
 	}
 
 	string AddStringWithEmbeddedId(string line)
@@ -820,31 +867,61 @@ public class SystemTextEditor : Editor
 		}
 	}
 
-	// Finds [QuestLocalizable] attribute on string fields, and adds that text to system. returns true if found
+	/// Finds [QuestLocalizable] attribute on string fields, or classes/lists that contain string fields, and adds that text to system. returns true if found. 
+	/// NB: doesn't handle arrays at the moment, only lists.
 	public bool ProcessLocalizableFieldAttributes(Transform transform, bool root = true)
 	{
 		bool result = false;
+		if ( transform == null )
+			return result;
 		for ( int i = 0; i < transform.childCount; ++i )
 			result |= ProcessLocalizableFieldAttributes(transform.GetChild(i), false );
 
-		Component[] components = transform.GetComponents<Component>();
-		
-		BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+		Component[] components = transform.GetComponents<Component>();		
 		foreach( Component component in components) 
+			result |= ProcessLocalizableFieldAttribute(component);
+
+		return result;
+	}
+	
+	bool ProcessLocalizableFieldAttribute(object obj)
+	{ 
+		BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
+		bool result = false;
+
+		foreach(FieldInfo fieldInfo in obj.GetType().GetFields(flags))
 		{
-			foreach(FieldInfo fieldInfo in component.GetType().GetFields(flags))
-			{
-				if ( fieldInfo.GetCustomAttributes(typeof(QuestLocalizeAttribute),true).Count() > 0 )
-				{					
-					if ( fieldInfo.FieldType == typeof(string))
+			if ( fieldInfo.GetCustomAttributes(typeof(QuestLocalizeAttribute),true).Count() > 0 )
+			{	
+				// Check if field is string, if so add to localisation system
+				if ( fieldInfo.FieldType == typeof(string))
+				{
+					string val = fieldInfo.GetValue(obj) as string;
+					if ( string.IsNullOrEmpty(val) == false )
 					{
-						string val = fieldInfo.GetValue(component) as string;
-						if ( string.IsNullOrEmpty(val) == false )
+						val = AddStringWithEmbeddedId(val);
+						fieldInfo.SetValue(obj, val); 
+						// Debug.Log("Found: "+ val);
+						result = true;
+					}
+				}
+				else if ( fieldInfo.FieldType.IsPrimitive == false )
+				{ 					
+					// Check if field is a list of strings, if so add child strings to localisation system
+					if ( typeof(List<string>).IsAssignableFrom(fieldInfo.FieldType))
+					{ 
+						List<string> list = fieldInfo.GetValue(obj) as List<string>;
+						for ( int i = 0; i < list.Count; ++i )
+							list[i] = AddStringWithEmbeddedId(list[i]);		 
+						result = true;
+					}
+					// Check if field is a list of a class/struct. If so, recurse. (so can have list of classes, which contain a [QuestLocalise] string variable)
+					else if ( typeof(IList).IsAssignableFrom(fieldInfo.FieldType))
+					{ 
+						IList list = fieldInfo.GetValue(obj) as IList;						
+						foreach (var item in list)
 						{
-							val = AddStringWithEmbeddedId(val);
-							fieldInfo.SetValue(component, val); 
-							// Debug.Log("Found: "+ val);
-							result = true;
+							result |= ProcessLocalizableFieldAttribute(item);								
 						}
 					}
 				}
@@ -867,15 +944,15 @@ public class SystemTextEditor : Editor
 
 	private bool HasRecording(TextData data)
 	{
-        string fullFileName = data.m_character + data.m_id.ToString();			
-        AudioClip clip = Resources.Load("Voice/" + fullFileName) as AudioClip;
+		string fullFileName = data.m_character + data.m_id.ToString();			
+		AudioClip clip = Resources.Load("Voice/" + fullFileName) as AudioClip;
 
-        if (clip == null)
-        {
-	        return false;
-        }
+		if (clip == null)
+		{
+			return false;
+		}
 
-        return true;
+		return true;
 	}
 
 	// Generates a screenplay style script for recording dialog
@@ -920,8 +997,8 @@ public class SystemTextEditor : Editor
 		Dictionary<string, Color> colourCache = new Dictionary<string, Color>();
 
 		System.Text.StringBuilder builder = new System.Text.StringBuilder();		
-		builder.Append(SCRIPT_DIALOG_FILE_START);
-		// builder.AppendFormat(SCRIPT_DIALOG_LINE, "fred", "23", "blah di blah di blah blah blah");
+		TextAsset scriptHeader = AssetDatabase.LoadAssetAtPath<TextAsset>(SCRIPT_DIALOG_HEADER_PATH);
+		builder.Append(scriptHeader.text);
 
 		List<TextData> list = systemText.EditorGetTextDataOrdered();
 		DialogScript dialogScript = GatherDialog(list);
@@ -985,8 +1062,8 @@ public class SystemTextEditor : Editor
 
 						// here we decide whether to grey out the dialog line,
 						string dialogFmt = blockIsPartiallyRecorded && recorded && block.SatisifiesFilter(m_exportCharacters) && m_skipFullyRecordedSections
-							? SCRIPT_DIALOG_RECORDED_LINE
-							: SCRIPT_DIALOG_LINE;
+							? m_enablePreviewHyperlinks ? SCRIPT_DIALOG_RECORDED_LINE_LINKS : SCRIPT_DIALOG_RECORDED_LINE
+							: m_enablePreviewHyperlinks ? SCRIPT_DIALOG_LINE_LINKS : SCRIPT_DIALOG_LINE;
 
 						if (languageIndex > 0)
 						{
@@ -1230,20 +1307,20 @@ public class SystemTextEditor : Editor
 				}
 				
 				if (unprocessedTextData[0] == null)
-                {
-                	Debug.LogError("Failed to extract a DialogSubsection.");
-                }
-                else
-                {
-	                TextData textData = unprocessedTextData[0];
+				{
+					Debug.LogError("Failed to extract a DialogSubsection.");
+				}
+				else
+				{
+					TextData textData = unprocessedTextData[0];
 
-	                if (textData.m_sourceFile != sectionName || textData.m_sourceFunction != dialogSubsection.Name)
-	                {
-		                // we just traversed into a new (sub)section, not a problem...
-		                return true;
-	                }
-                	Debug.LogError($"Failure occurred around {textData.m_sourceFile}:{textData.m_sourceFunction}");
-                }
+					if (textData.m_sourceFile != sectionName || textData.m_sourceFunction != dialogSubsection.Name)
+					{
+						// we just traversed into a new (sub)section, not a problem...
+						return true;
+					}
+					Debug.LogError($"Failure occurred around {textData.m_sourceFile}:{textData.m_sourceFunction}");
+				}
 
 				dialogSubsection = null;
 				return false;
@@ -1417,18 +1494,19 @@ public class SystemTextEditor : Editor
 
 	}
 
+	// Returns csv encoding to use when reading/writing a file based on user setting. Eg. For GoogleSheets- write as Unicode, read as "Default" seems to work.
 	System.Text.Encoding GetCsvEncoding()
 	{
 		if ( m_csvEncoding == eCsvEncoding.ASCII )
 			return System.Text.Encoding.ASCII;
-		else if ( m_csvEncoding == eCsvEncoding.UTF8 )
+		else if ( m_csvEncoding == eCsvEncoding.UTF8 || m_csvEncoding == eCsvEncoding.GoogleSheets )
 			return System.Text.Encoding.UTF8;
-		else if ( m_csvEncoding == eCsvEncoding.Unicode || m_csvEncoding == eCsvEncoding.GoogleSheets )
+		else if ( m_csvEncoding == eCsvEncoding.Unicode )// || m_csvEncoding == eCsvEncoding.GoogleSheets ) // Had this, but had to be imported as "Default- which I suspect is "UTF8"
 			return System.Text.Encoding.Unicode;
 		else if ( m_csvEncoding == eCsvEncoding.Windows1252 || m_csvEncoding == eCsvEncoding.Excel )
 			return System.Text.Encoding.GetEncoding(1252);
 	
-		return System.Text.Encoding.Default;
+		return System.Text.Encoding.Default; // I think this defaults to UTF8... kinda dumb
 	}
 
 	// Returns true on success
@@ -1447,6 +1525,7 @@ public class SystemTextEditor : Editor
 
 		FileStream stream = null;
 		StreamReader streamReader = null;
+		
 
 		try
 		{
@@ -1463,15 +1542,16 @@ public class SystemTextEditor : Editor
 						// Check for expected languages
 						if ( line.Length < CSV_NUM_HEADERS + numLanguages )
 						{
-							string error = "Import canceled, unexpected columns:\nFound: ";
-							for ( int i = 0; i < line.Length; ++i )
-								error += line[i] + ", ";
-							error += "\nExpected: "
+							string err = "Import canceled, unexpected columns:\n";
+							err += "\nExpected: "
 								  + "Character,ID,File,Context";
 							foreach (LanguageData language in systemText.GetLanguages())
-								error+=","+language.m_description;
-							Debug.LogError(error);
-							break;
+								err+=","+language.m_description;
+							err += "\n\nFound: ";
+							for ( int i = 0; i < line.Length; ++i )
+								err += line[i] + ", ";
+							Debug.LogError(err);
+							throw new System.Exception("Import canceled, Unexpected colums. See error log for details.");							
 						}
 						continue;
 					}
@@ -1494,7 +1574,7 @@ public class SystemTextEditor : Editor
 					else
 					{
 						//Debug.Log($"Imported {textData.m_id}:{textData.m_string}");
-						if ( systemText.EditorGetShouldImportDefaultStringFromCSV() ) // NB: Now always importing text
+						//if ( systemText.EditorGetShouldImportDefaultStringFromCSV() ) // NB: Now always importing text
 							textData.m_string = line[CSV_INDEX_LANGUAGES];
 						if ( numLanguages > 1 )
 						{
@@ -1539,22 +1619,22 @@ public class SystemTextEditor : Editor
 	public static void ReadRhubarbData(SystemText systemText, int id)
 	{
 		if ( systemText == null )
-	    {
-	        return;
-	    }
+		{
+			return;
+		}
 
 		if( id < 0)
-		    return;
+			return;
 
-	    // Get data from processed line
+		// Get data from processed line
 		TextData data = systemText.EditorGetTextDataOrdered()[id];
 		string[] phones = File.ReadAllLines("RhubarbOutput.txt");
 		data.m_phonesTime = new float[phones.Length];
 		data.m_phonesCharacter = new char[phones.Length];
 		for (int i = 0; i < phones.Length; ++i )
 		{
-		    // read in phones (tab separated)
-		    string[] strings = phones[i].Split('\t');
+			// read in phones (tab separated)
+			string[] strings = phones[i].Split('\t');
 			data.m_phonesTime[i] = float.Parse(strings[0]);
 			data.m_phonesCharacter[i] = strings[1][0];
 		}
@@ -1569,7 +1649,7 @@ public class SystemTextEditor : Editor
 		if( m_skipExistingLipsyncData && data.m_phonesCharacter.Length > 0 )
 			return null;
 
-	    // Skip narrated lines
+		// Skip narrated lines
 		if ( string.IsNullOrEmpty(data.m_character) || string.Equals( data.m_character, PowerQuest.STR_NARR, StringComparison.OrdinalIgnoreCase ) )
 			return null;
 

@@ -205,7 +205,7 @@ public partial class Gui : IQuestClickable, IQuestScriptable, IGui
 	// Returns true if the gui is under another modal gui
 	public bool ObscuredByModal { get => PowerQuest.Get.GetIsGuiObscuredByModal(this); }
 
-	public Vector2 Position { get{ return m_position;} set{ m_position = value; if ( m_instance != null ) { m_instance.transform.position = m_position.WithZ(m_instance.transform.position.z); } } }
+	public Vector2 Position { get{ return m_instance == null ? m_position : (Vector2)m_instance.transform.position;} set{ m_position = value; if ( m_instance != null ) { m_instance.transform.position = m_position.WithZ(m_instance.transform.position.z); } } }
 	public float Baseline { get{ return m_baseline;} 
 		set 
 		{ 	
@@ -505,7 +505,7 @@ public partial class Gui : IQuestClickable, IQuestScriptable, IGui
 		{
 			if ( control == focusedControl )
 				continue;
-			if ( control.Clickable == false )
+			if ( control.Clickable == false || control.gameObject.activeInHierarchy == false )
 				continue;
 			// Check that control isn't in same grid as us
 			if ( container != null && container.GetIsControlInGrid(control) )

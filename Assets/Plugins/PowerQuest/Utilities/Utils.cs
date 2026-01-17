@@ -695,6 +695,13 @@ public static class ExtentionMethods
 	{
 		return first.IndexOf(second, System.StringComparison.OrdinalIgnoreCase) >= 0;
 	}
+	
+	public static char GetLastCharacter(this string str)
+	{
+		if ( str.Length == 0 )
+			return '\0';
+		return str[str.Length-1];
+	}
 
 
 		

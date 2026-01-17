@@ -20,16 +20,16 @@ public class QuestTextEditor : Editor
 	public void OnEnable()
 	{
 		// Set charater size to 10 if snapping
-		if ( PowerQuestEditor.Snap )
+		QuestText component = (QuestText)target;
+		if ( component != null && component.IsPixelStyle ) // (PowerQuestEditor.Snap && component.FontPixelStyle == QuestText.eFontPixelStyle.Auto) || component.FontPixelStyle == QuestText.eFontPixelStyle.Pixel || component.FontPixelStyle == QuestText.eFontPixelStyle.PixelAntiAliased)
 		{
-			QuestText component = (QuestText)target;
 			TextMesh tm = component != null ? component.GetComponent<TextMesh>() : null;
 			if ( tm != null && tm.characterSize == 1 )
 			{
 				tm.characterSize = 10;
-				EditorUtility.SetDirty(tm);					
+				EditorUtility.SetDirty(tm);
 			}
-		}		
+		}
 	}
 
 	public override void OnInspectorGUI()
@@ -54,31 +54,44 @@ public class QuestTextEditor : Editor
 
 		GUILayout.Space(10);		
 		EditorGUILayout.LabelField("Font", EditorStyles.boldLabel);
-
+		
 		Font newFont = EditorGUILayout.ObjectField("Font", m_meshComponent.font, typeof(Font),false ) as Font;
-		if ( newFont != m_meshComponent.font )
+		if ( newFont != m_meshComponent.font && newFont != null )
 		{
-			//newFont.material = null;
 			m_meshComponent.font = newFont;
 			m_meshComponent.GetComponent<MeshRenderer>().material = newFont.material;
 		}
-		m_meshComponent.fontSize = EditorGUILayout.IntField("Size", m_meshComponent.fontSize);		
+		
+		int fontSize = EditorGUILayout.IntField("Size", m_meshComponent.fontSize);		
+		if ( m_meshComponent.fontSize != fontSize ) // have to only change if necessary or unity goes weird
+			m_meshComponent.fontSize = fontSize;
+		
 		float lineSpacing = m_meshComponent.lineSpacing * Mathf.Max(m_meshComponent.fontSize,10);
 		lineSpacing = EditorGUILayout.FloatField("Line spacing", lineSpacing);
-		m_meshComponent.lineSpacing = lineSpacing / Mathf.Max(m_meshComponent.fontSize,10);
-		m_meshComponent.color = EditorGUILayout.ColorField("Color", m_meshComponent.color);
+		lineSpacing = lineSpacing / Mathf.Max(m_meshComponent.fontSize,10);
+		if ( lineSpacing != m_meshComponent.lineSpacing)
+			m_meshComponent.lineSpacing = lineSpacing;
+		Color col = EditorGUILayout.ColorField("Color", m_meshComponent.color);
+		if ( m_meshComponent.color != col )
+			m_meshComponent.color = col;
 		
 		EditorGUILayout.LabelField("Appearance", EditorStyles.boldLabel);
 		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_outline"));
 		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_typeSpeed"));
 		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_shaderOverride"));
-		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_setFiltering"));
+		//EditorGUILayout.PropertyField(serializedObj.FindProperty("m_setFiltering"));
+		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_fontPixelStyle"));
 		
 		GUILayout.Space(10);	
 		EditorGUILayout.LabelField("Alignment", EditorStyles.boldLabel);
 
-		m_meshComponent.alignment = (TextAlignment)EditorGUILayout.EnumPopup("Alignment", m_meshComponent.alignment );
-		m_meshComponent.anchor = (TextAnchor)EditorGUILayout.EnumPopup("Anchor", m_meshComponent.anchor );
+		TextAlignment align = (TextAlignment)EditorGUILayout.EnumPopup("Alignment", m_meshComponent.alignment );
+		if ( align != m_meshComponent.alignment )
+			m_meshComponent.alignment = align;
+		TextAnchor anchor = (TextAnchor)EditorGUILayout.EnumPopup("Anchor", m_meshComponent.anchor );
+		if ( anchor != m_meshComponent.anchor )
+			m_meshComponent.anchor = anchor;
+		
 		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_sortingLayer"));
 		EditorGUILayout.PropertyField(serializedObj.FindProperty("m_orderInLayer"));
 		

@@ -78,25 +78,30 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	[SerializeField] QuestText m_dialogTextPrefab = null;
 	[Tooltip("Global offset of dialog text (above character sprite)")]
 	[SerializeField] Vector2 m_dialogTextOffset = Vector2.zero;
+	[Tooltip("Dialog will be placed above other characters if their text position is within this distance of the speaking character. (Avoids dialog text obscuring other character's faces)")]
+	[SerializeField] Vector2 m_dialogTextCharacterInRange = new Vector2(50,15);
 	[Tooltip("Set speech style to AboveCharacter to use, and implement ISpeechGui")]
 	[SerializeField] string m_customSpeechGui = "";
 	
 	[SerializeField] string m_displayBoxGui = "DisplayBox";
 	[SerializeField] string m_dialogTreeGui = "DialogTree";
 
+
 	[Header("Other Dialog Speech Setup")]
-	[Tooltip("When clicking to skip text, ignore clicks until text has been shown for this time")]
-	[SerializeField] float m_textNoSkipTime = 0.25f;	
 	[Tooltip("Whether charaters stop walking automatically when they start talking")]
 	[SerializeField] bool m_stopWalkingToTalk = true;
-	[Tooltip("Whether character dialog text requires a click to advance, or dismisses after dialog's spoken/after time")]
-	[SerializeField] bool m_sayTextAutoAdvance = true;
-	[Tooltip("Whether display requires a click to advance, or dismisses after dialog's spoken/after time")]
-	[SerializeField] bool m_displayTextAutoAdvance = false;
-	[Tooltip("After dialog's audio finishes, how long before going to next line (sec)")]
-	[SerializeField] float m_textAutoAdvanceDelay = 0.0f;	
 	[Tooltip("If true, display is shown even when subtitles off")]
 	[SerializeField] bool m_alwaysShowDisplayText = true;
+	[Tooltip("Whether display requires a click to advance, or dismisses after dialog's spoken/after time")]
+	[SerializeField] bool m_displayTextAutoAdvance = false;	
+	[Tooltip("Whether character dialog text requires a click to advance, or dismisses after dialog's spoken/after time")]
+	[SerializeField] bool m_sayTextAutoAdvance = true;
+	[Tooltip("The minimum amount of time (sec) to show a line of dialog text (for very short words).")]
+	[SerializeField] float m_textMinTime = 1.5f;		
+	[Tooltip("When clicking to skip text, ignore clicks until text has been shown for this time (sec)")]
+	[SerializeField] float m_textNoSkipTime = 0.25f;
+	[Tooltip("After dialog's audio finishes, how long before going to next line (sec)")]
+	[SerializeField] float m_textAutoAdvanceDelay = 0.0f;
 
 	[Header("Project Verb Setup")]
 
@@ -271,16 +276,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	Coroutine m_consumedInteraction = null;
 
 
-	#endregion
-	
-	#region Properties: Public
-
-	public bool DialogInterruptRequested => m_interruptNextLine;
-	public float DialogInterruptDuration => m_interruptNextLineTime;
-	public float FacingSegmentAngle => m_facingSegmentAngle;
-
-	#endregion
-	
+	#endregion		
 	#region Functions: Implementing IPowerQuest
 
 	/// Breaks instantly, rather than yielding for a frame
@@ -325,7 +321,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		LoadAtlas(room.ScriptName);
 		s_restartPlayFromFunction = playFromFunction;
 		s_restartAssembly = m_hotLoadAssembly;
-		m_restartOnUpdate = true;
+		m_restartOnUpdate = true;		
 		// Destroy everything, including powerquest, and load the game scene again
 		StopAllCoroutines();
 	}
@@ -589,10 +585,12 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		GetPlayer().DebugSetLastRoom(room);
 	}
 
-	public Room GetRoom(string scriptName) 
+	public Room GetRoom(string scriptName) => GetRoom(scriptName,false); 
+
+	public Room GetRoom(string scriptName, bool ignoreErrors) 
 	{ 		
-		Room result = QuestUtils.FindScriptable(m_rooms, scriptName);
-		if ( result == null && string.IsNullOrEmpty(scriptName) == false )
+		Room result = QuestUtils.FindScriptableFast(m_rooms, scriptName);
+		if ( result == null && string.IsNullOrEmpty(scriptName) == false && ignoreErrors == false  )
 			Debug.LogError("Room doesn't exist: "+scriptName+". Check for typos and that it's added to PowerQuest");				
 		return GetSavable(result);
 	}
@@ -607,13 +605,14 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		GetCamera().SetCharacterToFollow(newPlayer,sameRoom ? cameraTransitionTime : 0 );
 		ChangeRoomBG(m_player.Room);
 	}
-	public Character GetCharacter(string scriptName) { Systems.Text.LastPlayerName=SystemText.ePlayerName.Character; return GetSavable(QuestUtils.FindScriptable(m_characters, scriptName)); }
+	public Character GetCharacter(string scriptName) { Systems.Text.LastPlayerName=SystemText.ePlayerName.Character; return GetSavable(QuestUtils.FindScriptableFast(m_characters, scriptName)); }
+	
 	/// Shortcut to the current player's active inventory  
 	public IInventory ActiveInventory { get { return GetSavable(m_player.ActiveInventory as Inventory); } set { m_player.ActiveInventory = value; } }
 	
 	// NB: Potential pitfall, if modify items from this list, they aren't marked as dirty for save system. To flag dirty, use PowerQuest.GetSavable(item);
 	public List<Inventory> GetInventoryItems_SaveFlagNotDirtied() { return m_inventoryItems; }
-	public Inventory GetInventory(string scriptName) { return GetSavable(QuestUtils.FindScriptable(m_inventoryItems, scriptName));	}
+	public Inventory GetInventory(string scriptName) { return GetSavable(QuestUtils.FindScriptableFast(m_inventoryItems, scriptName));	}
 		
 	public static T GetSavable<T>(T savable) where T: IQuestSaveCachable 
 	{ 
@@ -632,8 +631,8 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	}
 	public DialogTree GetCurrentDialog() { return GetSavable(m_currentDialog); }	
 	public DialogTree GetPreviousDialog() { return GetSavable(m_previousDialog); }
-	public DialogTree GetDialogTree(string scriptName) { return GetSavable(QuestUtils.FindScriptable(m_dialogTrees, scriptName)); }
-	public Gui GetGui(string scriptName) { return QuestUtils.FindScriptable(m_guis, scriptName); }
+	public DialogTree GetDialogTree(string scriptName) { return GetSavable(QuestUtils.FindScriptableFast(m_dialogTrees, scriptName)); }
+	public Gui GetGui(string scriptName) { return QuestUtils.FindScriptableFast(m_guis, scriptName); }
 	public GameObject GetSpawnablePrefab(string name) { return QuestUtils.FindByName(m_spawnablePrefabs, name); }
 
 	//
@@ -669,7 +668,8 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	{ 
 		// When script blocked, contols aren't focused UNLESS it's part of a "blocking gui" (gui shown during blocked scripts, like prompts)...
 		// Maybe guis themselves should be able to set whether they're controllable while blocking...?
-		if ( PowerQuest.Get.GetBlocked() == false || (m_focusedGui != null && m_focusedGui == m_blockingGui) )
+		if ( PowerQuest.Get.GetBlocked() == false || (m_focusedGui != null && m_focusedGui == m_blockingGui) 
+			|| (m_focusedGui != null && m_focusedGui.PauseGame == true) )  // Allows use of guis like pause menu while in blocking sequence
 			return m_focusedControl; 
 		return null;
 	}
@@ -737,6 +737,15 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		get { return m_alwaysShowDisplayText; }
 		set { m_alwaysShowDisplayText = value; }
 	}
+
+	
+	/// Distance characters are from each other before dialog text is moved from their head
+	public Vector2 DialogTextCharacterInRange
+	{ 
+		get { return m_dialogTextCharacterInRange; }
+		set { m_dialogTextCharacterInRange = value; }
+	}
+	
 
 	public eSpeechStyle SpeechStyle 
 	{ 
@@ -900,7 +909,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			
 			// Handle parser
 			{
-				// Check for "OnWalkTo" interrupts
+				// Check for "Parser" interrupts
 				if ( clickHandled == false )
 					clickHandled = StartScriptInteraction(m_currentRoom, SCRIPT_FUNCTION_ONPARSER );
 				if ( clickHandled == false )
@@ -909,7 +918,6 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 				if ( clickHandled )
 					m_queuedScriptInteractions.Add(m_currentSequence); 
 				
-				//CancelCurrentInteraction();
 				clickHandled = true;
 				interactionFound = true;
 			}
@@ -924,9 +932,14 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			{
 				// Check for "OnWalkTo" interrupts
 				if ( clickHandled == false )
-					clickHandled = StartScriptInteraction(m_currentRoom, SCRIPT_FUNCTION_ONWALKTO );
+					clickHandled = StartScriptInteraction(m_currentRoom, SCRIPT_FUNCTION_ONWALKTO, new object[]{mousePosition} );
 				if ( clickHandled == false )
-					clickHandled = StartScriptInteraction( this, SCRIPT_FUNCTION_ONWALKTO );
+					clickHandled = StartScriptInteraction(m_currentRoom, SCRIPT_FUNCTION_ONWALKTO ); // Legacy
+				if ( clickHandled == false )
+					clickHandled = StartScriptInteraction( this, SCRIPT_FUNCTION_ONWALKTO, new object[]{mousePosition} );
+				if ( clickHandled == false )
+					clickHandled = StartScriptInteraction( this, SCRIPT_FUNCTION_ONWALKTO ); // Legacy
+
 				if ( clickHandled )
 				{
 					m_queuedScriptInteractions.Add(m_currentSequence); 
@@ -1247,6 +1260,10 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			option.Used = wasUsed;
 			option.TimesUsed--;
 		}
+
+		// HandleOption doesn't cancelling safely, so disable it. Not as nice as handling it flawlessly, but this is safer for now.
+		DisableCancel();
+
 		return coroutine;
 	}
 	
@@ -1634,8 +1651,6 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	public void HotLoadScript(Assembly assembly) { QuestUtils.HotSwapScript( ref m_globalScript, GLOBAL_SCRIPT_NAME, assembly ); }
 	public void EditorRename(string name) {}
 
-
-
 	#endregion
 	#region Functions: ISerializationCallbackReceiver
 
@@ -1650,10 +1665,12 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		m_serializeComplete = true;
 	}
 
-	//
-	// Save/Load 
-	//  Moved to "PowerQuestSave.cs"
-	//
+	#endregion
+	#region Properties: Public
+
+	public bool DialogInterruptRequested => m_interruptNextLine;
+	public float DialogInterruptDuration => m_interruptNextLineTime;
+	public float FacingSegmentAngle => m_facingSegmentAngle;
 
 	#endregion
 	#region Functions: Public System (advanced functions)
@@ -1662,6 +1679,8 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	public System.Action CallbackOnDialogSkipped = null;
 	/// Called when a character collects an inventory item. EG:  OnInventoryCollected(ICharacter character, IInventory item);
 	public System.Action<ICharacter, IInventory> CallbackOnInventoryCollected = null;
+	/// Called before a character has an inventory item removed. NB: Charcter may have multiple of the item and only lost 1. EG:  OnInventoryRemoved(ICharacter character, IInventory item);
+	public System.Action<ICharacter, IInventory> CallbackOnInventoryRemoved = null;
 	// Callback when cutscene's skipped
 	public System.Action CallbackOnEndCutscene = null;
 	// Callback when cutscene's skipped, CallbackOnProcessClick(bool interactionFound)
@@ -1747,7 +1766,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		m_rightClickPrev = true;
 		if ( CallbackOnDialogSkipped != null )
 			CallbackOnDialogSkipped.Invoke();
-		ExHandleSkipDialogKeyPressed();			
+		ExHandleSkipDialogKeyPressed();
 		
 		return result;		
 	}
@@ -1802,7 +1821,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	public void SetMouseOverDescriptionOverride( string description ) { m_mouseOverDescriptionOverride = description; }
 	public void ResetMouseOverDescriptionOverride() { m_mouseOverDescriptionOverride = null; }
 
-	public float GetTextDisplayTime(string text)	{ return Mathf.Max(TEXT_DISPLAY_TIME_MIN, text.Length * TEXT_DISPLAY_TIME_CHARACTER) * Settings.TextSpeedMultiplier; }
+	public float GetTextDisplayTime(string text)	{ return Mathf.Max(m_textMinTime, text.Length * TEXT_DISPLAY_TIME_CHARACTER) * Settings.TextSpeedMultiplier; }
 
 	public QuestScript GetGlobalScript() { return m_globalScript; }
 
@@ -2331,6 +2350,8 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		m_guiPrefabs.RemoveAll(item=>item==null);
 		m_inventoryPrefabs.RemoveAll(item=>item==null);
 
+		// Scriptable cache is static, so clear incase it has old objects cached from previous restart.
+		QuestUtils.ClearScriptableCache();
 
 		// Check for existing SystemAudio and remove it if found. Since it'll be one left over from previewing in the editor
 		if ( SystemAudio.HasInstance() )
@@ -2362,7 +2383,8 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		// Create the game script
 		m_globalScript = QuestUtils.ConstructByName<QuestScript>(GLOBAL_SCRIPT_NAME);
 		Debug.Assert( m_globalScript != null, "Couldn't find global script! Add GlobalScript.cs to the Game folder" );
-			
+		
+		ClearEnumCache();
 
 		// Initialise Cursor
 		if ( m_cursorPrefab != null )
@@ -2403,6 +2425,10 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 	// Clears and initialises quest objects from initial prefab state. Done on game start and again on Restore
 	void InitialiseQuestObjects()
 	{	
+		// Scriptable cache is static, so clear incase it has old objects cached from previous restart.
+		QuestUtils.ClearScriptableCache();
+		ClearEnumCache();
+
 		// Initialise Rooms
 		m_rooms.Clear();
 		foreach (RoomComponent prefab in m_roomPrefabs) 
@@ -2536,8 +2562,9 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			m_mousePos = Vector2.zero;
 
 			if ( mainCamera != null )
-			{				
-				m_mousePos = mainCamera.ScreenToWorldPoint( Input.mousePosition.WithZ(0) );
+			{
+				m_mousePos = mainCamera.ScreenToViewportPoint( Input.mousePosition.WithZ(0) );
+				m_mousePos = mainCamera.ViewportToWorldPoint( m_mousePos.Clamp01() );
 			}
 		}
 		if ( mainCamera != null )
@@ -2649,7 +2676,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			m_restartOnUpdate = false;
 			
 			SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
-			SceneManager.MoveGameObjectToScene(m_cameraGui.gameObject, SceneManager.GetActiveScene());			
+			SceneManager.MoveGameObjectToScene(m_cameraGui.gameObject, SceneManager.GetActiveScene());	
 			if ( string.IsNullOrEmpty(s_restartScene) == false )
 			{				
 				SceneManager.LoadScene(s_restartScene);
@@ -2764,7 +2791,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		SystemAudio.Stop(m_dialogAudioSource);
 		m_dialogAudioSource = null;
 		if ( Settings.DialogDisplay != QuestSettings.eDialogDisplay.TextOnly )
-			m_dialogAudioSource = SystemText.PlayAudio(id, PowerQuest.STR_NARR, null, SystemAudio.Get.NarratorMixerGroup);
+			m_dialogAudioSource = SystemText.PlayAudio(id, PowerQuest.STR_NARR, null, SystemAudio.Get.NarratorMixerGroup, 1);
 		
 		if ( Settings.DialogDisplay != QuestSettings.eDialogDisplay.SpeechOnly || PowerQuest.Get.AlwaysShowDisplayText )
 		{
@@ -2939,7 +2966,9 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			// "Flash" to fade in (if definitely in the 
 			FadeInBG(0.15f, "CUTSCENE");
 
-		}
+		}		
+		SystemText.Get.NextVoiceClipAffix = null; // Need to force this since StartSay is skipped
+
 		m_cutscene = false;
 		m_skipCutscene = false;
 	}
@@ -3466,7 +3495,7 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 		if ( skippable && PowerQuest.Get.HandleSkipDialogKeyPressed() && firstCall == false )
 			return false;
 
-		if ( audioSource != null )
+		if ( audioSource != null && autoAdvance )
 		{			
 			// Check if has audio and if it's finished playing
 			#if UNITY_SWITCH 
@@ -3475,12 +3504,12 @@ public partial class PowerQuest : Singleton<PowerQuest>, ISerializationCallbackR
 			bool audioPlaying = ( audioSource.isPlaying || Application.isFocused == false || PowerQuest.Get.Paused );			
 			#endif
 			
-			if ( m_textAutoAdvanceDelay > 0 ) // check if we should wait a bit after audio stops
-			{						
+			if ( m_textAutoAdvanceDelay > 0 && skippable ) // check if we should wait a bit after audio stops- only if not in background
+			{
 				if ( audioPlaying )				
 					time = 0; // set time to zero the whole time audio is playing, so we know its at zero when it finishes				
-				else if ( time <= -m_textAutoAdvanceDelay ) // Add extra time to wait after audio clip finishes		
-					return false;				
+				else if ( time <= -m_textAutoAdvanceDelay ) // Add extra time to wait after audio clip finishes				
+					return false;
 			}
 			else if ( audioPlaying == false )
 			{

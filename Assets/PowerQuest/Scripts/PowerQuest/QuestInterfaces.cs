@@ -104,7 +104,7 @@ public partial interface IPowerQuest
 	~~~
 	Then call it from any sequence. Eg:
 	~~~
-	Display: Lets enter the door!
+	Display: Let's enter the door!
 	=> OpenDoor
 	~~~
 	Or if your function is used in multiple rooms, put it in your global script, then use `=> Globals.OpenDoor`
@@ -143,21 +143,21 @@ public partial interface IPowerQuest
 	/**
 	__Usage:__
 
-		- Create a blocking function, eg: `IEnumerator BackgroundChatter()`
-		- Call `E.StartBackroundSequence( BackgroundChatter );`
-		- If you want to interrupt the sequence, call `E.StopBackgroundSequence("BackgroundChatter");`
-		- These don't currently work when changing rooms, call `E.StopBackgroundSequence()` to stop all of them if leaving.
-		- Since a regular mouse click skips dialog, and WaitSkip commands, you need to use: 
-			- `E.Wait(0.5f)` instead of `...` when waiting
-			- `C.SayNoSkip("blah")` or `C.SayBG("blah");` followed by `E.WaitForDialog();`
-			- NB: Do NOT use `E.WaitFor()` or `=>` These will break the sequence if player cancels out of an interaction. Let Dave know if you need to do this.
+	- Create a blocking function, eg: `IEnumerator BackgroundChatter()`
+	- Call `E.StartBackroundSequence( BackgroundChatter );`
+	- If you want to interrupt the sequence, call `E.StopBackgroundSequence("BackgroundChatter");`
+	- These don't currently work when changing rooms, call `E.StopBackgroundSequence()` to stop all of them if leaving.
+	- Since a regular mouse click skips dialog, and WaitSkip commands, you need to use: 
+		- `E.Wait(0.5f)` instead of `...` when waiting
+		- `C.SayNoSkip("blah")` or `C.SayBG("blah");` followed by `E.WaitForDialog();`
+		- NB: Do NOT use `E.WaitFor()` or `=>` These will break the sequence if player cancels out of an interaction. Let Dave know if you need to do this.
 
 	__Saving/Restoring:__
 
-		- If the game is saved & restored when the background sequence is running, it'll be restarted. 
-		- If you want to be able to restore midway, you need to either:
-			- Save a variable to skip over the already-done part of the sequence.
-			- Or, have a chain of background sequences, so as one stops, it starts the next.
+	- If the game is saved & restored when the background sequence is running, it'll be restarted. 
+	- If you want to be able to restore midway, you need to either:
+		- Save a variable to skip over the already-done part of the sequence.
+		- Or, have a chain of background sequences, so as one stops, it starts the next.
 
 	\sa StopBackgroundSequence  \sa ICharacter.SayNoSkip
 	*/
@@ -577,11 +577,11 @@ public partial interface IPowerQuest
 	  if ( GetOccurrenceCount("knocked on door") == 3 )
 	  		Doorman: Who's there?
 	  ~~~	
-	   \sa FirstOccurrence \sa Occurrrence
+	   \sa FirstOccurrence \sa Occurrence
 	 */
 	int GetOccurrenceCount(string uniqueString);
 
-	//! Continues a sequence of Occurrence checks, started with FirstOccurence.
+	//! Continues a sequence of Occurrence checks, started with FirstOccurrence.
 	/**
 	Usage:
 	~~~
@@ -596,7 +596,7 @@ public partial interface IPowerQuest
 	*/
 	bool NextOccurrence {get;}
 
-	//! Start a sequence of options, passing in the total number of options in your list. Then call NextOption for the remaining options
+	/// Start a sequence of options, passing in the total number of options in your list. Then call NextOption for the remaining options
 	/**
 	Usage:
 	~~~
@@ -613,6 +613,7 @@ public partial interface IPowerQuest
 	\sa NextOption
 	 */
 	bool FirstOption(int count, string source = null);
+
 	//! Continues a if/else sequence starting with FirstOption \sa FirstOption
 	bool NextOption {get;}
 		
@@ -702,7 +703,7 @@ public partial interface IPowerQuest
 
 	/// Returns true if the enum has the specified value. Usage: `if ( E.Is(eDoor.Unlocked) ) {...}`.
 	/**
-	You can check multiple at the same time too. Eg: `if ( E.At(eDoor.Unlocked,eDoor.Open) )`
+	You can check multiple at the same time too. Eg: `if ( E.Is(eDoor.Unlocked,eDoor.Open) )`
 	
 	This is the same as the At() function and is shorthand for: `if ( m_door == eSection.Unlocked ) {...}`
 	\sa Set<tEnum>() \sa At<tEnum>() \sa Is<tEnum>() \sa Before<tEnum>() \sa Reached<tEnum>() \sa After<tEnum>()
@@ -847,23 +848,80 @@ public partial interface IPowerQuest
 public partial interface ICharacter : IQuestClickableInterface
 {
 	/// Gets/Sets the name shown to players
+	/**
+		For example:
+		~~~
+			C.Dave.Description = "Dave caresses his lustrous beard and nods wisely.";
+
+			if ( C.Barney.Description == "It's Barney" )
+				C.Barney.Description = "It's definitely Barney");
+		~~~
+	*/
 	string Description {get;set;}
 
 	/// The name used in scripts
+	/**
+		For example:
+		~~~
+			if ( character.ScriptName.StartsWith("Da") )
+				Display: Must be Dave!
+		~~~
+	*/
 	string ScriptName {get;}
 
-	/// Access to the actual game object component in the scene
+	/// Access to the actual unity game object component in the scene. From there you can access any other unity components you might want to use.
+	/**
+		~~~
+			// Access a particle system you've added to a child of Dave.
+			ParticleSystem sparkles = C.Dave.Instance.GetComponentInChildren<ParticleSystem>();
+			sparkels.Start();
+
+			// Set a hat to be on an anim node on Barney
+			P.Hat.Position = C.Barney.Instance.GetComponent<SpriteAnimNodes().GetPosition(1);
+		~~~
+	*/
 	MonoBehaviour Instance{get;}
 
+
+
 	/// The room the character's in. Setting this moves the character to another room. If the player character is moved, the scene will change to the new room. \sa ChangeRoom() \sa ChangeRoomBG()
+	/**
+		~~~
+			// Move Barney to the dunny.
+			C.Barney.Room = R.Dunny;
+
+			// Check if the killer is in this room and display a message.
+			if ( C.Killer.Room == R.Current )
+				Display: The killer is in this very room!
+		~~~
+	*/
 	IRoom Room {get;set;}
 
 	/// Returns the last room visited before the current one
+	/**		
+		~~~
+			// If Barney was just in the dunny, display a message
+			if ( C.Barney.LastRoom == R.Dunny )
+				Barney: Might want to give that a while...
+		~~~
+	*/
 	IRoom LastRoom { get; }
 
 	/// The location of the character. Eg: `C.Player.Position = new Vector2(10,20);` or `C.Dave.Position = Point.UnderTree;`
 	Vector2 Position{ get;set; }
-	/// The positiont the character is currently at, or walking towards
+
+	/// The position the character is currently at, or walking towards
+	/**	 
+		For example:
+		~~~
+			// If player is walking into a region, stop them and display a message
+			if ( Regions.Lava.ContainsPoint( Plr.TargetPosition ) )
+			{
+				Plr.StopWalking();
+				Display: You don't want to walk over THERE!
+			}
+		~~~
+	*/
 	Vector2 TargetPosition{ get; }
 
 	/// Set the location of the character, with an optional 'facing' direction.
@@ -911,6 +969,9 @@ public partial interface ICharacter : IQuestClickableInterface
 	/**
 	The solid size determines how large of a blocking rectangle the character exerts to stop other characters walking through it. If this is set to 0,0 (the default), then the blocking rectangle is automatically calculated to be the character's width, and 5 pixels high.
 	You can manually change the setting by entering a blocking height in pixels, which is the size of walkable area that the character effectively removes by standing on it.
+	
+	eg. `C.BigMan.SolidSize = new Vector2(200,100);`
+	
 	\sa Solid
 	*/
 	Vector2 SolidSize { get; set; }
@@ -948,7 +1009,11 @@ public partial interface ICharacter : IQuestClickableInterface
 	bool IsPlayer {get;}
 	/// Gets or sets the text colour for the character's speech text
 	Color TextColour  { get;set; }
-	/// Gets or sets the position the player's dialog text will be shown (in world space). If set to zero, the default will be used (Displayed above the character sprite). \sa ResetTextPosition() \sa LockTextPosition()
+	/// Gets or sets the position the player's dialog text will be shown (in world space). If set to zero, the default will be used (Displayed above the character sprite).
+	/**
+    eg: `C.Plr.TextPositionOverride = new Vector2(12, 34);`
+	\sa ResetTextPosition() \sa LockTextPosition()
+    */
 	Vector2 TextPositionOverride { get;set; }
 	/// Sets the character's text position in world space \sa ResetTextPosition() \sa LockTextPosition()
 	void SetTextPosition(Vector2 worldPosition);
@@ -959,23 +1024,42 @@ public partial interface ICharacter : IQuestClickableInterface
 	/// Resets the text position again after a call to SetTextPosition or LockTextPosition  \sa SetTextPosition() \sa LockTextPosition() \sa TextPositionOverride
 	void ResetTextPosition();
 	/// Distance that dialog text is offset from the top of the sprite, added to the global one set in PowerQuest settings. Will flip with the character. Defaults is zero.
+	/**
+    eg: `C.Plr.TextPositionOffset = new Vector2(12, 34);`
+	*/
 	Vector2 TextPositionOffset { get;set; }	
 
 	/// Gets or sets the idle animation of the character
+	/**
+    eg: `C.Plr.AnimIdle = "WaveArmsInAir";`
+	*/
 	string AnimIdle { get;set; }
 	/// Gets or sets the walk animation of the character
+	/**
+    eg: `C.Plr.AnimWalk = "Run";`
+	*/
 	string AnimWalk { get;set; }
 	/// Gets or sets the talk animation of the character
+	/**
+    eg: `C.Plr.AnimTalk = "Talk";`
+	*/
 	string AnimTalk { get;set; }
 	/// Gets or sets the lipsync mouth animation of the character, attached to a node
 	string AnimMouth { get;set; }
 	/// If an AnimPrefix is set, when an animation is played, the system will check if an anim exists with this prefix, before falling back to the regular anim. 
 	/** 
 		Eg. if prefix is 'Angry', then, when a 'Walk' anim is played, it'll first check if there's an 'AngryWalk' anim.
+		// Eg. Make Barney Angry:
+		`C.Barney.AnimPrefix = "Angry";`
+		// Remove Dave's AnimPrefix
+		`C.Dave.AnimPrefix = null; // ` 
 	*/
 	string AnimPrefix{get;set;}
 
 	/// Gets or sets the cursor to show when hovering over the object. If empty, default active cursor will be used
+	/**
+		Eg. C.Barney.Cursor = "Talk";
+	*/
 	string Cursor { get; set; }
 	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="PowerTools.Quest.ICharacter"/> use region tinting.
@@ -1071,11 +1155,11 @@ public partial interface ICharacter : IQuestClickableInterface
 	/// Make the character walk to the walk-to-point of a clickable object without halting the script, then face the passed in direction
 	/**
 	eg. `Plr.WalkToBG( H.Door, eFace.UpRight );
-	\sa WalkTo() \sa StopWalking()
+	\sa WalkTo() \sa StopWalking() \sa AddWaypoint()
 	*/
 	void WalkToBG(IQuestClickableInterface clickable,eFace thenFace);
 	
-	/// Stop the character walking or moving. Also clears any waypoints.
+	/// Stop the character walking or moving. Also clears any waypoints. \sa WalkTo() \sa AddWaypoint()
 	void StopWalking();
 
 	/// Tells the character to move to a location directly, after it has finished its current move. Ignores walkable areas.
@@ -1299,6 +1383,8 @@ public partial interface ICharacter : IQuestClickableInterface
 	Coroutine SayBG(string dialog, int id = -1);
 	/// Cancel any current dialog the character's speaking
 	void CancelSay();
+	/// Start character saying something, unskippable. Useful in background conversations \sa IPowerQuest.StartBackgroundSequence()
+	Coroutine SayNoSkip(string dialog, int id = -1);
 
 	/// Play an animation on the character. Will return to idle after animation ends. 
 	/// \sa PlayAnimationBG() \sa Animation \sa AnimIdle \sa AnimWalk \sa AnimTalk
@@ -1576,29 +1662,75 @@ public partial interface IProp : IQuestClickableInterface
 	/// Returns the number of times player has "looked" at the object. 0 when it's the first click on the object.
 	int LookCount {get;}
 
-	/// The prop's animation, change this to change the visuals of the prop
+	/// The prop's animation, change this to change the visuals of the prop.
 	string Animation { get; set; }
-	/// Whether an animation is currently playing on the prop
+
+	/// Whether an animation triggered by PlayAnimation() is currently playing. Note- this does not include animations set using the Animation property. \sa Animation \sa PlayAnimation
 	bool Animating { get; }
 
-	/// Set's visible & clickable (Same as `Enable()`)
+	/// Set's visible & clickable (Same as `Enable()`) \sa Hide \sa Visible \sa Clickable
 	void Show( bool clickable = true );
-	/// Set's invisible & non-clickable (Same as `Disable()`)
+
+	/// Set's invisible & non-clickable (Same as `Disable()`) \sa Show \sa Visible \sa Clickable
 	void Hide();
-	/// Set's visible & clickable
+
+	/// Set's visible & clickable  \sa Hide \sa Visible \sa Clickable
 	void Enable( bool clickable = true );
-	/// Set's invisible & non-clickable
+
+	/// Set's invisible & non-clickable  \sa Show \sa Visible \sa Clickable
 	void Disable();
 
-	/// Plays an animation on the prop. Will return to playing Animation once it ends
-	/** NB: Animation play/pause/resume/stop stuff doesn't get saved. If you want to permanently change anim, set the Animation property */ 
+	/// Plays an animation on the prop, overriding whatever the current prop's 'Animation' property is set to until complete.
+	/** 
+		NB: Animation play/pause/resume/stop stuff doesn't get saved. If you want to permanently change anim, set the Animation property 
+		
+		For example- If a door's Animation is set to "closed", play an "opening" animation, then change it's 'animation' to "open"
+		~~~
+			if ( P.Door.Animation == "closed") 
+			{
+				P.Door.PlayAnimation("opening");
+				P.Door.Animation = "open";
+			}
+		~~~
+		
+
+		\sa Animation \sa PlayAnimation \sa PlayAnimationBG \sa PauseAnimation \sa StopAnimation
+	*/ 
 	Coroutine PlayAnimation(string animName);
 	/// Plays an animation on the prop. Will return to playing Animation once it ends (Non-blocking)
-	/** NB: Animation play/pause/resume/stop stuff doesn't get saved. If you want to permanently change anim, set the Animation property */ 
+	/** NB: Animation play/pause/resume/stop stuff doesn't get saved. If you want to permanently change anim, set the Animation property 
+	
+		For example- If a door's Animation is set to "closed", play an "opening" animation and change it's 'animation' to "open".
+		~~~
+			if ( P.Door.Animation == "closed") 
+			{
+				P.Door.PlayAnimationBG("opening");
+				P.Door.Animation = "open";
+			}
+		~~~	
+
+		\sa Animation \sa PlayAnimation \sa PlayAnimationBG \sa PauseAnimation \sa StopAnimation
+	*/ 
 	void PlayAnimationBG(string animName);
-	/// Pauses the currently playing animation
+
+	/// Stops an animation played from PlayAnimationBG(). The prop will return to it's default sprite or Animation
+	/**	
+		For example- Set a flag's default animation to "Still". Start a background "Flap" animation, wait a second, then stop it to return to the "Still" animation.
+		~~~
+			P.Flag.Animation = "Still";
+			P.Flag.PlayAnimationBG("Flap");
+			....
+			P.Flag.StopAnimation();
+		~~~	
+
+		\sa Animation \sa PlayAnimation \sa PlayAnimationBG \sa PauseAnimation
+	*/
+	void StopAnimation();
+
+	/// Pauses the currently playing animation. \sa ResumeAnimation
 	void PauseAnimation();
-	/// Resumes the currently paused animation
+
+	/// Resumes the currently paused animation. \sa PauseAnimation
 	void ResumeAnimation();
 	
 	/// Starts video playback if the prop has a video component. Returns once the video has completed, or on mouse click if skippableAfterTime is greater than zero
@@ -1613,6 +1745,8 @@ public partial interface IProp : IQuestClickableInterface
 	/** Usage:
 		Add an event to the anim with the name you want (eg: "boom")
 		Then add the trigger with the same name `Prop("dynamite").AddAnimationTrigger( "boom", true, ()=>Audio.PlaySound("explode") ); `
+
+		Note: Usually it's easier to use WaitForAnimationTrigger instead \sa WaitForAnimTrigger \sa RemoveAnimationTrigger
 	*/
 	void AddAnimationTrigger(string triggerName, bool removeAfterTriggering, System.Action action);
 
@@ -1620,18 +1754,54 @@ public partial interface IProp : IQuestClickableInterface
 	void RemoveAnimationTrigger(string triggerName);
 
 	/// Waits until an Event/Tag in the current animation is reached
-	/** Usage:
-		Add an event to the anim with the name you want (eg: "boom")
-		Then call `yield return Prop("dynamite").WaitForAnimTrigger("boom");` 
+	/** 
+		For example
+		Add an event to the animation with the name you want (eg: "Boom")
+
+		Then use this code plays an animation in the background and waits for the anim event "Boom" before going to the next line
+		~~~
+			P.Tnt.PlayAnimationBG("LightFuse");
+			P.Tnt.WaitForAnimTrigger("Boom");
+			Camera.Shake(4);
+			Audio.Play("Explosion");
+			C.Wall.Animation = "WallDestroyed";
+		~~~	
+
 	*/
 	Coroutine WaitForAnimTrigger(string eventName);
 
-	/// Fade the sprite's alpha
-	Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth );
-	/// Fade the sprite's alpha (non-blocking)
-	void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.InOutSmooth );
+	/// Fade the sprite's alpha (0.0f being fully transparent, 1.0f being fully opaque.)
+	/**
+		~~~
+			// Fade a ghost sprite in from zero (fully transparent) to 1 (opaque) over 2 seconds.
+			P.Ghost.Fade(0.0f, 1.5f, 2.0f); 
+			
+			// Then fade the sprite out from fullly opaque to half transparent over 2 seconds, with linear easing.
+			P.Ghost.Fade(1.0f, 0.5f, 2.0f, eEaseCurve.Linear); 
+		~~~
+	*/
+	Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth);
+	/// Fade the sprite's alpha (non-blocking). (0.0f being fully transparent, 1.0f being fully opaque.)
+	/**
+		~~~
+			// Fade a ghost sprite in from zero (fully transparent) to 1 (opaque) over 2 seconds.
+			P.Ghost.FadeBG(0.0f, 1.5f, 2.0f);
+		~~~
+	*/
+	void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth);
 	
-	/// Gets/Sets the transparency of the prop
+	/// Gets/Sets the transparency of the prop. (0.0f being fully transparent, 1.0f being fully opaque.)
+	/**
+		eg.
+		~~~
+			// Check a ghost prop's transparency
+			if ( P.Ghost.Alpha < 0.2f )
+				Display: The Ghost is barely visible
+				
+			// Set the ghost prop to half transparent.
+			P.Ghost.Alpha = 0.5f;
+		~~~
+	*/
 	float Alpha {get;set;}	
 
 	/// Access to the base class with extra functionality used by the PowerQuest
@@ -2225,7 +2395,7 @@ public partial interface IGuiControl
 			Button.KeypadEnter.Clickable = false;
 			Button.AnimHover = "FlashRed";
 			Button.ColorPress = Color.yellow;
-			Button.Text = "Lets do it";
+			Button.Text = "Let's do it";
 			Button.Description = "This button wins the game";
 			
 */	
@@ -2259,11 +2429,11 @@ public partial interface IButton : IGuiControl
 	void RemoveAnimationTrigger(string triggerName);
 	Coroutine WaitForAnimTrigger(string triggerName);
 			
-	/// Gets/Sets the transparency of the sprite
+	/// Gets/Sets the transparency of the sprite.  (0.0f being fully transparent, 1.0f being fully opaque.)
 	float Alpha {get;set;}
-	/// Fade the sprite's alpha
+	/// Fade the sprite's alpha.  (0.0f being fully transparent, 1.0f being fully opaque.)
 	Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth );
-	/// Fade the sprite's alpha (non-blocking)
+	/// Fade the sprite's alpha (non-blocking).  (0.0f being fully transparent, 1.0f being fully opaque.)
 	void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.InOutSmooth );
 	
 }
@@ -2279,11 +2449,11 @@ public partial interface ILabel : IGuiControl
 	new Color Color {get;set;}
 	QuestText TextComponent {get;}
 	
-	/// Gets/Sets the transparency of the text
+	/// Gets/Sets the transparency of the text. (0.0f being fully transparent, 1.0f being fully opaque.)
 	float Alpha {get;set;}
-	/// Fade the sprite's text
+	/// Fade the sprite's text.  (0.0f being fully transparent, 1.0f being fully opaque.)
 	Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth );
-	/// Fade the sprite's text (non-blocking)
+	/// Fade the sprite's text (non-blocking).  (0.0f being fully transparent, 1.0f being fully opaque.)
 	void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.InOutSmooth );
 }
 
@@ -2308,11 +2478,11 @@ public partial interface IImage : IGuiControl
 	void RemoveAnimationTrigger(string triggerName);
 	Coroutine WaitForAnimTrigger(string triggerName);
 	
-	/// Gets/Sets the transparency of the sprite
+	/// Gets/Sets the transparency of the sprite. (0.0f being fully transparent, 1.0f being fully opaque.)
 	float Alpha {get;set;}
-	/// Fade the sprite's alpha
+	/// Fade the sprite's alpha. (0.0f being fully transparent, 1.0f being fully opaque.)
 	Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth );
-	/// Fade the sprite's alpha (non-blocking)
+	/// Fade the sprite's alpha (non-blocking). (0.0f being fully transparent, 1.0f being fully opaque.)
 	void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.InOutSmooth );
 }
 /** Gui Inventory Panel

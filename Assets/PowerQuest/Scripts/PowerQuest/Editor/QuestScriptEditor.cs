@@ -1137,7 +1137,8 @@ public partial class QuestScriptEditor : EditorWindow, IHasCustomMenu
 		// Layout Current file name (todo: dropdown of recent files)
 		//
 
-		EditorGUILayout.LabelField( m_fileName, Styles.TOOLBAR_LABEL ); 
+		
+		EditorGUILayout.LabelField( m_fileName, Styles.TOOLBAR_LABEL, GUILayout.MinWidth(10), GUILayout.MaxWidth(m_fileName.Length*12) ); 
 
 
 		// Prev-next function in history control
@@ -1778,11 +1779,13 @@ public partial class QuestScriptEditor : EditorWindow, IHasCustomMenu
 		m_functionNames.Sort();
 		
 		// Room script function sorting
+
+		int index =1 ; // start at 1 to skip <header>	
+		
 		//if ( m_scriptType == eType.Room )
 		{
 			// First list room functions - this is totally slow
-			
-			int index =1 ; // start at 1 to skip <header>							
+								
 			m_functionNames.Insert(index++,null);
 			bool seperate = false;
 			foreach( string str in FUNCTION_SORT_ORDER )
@@ -1896,6 +1899,10 @@ public partial class QuestScriptEditor : EditorWindow, IHasCustomMenu
 		{
 
 		}
+
+		// Sort remaining functions alphabetically
+		if ( index < m_functionNames.Count )
+			m_functionNames.Sort(index, m_functionNames.Count-index, System.StringComparer.OrdinalIgnoreCase );
 		
 		m_functionNames.Add(null);
 		m_functionNames.Add("+ New");

@@ -306,6 +306,7 @@ MonoBehaviour:
     m_width: 1
     m_color: {r: 0, g: 0, b: 0, a: 1}
   m_typeSpeed: 0
+  m_fontPixelStyle: 0
   m_unlocalizedText: CONTINUE
   m_outlineMeshes: []
 --- !u!1 &1580520883078626
@@ -736,6 +737,7 @@ MonoBehaviour:
     m_width: 1
     m_color: {r: 0, g: 0, b: 0, a: 1}
   m_typeSpeed: 0
+  m_fontPixelStyle: 0
   m_unlocalizedText: NEW GAME
   m_outlineMeshes: []
 --- !u!1 &1939486641130840

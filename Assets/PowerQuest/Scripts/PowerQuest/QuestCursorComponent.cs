@@ -228,7 +228,7 @@ public partial class QuestCursorComponent : MonoBehaviour
 			return;
 		}
 
-		if ( PowerQuest.Get.GetBlocked() && PowerQuest.Get.GetCurrentDialog() == null && PowerQuest.Get.GetBlockingGui() == null )
+		if ( PowerQuest.Get.GetBlocked() && PowerQuest.Get.GetCurrentDialog() == null && PowerQuest.Get.GetBlockingGui() == null && IsString.NonEmpty(m_data.AnimationWait) )
 		{
 			newAnim = m_data.AnimationWait;
 			return;
@@ -399,9 +399,14 @@ public partial class QuestCursorComponent : MonoBehaviour
 
 	void Update()
 	{
-		if ( m_data.HideWhenBlocking )
-		{
-			SetVisible((!PowerQuest.Get.GetBlocked()) && m_data.Visible);
+		// Update visibility
+		{ 
+			// Hide cursor when blocking and hideWhenBlocking is option is set.
+			bool hide = m_data.HideWhenBlocking && PowerQuest.Get.GetBlocked();
+			// Unless the focused gui pauses the game- (eg for prompts showing up during a blocking sequence)
+			if ( PowerQuest.Get.GetFocusedGui() != null && PowerQuest.Get.GetFocusedGui().PauseGame )
+				hide = false;
+			SetVisible(hide == false && m_data.Visible);
 		}
 
 		Camera camMain = Camera.main;

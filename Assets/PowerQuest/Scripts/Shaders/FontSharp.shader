@@ -1,7 +1,5 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
+// "Sharp" text shader- lets you have smaller "Character size" on HD fonts while still having text look sharp.
+// Works well for pixel fonts if you don't care about them snapping to world space grid PixelFont shader does.
 Shader "Powerhoof/Sharp Text Shader" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}

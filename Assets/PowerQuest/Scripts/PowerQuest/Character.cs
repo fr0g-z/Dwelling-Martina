@@ -74,7 +74,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 
 	[Header("Movement Defaults")]
 	[SerializeField] Vector2 m_walkSpeed = new Vector2(50,50);
-	Vector2 m_defaultWalkSpeed = -Vector2.one; // Default walkspeed starts at zero, 
+	Vector2 m_defaultWalkSpeed = -Vector2.one; // Default walkspeed starts at -1, 
 	[SerializeField] bool m_moveable = true;    // Whether character can walk
 	[Tooltip("If true, this character will walk around other characters marked as solid (Using their Solid Size)")]
 	[SerializeField] bool m_solid = false;
@@ -103,6 +103,8 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 	[Header("Audio")]
 	[Tooltip("Add Footstep event to animation to trigger the footstep sound")]
 	[SerializeField,QuestAudioCueName] string m_footstepSound = string.Empty;
+	[Tooltip("Volume multiplier applied to character VO")]
+	[SerializeField, Range(0f,2f)] float m_speechVolume = 1;
 
 	[Header("Other Settings")]
 	[Tooltip("Whether clickable collider shape is taken from the sprite")]
@@ -211,7 +213,14 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 			if ( string.IsNullOrEmpty(m_room) )
 				m_nonSavedData.m_roomCached = null;				
 			else if ( m_nonSavedData.m_roomCached == null || m_room != m_nonSavedData.m_roomCached.ScriptName )
-				m_nonSavedData.m_roomCached = PowerQuest.Get.GetRoom(m_room);
+			{ 
+				m_nonSavedData.m_roomCached = PowerQuest.Get.GetRoom(m_room,true);
+				if ( m_nonSavedData.m_roomCached == null )
+				{ 
+					Debug.LogWarning($"Character {ScriptName} has invalid starting room '{m_room}'. Fix this by selecting the character and changing their 'Room' in the inspector.");
+					m_room = string.Empty;
+				}
+			}
 
 			return m_nonSavedData.m_roomCached; 
 		} 
@@ -272,7 +281,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 	}
 
 	// Returns the last room visited before the current one.
-	public IRoom LastRoom => PowerQuest.Get.GetRoom(m_lastRoom);
+	public IRoom LastRoom => PowerQuest.Get.GetRoom(m_lastRoom,true);
 
 	// Debugging function to set the last room, useful in PlayFrom functions in particular
 	public void DebugSetLastRoom(IRoom room)
@@ -292,7 +301,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 	} }
 	public List<Vector2> Waypoints { get { return m_waypoints; } }
 
-	public float Baseline { get{return m_baseline;} set{m_baseline = value;} }	
+	public float Baseline { get{return m_baseline;} set { m_baseline = value; if ( m_instance != null) m_instance.UpdateBaseline(); } }	
 	public void SetBaselineInFrontOf(IQuestClickableInterface clickable) 
 	{ 		
 		Baseline = (clickable.IClickable.Baseline+clickable.IClickable.Position.y-1) - Position.y;
@@ -303,7 +312,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		get{ return m_walkSpeed; } 
 		set 
 		{  
-			if ( m_defaultWalkSpeed.x < 0 )
+			if ( m_defaultWalkSpeed.x <= 0 )
 				m_defaultWalkSpeed = m_walkSpeed;
 			m_walkSpeed = value; 
 		} 
@@ -791,6 +800,10 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		Inventory invItem = PowerQuest.Get.GetInventory(itemName);
 		if ( invItem == null ) 
 			return;
+		
+		if ( PowerQuest.Get.CallbackOnInventoryRemoved != null )
+			PowerQuest.Get.CallbackOnInventoryRemoved.Invoke(Data,invItem);
+
 		if ( invItem.Stack )
 		{
 			// Find existing and decrement quantity, and remove if none left
@@ -825,6 +838,16 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 	}
 	public void ClearInventory()
 	{
+		if ( PowerQuest.Get.CallbackOnInventoryRemoved != null )
+		{ 
+			foreach ( CollectedItem item in m_inventory)
+			{ 
+				Inventory invItem = PowerQuest.Get.GetInventory(item.m_name);
+				if ( invItem != null ) 
+					PowerQuest.Get.CallbackOnInventoryRemoved.Invoke(Data, invItem);				
+			}
+		}
+
 		m_inventory.Clear();
 		ActiveInventory = null;
 	}
@@ -1509,9 +1532,29 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 			
 		bool skip = false;
 		//bool cancel = false;
+
+		Vector2 cachedPos = Position;
+		float stuckTimer = 0;
 		while ( m_instance != null && skip == false && Moveable && m_instance.Walking )
 		{
-			if ( PowerQuest.Get.GetSkippingCutscene() )
+			if ( (cachedPos-Position).sqrMagnitude < 2.0f && PowerQuest.Get.Paused == false )
+				stuckTimer += Time.deltaTime;		
+			else 
+			{
+				stuckTimer = 0;
+				cachedPos = Position;
+			}
+			
+
+			if ( stuckTimer > 3.0f )
+			{
+				Debug.LogError($"Character stuck! {ScriptName}, walkspeed: {WalkSpeed}, anim: {AnimWalk}");
+				if ( Instance != null )
+					Instance.SendMessage("AnimWalkSpeedReset");
+				skip = true;
+				m_instance.SkipWalk();
+			}
+			else if ( PowerQuest.Get.GetSkippingCutscene() )
 			{
 				// when walk is skipped, character teleports to location and face direction
 				skip = true;
@@ -1574,20 +1617,18 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		while (stillPlaying)
 		{
 			// Past end			
-			stillPlaying = PowerQuest.Get.ShouldContinueDialog(first, ref time, true, PowerQuest.Get.GetShouldSayTextAutoAdvance(), m_dialogAudioSource, m_dialogText, endTime);						
+			stillPlaying = PowerQuest.Get.ShouldContinueDialog(first, ref time, true, true, m_dialogAudioSource, m_dialogText, endTime);						
 			if ( stillPlaying )
 			{
 				first = false;
 				yield return new WaitForEndOfFrame();
 				if ( SystemTime.Paused == false )
-				{
 					time -= Time.deltaTime;
-				}
 			}
 			else 
 			{
 				// check the "shouldcontinue" again- but this time with skippable off so we can tell if thats why its ended
-				skipped = PowerQuest.Get.ShouldContinueDialog(first, ref time, false, PowerQuest.Get.GetShouldSayTextAutoAdvance(), m_dialogAudioSource, m_dialogText, endTime);
+				skipped = PowerQuest.Get.ShouldContinueDialog(first, ref time, false, true, m_dialogAudioSource, m_dialogText, endTime);
 			}
 		}
 		if ( skipped && m_coroutineSay != null && m_coroutineSay == sayBGCoroutine )
@@ -1687,7 +1728,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		// Start audio (if enabled)
 		SystemAudio.Stop(m_dialogAudioSource);
 		m_dialogAudioSource = null;
-		m_dialogAudioSource = SystemText.PlayAudio(id, m_scriptName, (m_instance!= null?m_instance.transform:null));
+		m_dialogAudioSource = SystemText.PlayAudio(id, m_scriptName, (m_instance!= null?m_instance.transform:null), null, m_speechVolume);		
 
 		// if set to text only, set the volume to zero, still play it though for timing and lipsync
 		if ( powerQuest.Settings.DialogDisplay == QuestSettings.eDialogDisplay.TextOnly && m_dialogAudioSource != null )
@@ -1697,8 +1738,14 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		GameObject speechObj = null;
 		eSpeechStyle speechStyle = powerQuest.SpeechStyle;	
 		if ( speechStyle == eSpeechStyle.AboveCharacter || speechStyle == eSpeechStyle.Caption || background )
-		{
-			// Above character speech (Lucasarts style)
+		{	
+			// Above character speech (Lucasarts style)	
+
+			if ( m_instance != null )
+			{
+				m_instance.StartSay(line, id);
+			}
+
 			bool showText = ( m_dialogAudioSource == null || powerQuest.Settings.DialogDisplay != QuestSettings.eDialogDisplay.SpeechOnly );
 			if ( showText )
 			{
@@ -1719,9 +1766,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 				{
 					m_dialogText.OrderInLayer = background ? -15 : -10;
 					if ( m_instance == null )
-					{
-						//Vector2 dialogWorldPos = m_position.WithZ(m_dialogText.transform.position.z);
-						
+					{						
 						Vector3 dialogWorldPos = m_position;
 						if ( TextPositionOverride != Vector2.zero )
 							dialogWorldPos = TextPositionOverride;
@@ -1730,15 +1775,9 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 					else 
 					{
 						// Attach with instance transform so it'll move with it.
-						Vector3 dialogWorldPos = m_instance.GetTextPosition();
-						m_dialogText.AttachTo(m_instance.transform, dialogWorldPos);
+						m_dialogText.AttachTo(m_instance.transform, m_instance.GetTextPosition(true));
 					}
 				}
-			}
-
-			if ( m_instance != null )
-			{
-				m_instance.StartSay(line, id);
 			}
 			
 			if ( showText )
@@ -1775,20 +1814,13 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 	{	
 		//Debug.Log($"EndSay- {ScriptName}");
 		if ( m_startSayCalled && CallbackOnEndSay != null )
-		{
-			//Debug.Log("CallbackOnEndSay");
 			CallbackOnEndSay.Invoke();
-		}
 
 		SystemAudio.Stop(m_dialogAudioSource);
 		if ( m_dialogText != null )
-		{
 			m_dialogText.gameObject.SetActive(false);
-		}
 		if ( m_instance != null )
-		{
 			m_instance.EndSay();
-		}
 		
 		// Get the speech gameobject
 		GameObject speechObj = null;
@@ -1809,9 +1841,7 @@ public partial class Character : IQuestClickable, ICharacter, IQuestScriptable, 
 		
 		// Call end say on ISpeechGui component, if found
 		if ( speechObj != null )
-		{
 			System.Array.ForEach(speechObj.GetComponents<ISpeechGui>(),iSpeechGui=>iSpeechGui.EndSay(this));
-		}
 		
 		m_startSayCalled = false;
 	}

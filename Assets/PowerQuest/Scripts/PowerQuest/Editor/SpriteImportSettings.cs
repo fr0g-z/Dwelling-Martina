@@ -32,7 +32,7 @@ class PowerQuestAssetPostProcessor : AssetPostprocessor
 				
 		#if UNITY_2019_3_OR_NEWER		
 			// Ok, so the check to avoid forcing settings is broken for unity 2019.3 and above. Great.
-			// In leau of that, lets check the various settings, and only apply if it's default.				
+			// In leau of that, let's check the various settings, and only apply if it's default.				
 			if ( importer.spritePixelsPerUnit != 100 || string.IsNullOrEmpty(importer.spritePackingTag) == false || importer.textureCompression != TextureImporterCompression.Compressed )
 				return;
 		#else

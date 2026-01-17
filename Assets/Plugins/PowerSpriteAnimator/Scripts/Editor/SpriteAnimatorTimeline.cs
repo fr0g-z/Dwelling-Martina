@@ -27,6 +27,9 @@ public partial class SpriteAnimator
     static readonly float SCRUBBER_INTERVAL_WIDTH_MAX = 80.0f;
 
 	static readonly Color COLOR_UNITY_BLUE = new Color(0.3f,0.5f,0.85f,1);
+	static readonly Color COLOR_RED_DARK = new Color(0.47f,0.235f,0.235f);
+	static readonly Color COLOR_RED_MID = new Color(0.553f,0.235f,0.235f);
+	static readonly Color COLOR_RED_LIGHT = new Color(0.784f,0.247f,0.247f);
 
 
 	static readonly Color COLOR_INSERT_FRAMES_LINE = COLOR_UNITY_BLUE;
@@ -1017,6 +1020,11 @@ public partial class SpriteAnimator
 			// Animation Frame data editor
 			LayoutBottomBarFrameData(rect);
 		}
+		else if ( m_selectedFrames.Count > 0 )
+		{ 
+			// Muliple Animation Frames data editor
+			LayoutBottomBarFrameMultiData(rect);
+		}
 		else if ( m_selectedNode >= 0 )
 		{
 			// Node data editor
@@ -1179,10 +1187,35 @@ public partial class SpriteAnimator
 		}
 	}
 
+	void LayoutBottomBarFrameMultiData(Rect rect)
+	{
+		float xOffset = 10;
+		float width = 200;
+		GUI.Label( new Rect(xOffset,1, width,rect.height), $"{m_selectedFrames.Count} Frames selected", EditorStyles.boldLabel );
+				
+		width = 120;
+		xOffset = rect.width - width - 10;
+		
+		// Reverse Frames
+		if ( GUI.Button(new Rect(xOffset,2, width,rect.height-4), "Reverse Frames", EditorStyles.miniButton) )
+		{
+			ReverseSelectedFrames();
+		}
+	}
+
 	void LayoutPlayhead(Rect rect)
 	{		
 		float offset = rect.xMin + m_timelineOffset + (m_animTime * m_timelineScale);
-		DrawLine( new Vector2(offset, rect.yMin), new Vector2(offset,rect.yMax),Color.red );
+
+		DrawLine( new Vector2(offset, rect.yMin), new Vector2(offset,rect.yMax), Color.red);
+
+		// Draw current time
+		const float timeWidth = 30;		
+		Rect boxRect = new Rect(rect.xMin + offset, rect.y, timeWidth, 12 );
+		DrawRect(boxRect , COLOR_RED_MID );
+		GUI.color = Color.white;
+		GUI.Label ( boxRect, ToTimelineLabelString(m_animTime, m_clip.frameRate), EditorStyles.miniLabel );
+
 	}
 
 	// Handles moving frames
@@ -1332,7 +1365,11 @@ public partial class SpriteAnimator
 
     static string ToTimelineLabelString( float seconds, float sampleRate ) 
     {
-		return string.Format( "{0:0}:{1:00}",Mathf.FloorToInt(seconds),(seconds%1.0f)*100.0f );
+		// For sample rates with multiples of 10, show as decimal 1.23 seconds		
+		if ( sampleRate == 10 || sampleRate == 100 || sampleRate == 1000 )
+			return string.Format( "{0:0.00}",seconds );
+		// For other sample rates, show seconds followed by frame number 1:23
+		return string.Format( "{0:0}:{1:00}",Mathf.FloorToInt(seconds),(seconds%1.0f)*sampleRate );
     }
 
     List<int> CreateIntervalSizeList(out int intervalId)

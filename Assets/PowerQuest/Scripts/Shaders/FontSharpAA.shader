@@ -1,5 +1,5 @@
-// Blah
-Shader "Powerhoof/Pixel Text Shader AA" {
+// Anti-aliased "Sharp" text shader. For nicer quality hi-res fonts.
+Shader "Powerhoof/Sharp Text Shader AA" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}
 		_Color ("Text Color", Color) = (1,1,1,1)
@@ -60,24 +60,29 @@ Shader "Powerhoof/Pixel Text Shader AA" {
 				result.a = ratio;
 				return result;
 			}
-			
 
 			v2f vert (appdata_t v)
 			{
 				v2f o;
-				o.vertex = mul(unity_ObjectToWorld, v.vertex);
-				o.vertex.x = floor(o.vertex.x+0.0001);
-				o.vertex.y = floor(o.vertex.y+0.0001);
+				o.vertex = mul(unity_ObjectToWorld, v.vertex);				
 				o.vertex = mul(UNITY_MATRIX_VP, o.vertex + _Offset);
 				o.color = v.color * _Color;
 				o.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);
 				return o;
 			}
 
-			fixed4 frag (v2f i) : SV_Target
+			float invLerp(float from, float to, float value)
 			{
+				return (value - from) / (to - from);
+			}
+
+
+			fixed4 frag (v2f i) : SV_Target
+			{ 
+				
 				fixed4 col = i.color;
-				col.a = col.a * texture2DAA(_MainTex, i.texcoord).a;
+				//col.a = col.a * texture2DAA(_MainTex, i.texcoord).a;									
+				col.a = col.a * (invLerp(0.3f,0.7f, texture2DAA(_MainTex, i.texcoord).a));				
 				return col;
 			}
 			ENDCG

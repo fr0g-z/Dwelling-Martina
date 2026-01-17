@@ -208,7 +208,8 @@ public class QuestMenuManager
 	// Called when gui input is pressed- pass it through to gui system and record presses for queries.
 	public bool NavigateGui(eGuiNav input = eGuiNav.Ok)
 	{
-		if ( PowerQuest.Get.GetBlocked())
+		// Ignore gui nav while blocking, unless paused (ie. prompt is active)
+		if ( PowerQuest.Get.GetBlocked() && PowerQuest.Get.Paused == false ) 
 			return false;
 		
 		// update keyboard input
