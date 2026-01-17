@@ -38,6 +38,8 @@ namespace PowerScript
 		public static IGui Options        { get { return PowerQuest.Get.GetGui("Options"); } }
 		public static IGui Save           { get { return PowerQuest.Get.GetGui("Save"); } }
 		public static IGui CombLock       { get { return PowerQuest.Get.GetGui("CombLock"); } }
+		public static IGui Deathdoc       { get { return PowerQuest.Get.GetGui("Deathdoc"); } }
+		public static IGui Pills          { get { return PowerQuest.Get.GetGui("Pills"); } }
 		// #GUI# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
@@ -54,6 +56,7 @@ namespace PowerScript
 		public static IRoom Kitchen        { get { return PowerQuest.Get.GetRoom("Kitchen"); } }
 		public static IRoom Closet         { get { return PowerQuest.Get.GetRoom("Closet"); } }
 		public static IRoom Livingroom     { get { return PowerQuest.Get.GetRoom("Livingroom"); } }
+		public static IRoom Insidelockbox  { get { return PowerQuest.Get.GetRoom("Insidelockbox"); } }
 		// #ROOM# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 

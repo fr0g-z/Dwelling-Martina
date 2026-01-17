@@ -65,15 +65,17 @@ MonoBehaviour:
   m_speechPortraitLocation: 0
   m_dialogTextPrefab: {fileID: 11401660, guid: e602015b16ad0c041abca0abc9116b9d, type: 3}
   m_dialogTextOffset: {x: 0, y: 1}
+  m_dialogTextCharacterInRange: {x: 50, y: 15}
   m_customSpeechGui: 
   m_displayBoxGui: DisplayBox
   m_dialogTreeGui: DialogTree
-  m_textNoSkipTime: 0.25
   m_stopWalkingToTalk: 1
-  m_sayTextAutoAdvance: 1
-  m_displayTextAutoAdvance: 0
-  m_textAutoAdvanceDelay: 0
   m_alwaysShowDisplayText: 1
+  m_displayTextAutoAdvance: 0
+  m_sayTextAutoAdvance: 1
+  m_textMinTime: 1.5
+  m_textNoSkipTime: 0.25
+  m_textAutoAdvanceDelay: 0
   m_enableUse: 1
   m_enableLook: 1
   m_enableInventory: 1
@@ -110,15 +112,18 @@ MonoBehaviour:
   - {fileID: 5400448361327926501, guid: 7700280b67c56f8419c99c8426d19aba, type: 3}
   - {fileID: 979736516575040580, guid: d39a0b14e89f86b43a559b847717eb42, type: 3}
   - {fileID: 1965011443382810268, guid: b09765173c5af364683556586bde20ff, type: 3}
+  - {fileID: 1424659253934673171, guid: 3edd677a7052a3549969e4fe8d3d80aa, type: 3}
   m_characterPrefabs:
   - {fileID: 4924194864732359351, guid: 074dc1cf1eddd8f4bbe417732ef739c4, type: 3}
   m_guiPrefabs:
   - {fileID: 9203725617098537345, guid: dcad0b6eee428504da172abd4bda172c, type: 3}
+  - {fileID: 808216922733219109, guid: bc220a71783049443b47a8a6f5db7cea, type: 3}
   - {fileID: 114997530584156344, guid: 411a5d13109ce024888cfebc375721e4, type: 3}
   - {fileID: 8056484958200454590, guid: 008d06288a0a6bf40a1f91be9220b969, type: 3}
   - {fileID: 3440285403923831220, guid: e4d641910d987554f936e3e385631a31, type: 3}
   - {fileID: 2508941201756995896, guid: 1bfd53b2a15eb2c44bfa958b184a6de3, type: 3}
   - {fileID: 2352130863124800982, guid: 09b12e39d168bdf41b05dbc3a73c4ec9, type: 3}
+  - {fileID: 1822455487563173047, guid: e84b71cc8e2c875459182ca50c3d75f2, type: 3}
   - {fileID: 6917939254628468773, guid: ee4ca9a030a8fb1429ec3aab2b38301f, type: 3}
   - {fileID: 8608667894250024884, guid: 2f4aa3f9ba456f34782aaea4044bddaf, type: 3}
   - {fileID: 114536762978702078, guid: f8cb0265062cc8449b37f62e4d70646e, type: 3}
@@ -175,6 +180,6 @@ MonoBehaviour:
   - {fileID: 4800000, guid: 493bc4d46ea0cf04989f4a24935a29e0, type: 3}
   - {fileID: 4800000, guid: 1919ad8d478bdbe4f89132831c3639b9, type: 3}
   - {fileID: 4800000, guid: 7b2d59994bd379e42a8357ea032034ab, type: 3}
-  m_version: 19004
+  m_version: 20003
   m_newVersion: 19004
   m_bgSequenceData: []

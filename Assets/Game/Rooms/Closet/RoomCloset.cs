@@ -14,13 +14,24 @@ public class RoomCloset : RoomScript<RoomCloset>
 		yield return E.Break;
 	}
 
-	IEnumerator OnInteractHotspotLock( IHotspot hotspot )
-	{
-		G.CombLock.Show();
-		yield return E.Break;
-	}
+    IEnumerator OnInteractHotspotLock(IHotspot hotspot)
+    {
+        // If the lock is already unlocked, go straight to the room
+        if (updatelockbox.LockboxUnlocked)
+        {
+            yield return C.player_invis.Say("It's already unlocked");
+            yield return E.ChangeRoom(R.Insidelockbox);
+            yield return E.Break;
+        }
+        else
+        {
+            G.CombLock.Visible = true;
+            yield return E.Break;
 
-	IEnumerator OnLookAtHotspotLock( IHotspot hotspot )
+        }
+    }
+
+    IEnumerator OnLookAtHotspotLock( IHotspot hotspot )
 	{
 
 		yield return E.Break;

@@ -660,6 +660,7 @@ MonoBehaviour:
   m_horizontal: 1
   m_offset: {x: 4, y: 4}
   m_offsetRatio: {x: 0, y: 0}
+  m_snapToPixel: 0
   m_camera: {fileID: 0}
 --- !u!1001 &2389535734671035587
 PrefabInstance:

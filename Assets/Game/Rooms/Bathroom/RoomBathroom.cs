@@ -13,4 +13,16 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 		yield return C.Plr.ChangeRoom(R.Hallway_2);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotPillbox( IHotspot hotspot )
+	{
+        G.Pills.Visible = true;
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotPillbox( IHotspot hotspot )
+	{
+		
+		yield return E.Break;
+	}
 }

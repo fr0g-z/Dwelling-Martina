@@ -113,6 +113,7 @@ MonoBehaviour:
   m_horizontal: 1
   m_offset: {x: 0, y: 0}
   m_offsetRatio: {x: 0, y: 0}
+  m_snapToPixel: 0
   m_camera: {fileID: 0}
 --- !u!1 &1164661929574550
 GameObject:
@@ -214,6 +215,7 @@ MonoBehaviour:
     m_width: 3.5
     m_color: {r: 0, g: 0, b: 0, a: 1}
   m_typeSpeed: 0
+  m_fontPixelStyle: 0
   m_unlocalizedText: Option 1
   m_outlineMeshes:
   - {fileID: 0}
@@ -262,7 +264,7 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1164025503
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 3005
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &5912662845839746748
@@ -417,7 +419,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1164025503
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2d4b4441c8db4b04f983998b482b052c, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.3137255}
@@ -562,7 +564,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1164025503
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 3005
   m_Sprite: {fileID: 21300000, guid: 361e9f69559850748975cee62ad79b4d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

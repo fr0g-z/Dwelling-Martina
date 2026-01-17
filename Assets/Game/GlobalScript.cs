@@ -235,34 +235,36 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////
-	// Unhandled interactions
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Unhandled interactions
 
-	/// Called when player interacted with something that had not specific "interact" script
-	public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
-	{		
-		// This function is called when the player interacts with something that doesn't have a response
-		
-		if ( mouseOver.ClickableType == eQuestClickableType.Inventory )
-		{
-			// If clicking an inventory item, select it as the active inventory
-			E.ActiveInventory = (IInventory)mouseOver;
-		}
-		else
-		{
-			// This bit of logic cycles between three options. The '% 3' makes it cycle between 3 options.
-			int option = E.Occurrence("unhandledInteract") % 3;
-			if ( option == 0 )
-				yield return C.Display("You can't use that");
-			else if ( option == 1 )
-				yield return C.Display("That doesn't work");
-			else if ( option == 2 )
-				yield return C.Display("Nothing happened");
-		}
-	}
+    /// Called when player interacted with something that had not specific "interact" script
+    public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
+    {
+        if (G.Deathdoc.Visible)
+            yield break;  
 
-	/// Called when player looked at something that had not specific "Look at" script
-	public IEnumerator UnhandledLookAt(IQuestClickable mouseOver)
+		if (G.Pills.Visible);
+            yield break;
+
+        // existing logic
+        if (mouseOver.ClickableType == eQuestClickableType.Inventory)
+        {
+            E.ActiveInventory = (IInventory)mouseOver;
+        }
+        else
+        {
+            int option = E.Occurrence("unhandledInteract") % 3;
+            if (option == 0)
+                yield return C.Display("You can't use that");
+            else if (option == 1)
+                yield return C.Display("That doesn't work");
+            else if (option == 2)
+                yield return C.Display("Nothing happened");
+        }
+    }
+    /// Called when player looked at something that had not specific "Look at" script
+    public IEnumerator UnhandledLookAt(IQuestClickable mouseOver)
 	{
 		// This function is called when the player looks at something that doesn't have a response
 		
@@ -294,6 +296,13 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		// This function is called when the uses an item on things that don't have a response
 		yield return C.Display( "You can't use that" ); 
 	}
+
+    public class updatelockbox : MonoBehaviour
+    {
+        // This variable will persist across rooms and scripts
+        public static bool LockboxUnlocked = false;
+    }
+
 
 
 }
