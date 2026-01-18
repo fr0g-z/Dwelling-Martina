@@ -15,7 +15,7 @@ public class GuiPills : GuiScript<GuiPills>
     IEnumerator OnAnyClick(IGuiControl control)
     {
         G.Pills.Visible = false;
-        yield return C.player_invis.Say("That expiry date looks familiar...");
+        yield return C.player_invis.Say("What an odd way to sort pills...");
         yield return E.Break;
     }
 }

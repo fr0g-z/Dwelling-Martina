@@ -6,9 +6,23 @@ using static GlobalScript;
 
 public class RoomBedroom : RoomScript<RoomBedroom>
 {
+	bool saidLine = false;
 
+    IEnumerator OnEnterRoomAfterFade()
+    {
+        // Move player to starting point
+        C.Plr.SetPosition(Point("Character"));
 
-	IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
+        // Say the line only once
+        if (!saidLine)
+        {
+            saidLine = true;
+            yield return C.player_invis.Say("Weird dream… I should freshen up…");
+        }
+
+        yield return E.Break;
+    }
+    IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
 	{
 		if ( hotspot.FirstLook )
 			yield return C.player_invis.Say("I cant see anything through the window");
@@ -23,15 +37,9 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 		yield return E.Break;
 	}
 
-	IEnumerator OnEnterRoomAfterFade()
-	{
-		C.Plr.SetPosition(Point("Character"));
-		yield return E.Break;
-	}
-
 	IEnumerator OnLookAtPropFeather( IProp prop )
 	{
-		yield return C.player_invis.Say("A Feather");
+		yield return C.player_invis.Say("A Feather, why is this here?");
 		
 		yield return E.Break;
 	}
