@@ -41,4 +41,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/Insidelockbox/SceneRoomInsidelockbox.unity
     guid: a7b06533b50e1a245b02a57ee6387eff
+  - enabled: 1
+    path: Assets/Game/Rooms/Clock/SceneRoomClock.unity
+    guid: ea669e3d559731947bdcf73e84e95cf2
   m_configObjects: {}

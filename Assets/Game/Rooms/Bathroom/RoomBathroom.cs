@@ -16,17 +16,15 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotPillbox( IHotspot hotspot )
 	{
+		
+	   G.Pills.Visible = true;
 
-       G.Pills.Visible = true;
-        // yield return C.player_invis.Say("This expiry date looks familiar");
-      //  yield return E.WaitSkip(0);
-       // yield return (C.player_invis.Say("This expiry date looks familiar"));
        yield return E.Break;
 	}
 
 	IEnumerator OnLookAtHotspotPillbox( IHotspot hotspot )
-	{
+    {
 		
-		yield return E.Break;
+        yield return E.Break;
 	}
 }
