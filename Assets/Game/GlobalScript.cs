@@ -304,5 +304,7 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
     }
 
 
+    public static float savedHourAngle = 85f;    // 2:50 hour hand starting
+    public static float savedMinuteAngle = 300f; // 2:50 minute hand starting
 
 }
