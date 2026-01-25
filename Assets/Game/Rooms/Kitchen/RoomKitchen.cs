@@ -19,4 +19,13 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 		yield return C.Plr.ChangeRoom(R.Livingroom);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractPropTeddyBear( IProp prop )
+	{
+        yield return C.Display("You pick up the Teddy Bear");
+        Audio.Play("Bucket");
+        prop.Disable();
+        I.TeddyBear.AddAsActive();
+        yield return E.Break;
+	}
 }

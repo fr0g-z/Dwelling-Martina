@@ -10,6 +10,7 @@ using PowerTools.Quest;
  * - Add your own variables and functions in here and you can access them with `Globals.` (eg: `Globals.m_myCoolInteger`)
  * - If you've used Adventure Game Studio, this is equivalent to the Global Script in that
 */
+
 public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 {	
 	////////////////////////////////////////////////////////////////////////////////////
@@ -303,8 +304,25 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
         public static bool LockboxUnlocked = false;
     }
 
+    public class ClockSolved : MonoBehaviour
+	{
+		public static bool ClockSolved_ = false;  
+		
+    }
 
-    public static float savedHourAngle = 85f;    // 2:50 hour hand starting
-    public static float savedMinuteAngle = 300f; // 2:50 minute hand starting
+	public class ItemsPlaced : MonoBehaviour
+	{
+		public static bool PinPlaced = false;
+		public static bool TeddyPlaced = false;
+		public static bool FeatherPlaced = false;
+
+		public static bool AllItemsPlaced
+		{
+			get
+			{
+				return PinPlaced && TeddyPlaced && FeatherPlaced;
+			}
+		}
+	}
 
 }

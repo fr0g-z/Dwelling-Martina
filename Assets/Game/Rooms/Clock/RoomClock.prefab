@@ -443,7 +443,7 @@ MonoBehaviour:
     m_baseline: 0
     m_baselineFixed: 0
     m_walkToPoint: {x: 0, y: 0}
-    m_lookAtPoint: {x: 0, y: 0}
+    m_lookAtPoint: {x: 2.4132965, y: -0.000038146973}
     m_scriptName: Clock
   m_parallaxDepth: 0
   m_parallaxAlignment: {x: 0, y: 0}
@@ -608,10 +608,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hourHand: {fileID: 6577504020019335908}
   minuteHand: {fileID: 5548664365403137668}
-  snapIncrement: 10
-  solveTolerance: 10
   secretDoor: {fileID: 0}
   doorAudio: {fileID: 8300000, guid: c07743729a025d64887d74aa20816325, type: 3}
+  snapIncrement: 10
+  solveTolerance: 10
 --- !u!1 &6408426954530901304
 GameObject:
   m_ObjectHideFlags: 0

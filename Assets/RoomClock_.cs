@@ -1,67 +1,64 @@
 ﻿using UnityEngine;
+using PowerScript;
+using PowerTools.Quest;
+using static GlobalScript;
 
 public class RoomClock_ : MonoBehaviour
 {
-    [Header("Clock Hands")]
     public Transform hourHand;
     public Transform minuteHand;
 
-    [Header("Puzzle Settings")]
-    public float snapIncrement = 5f;      // Snapping while dragging
-    public float solveTolerance = 8f;     // Degrees tolerance for solving
+    public GameObject secretDoor;
+    public AudioClip doorAudio;
 
-    [Header("Door / Audio")]
-    public GameObject secretDoor;         // Door to open
-    public AudioClip doorAudio;           // Audio clip
+    public float snapIncrement = 5f;
+    public float solveTolerance = 8f;
+
     private AudioSource audioSource;
-
-    // Dragging state
     private Transform activeHand = null;
     private float grabOffset = 0f;
-
-    // Stored local angles
     private float hourAngle;
     private float minuteAngle;
-
     private bool solved = false;
 
-    // Target angles for 12:50
-    private float targetHourAngle = 360f;
-    private float targetMinuteAngle = 60f;
+    private const float targetHourAngle = 360f;
+    private const float targetMinuteAngle = 60f;
 
     void Start()
     {
-        // Initialize angles from hands' local rotation
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        if (ClockSolved.ClockSolved_)
+        {
+            solved = true;
+            if (hourHand != null) hourHand.localRotation = Quaternion.Euler(0, 0, targetHourAngle);
+            if (minuteHand != null) minuteHand.localRotation = Quaternion.Euler(0, 0, targetMinuteAngle);
+            if (secretDoor != null) secretDoor.SetActive(true);
+            return;
+        }
+
         if (hourHand != null) hourAngle = Normalize(hourHand.localEulerAngles.z);
         if (minuteHand != null) minuteAngle = Normalize(minuteHand.localEulerAngles.z);
-
-        // Ensure AudioSource exists
-        audioSource = gameObject.GetComponent<AudioSource>();
-        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
     {
         if (solved) return;
 
-        // Handle dragging
         if (activeHand != null && Input.GetMouseButton(0))
         {
             Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 localMouse = activeHand.parent.InverseTransformPoint(mouseWorld);
-
             float mouseAngle = Mathf.Atan2(localMouse.y, localMouse.x) * Mathf.Rad2Deg;
-            float newAngle = mouseAngle - grabOffset;
-            newAngle = SnapAngle(newAngle, snapIncrement);
-
+            float newAngle = SnapAngle(mouseAngle - grabOffset, snapIncrement);
             activeHand.localRotation = Quaternion.Euler(0, 0, newAngle);
 
-            // Update stored angle
             if (activeHand == hourHand) hourAngle = Normalize(newAngle);
             else if (activeHand == minuteHand) minuteAngle = Normalize(newAngle);
         }
 
-        // Release check
         if (Input.GetMouseButtonUp(0) && activeHand != null)
         {
             activeHand = null;
@@ -70,51 +67,45 @@ public class RoomClock_ : MonoBehaviour
         }
     }
 
-    // Called by Event Trigger → PointerDown
-    public void OnGrabHourHand() => BeginDrag(hourHand, hourAngle);
-    public void OnGrabMinuteHand() => BeginDrag(minuteHand, minuteAngle);
+    public void OnGrabHourHand()
+    {
+        if (ClockSolved.ClockSolved_) return;
+        BeginDrag(hourHand, hourAngle);
+    }
+
+    public void OnGrabMinuteHand()
+    {
+        if (ClockSolved.ClockSolved_) return;
+        BeginDrag(minuteHand, minuteAngle);
+    }
 
     private void BeginDrag(Transform hand, float currentAngle)
     {
-        if (solved) return;
         activeHand = hand;
-
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector3 localMouse = hand.parent.InverseTransformPoint(mouseWorld);
-
-        float mouseAngle = Mathf.Atan2(localMouse.y, localMouse.x) * Mathf.Rad2Deg;
-        grabOffset = mouseAngle - currentAngle;
+        grabOffset = Mathf.Atan2(localMouse.y, localMouse.x) * Mathf.Rad2Deg - currentAngle;
     }
 
     private void CheckClock()
     {
-        float hDiff = Mathf.Min(Mathf.Abs(hourAngle - targetHourAngle), 360 - Mathf.Abs(hourAngle - targetHourAngle));
-        float mDiff = Mathf.Min(Mathf.Abs(minuteAngle - targetMinuteAngle), 360 - Mathf.Abs(minuteAngle - targetMinuteAngle));
+        float hDiff = Mathf.Min(Mathf.Abs(hourAngle - targetHourAngle), 360f - Mathf.Abs(hourAngle - targetHourAngle));
+        float mDiff = Mathf.Min(Mathf.Abs(minuteAngle - targetMinuteAngle), 360f - Mathf.Abs(minuteAngle - targetMinuteAngle));
 
         if (hDiff <= solveTolerance && mDiff <= solveTolerance)
         {
             solved = true;
+            ClockSolved.ClockSolved_ = true;
 
-            // Snap hands to exact position
             if (hourHand != null) hourHand.localRotation = Quaternion.Euler(0, 0, targetHourAngle);
             if (minuteHand != null) minuteHand.localRotation = Quaternion.Euler(0, 0, targetMinuteAngle);
-
-            // Open door
             if (secretDoor != null) secretDoor.SetActive(true);
-
-            // Play audio
             if (doorAudio != null && audioSource != null) audioSource.PlayOneShot(doorAudio);
+            I.MumsPin.AddAsActive();
 
-            Debug.Log("Clock solved at 12:50!");
         }
     }
 
-    private float SnapAngle(float a, float inc) => inc > 0 ? Mathf.Round(a / inc) * inc : a;
-
-    private float Normalize(float a)
-    {
-        a %= 360f;
-        if (a < 0) a += 360f;
-        return a;
-    }
+    private float SnapAngle(float angle, float increment) => increment > 0 ? Mathf.Round(angle / increment) * increment : angle;
+    private float Normalize(float angle) { angle %= 360f; if (angle < 0) angle += 360f; return angle; }
 }
