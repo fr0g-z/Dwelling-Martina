@@ -301,46 +301,11 @@ public static class QuestUtils
 		#endif
 	}
 
-	static Dictionary<System.Object, Dictionary<string,IQuestScriptable>> s_cachedScriptableList = new Dictionary<System.Object, Dictionary<string, IQuestScriptable>>();
-
-	public static void ClearScriptableCache()
-	{
-		s_cachedScriptableList.Clear();
-	}
-
-	// Fast version of FindScriptable that caches dictionaries of objects. Note- lists are cached so should only be used for things that will always exist- like 
-	public static T FindScriptableFast<T>(List<T> scriptables, string scriptName) where T : class, IQuestScriptable 
-	{ 
-		Dictionary<string,IQuestScriptable> dic;
-		if (s_cachedScriptableList.TryGetValue(scriptables, out dic)== false)
-		{
-			// Lazy add a new dictionary
-			dic = new Dictionary<string, IQuestScriptable>(scriptables.Count);
-			foreach( T scriptable in scriptables )
-			{ 
-				if ( dic.ContainsKey(scriptable.GetScriptName()) == false )
-					dic.Add(scriptable.GetScriptName(), scriptable);
-			}
-			s_cachedScriptableList.Add(scriptables,dic);
-		}
-		
-		if ( scriptName == null )
-			return null;
-
-		IQuestScriptable result;
-		if ( dic.TryGetValue(scriptName,out result) )
-			return result as T;
-		
-		return null;
-	}
-	
-
 	/**
 	 * Find a scriptable by ScriptName, null if not found
 	 */
 	public static T FindScriptable<T>(List<T> scriptables, string scriptName) where T : class, IQuestScriptable 
 	{
-		// Possible optimisation- cache dictionary of scriptables.
 		foreach (var scriptable in scriptables) 
 		{
 			if (scriptable != null && string.Equals(scriptable.GetScriptName(), scriptName, StringComparison.OrdinalIgnoreCase)) 

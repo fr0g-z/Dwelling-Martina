@@ -1,4 +1,5 @@
-// 
+// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
 Shader "Powerhoof/Pixel Text Shader" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}
@@ -41,6 +42,21 @@ Shader "Powerhoof/Pixel Text Shader" {
 			uniform fixed4 _Color;
 			uniform float4 _Offset;
 
+			/*
+			//uniform float4 _MainTex_TexelSize;			
+
+			// From TylerGlaiel
+			float4 texture2DAA(sampler2D tex, float2 uv)
+			{
+				float2 texsize = float2(_MainTex_TexelSize.z, _MainTex_TexelSize.w);	
+				float2 uv_texspace = uv * texsize;
+				float2 seam = floor(uv_texspace + .5);
+				uv_texspace = (uv_texspace - seam) / fwidth(uv_texspace) + seam;
+				uv_texspace = clamp(uv_texspace, seam - .5, seam + .5);
+				return tex2D(tex, uv_texspace / texsize);
+			}
+			*/
+
 			v2f vert (appdata_t v)
 			{
 				v2f o;
@@ -57,6 +73,7 @@ Shader "Powerhoof/Pixel Text Shader" {
 			{ 
 				
 				fixed4 col = i.color;
+				//col.a = texture2DAA(_MainTex, i.texcoord).a;
 				if ( tex2D(_MainTex, i.texcoord).a < 0.48f )
 					discard;				
 				return col;

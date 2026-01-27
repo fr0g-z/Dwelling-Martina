@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using PowerTools;
 using PowerTools.Quest;
-using static GlobalScript;
 
 namespace PowerTools.QuestGui
 {

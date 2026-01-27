@@ -656,14 +656,11 @@ public class PowerQuestProjectSetupUtil
 		AddAlwaysIncludedShader("Powerhoof/Pixel Text Shader");
 		AddAlwaysIncludedShader("Powerhoof/Pixel Text Shader AA");
 		AddAlwaysIncludedShader("Powerhoof/Sharp Text Shader");
-		AddAlwaysIncludedShader("Powerhoof/Sharp Text Shader AA");
 		AddAlwaysIncludedShader("Sprites/PowerSprite");
 		AddAlwaysIncludedShader("Sprites/PowerSpriteAdditive");
 		AddAlwaysIncludedShader("Sprites/PowerSpriteOutline");
 		AddAlwaysIncludedShader("Sprites/PowerSpriteAA");
-		AddAlwaysIncludedShader("Unlit/TransparentAntiAliased"); // Used for pixel camera
-
-
+		AddAlwaysIncludedShader("Unlit/TransparentAntiAliased");
 	}
 				
 	static void AddAlwaysIncludedShader(string shaderName)

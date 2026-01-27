@@ -7,29 +7,25 @@ using static GlobalScript;
 public class RoomVanity : RoomScript<RoomVanity>
 {
 
-
+    // Feather hotspot
     IEnumerator OnUseInvHotspotFeather(IHotspot hotspot, IInventory item)
     {
         if (item.ScriptName == "Feather" && !ItemsPlaced.FeatherPlaced)
-        {
-            // Remove item from inventory
-            item.Remove();
-
-            // Set global flag
+        {       
+            item.Remove(); 
             ItemsPlaced.FeatherPlaced = true;
-
+            Prop("Feather").Show();
             C.player_invis.Say("Feather placed!");
         }
         else
         {
             C.player_invis.Say("Wrong item for Feather hotspot!");
         }
-
-        // Check if all items are placed
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("All items placed! Trigger global event!");
-            // TODO: trigger your global event here (door, cutscene, etc.)
+            C.player_invis.Say("Something Clicked!");
+            Audio.Play("DoorOpen");
+
         }
 
         yield return E.Break;
@@ -42,6 +38,7 @@ public class RoomVanity : RoomScript<RoomVanity>
         {
             item.Remove();
             ItemsPlaced.TeddyPlaced = true;
+            Prop("Teddybear").Show();
             C.player_invis.Say("TeddyBear placed!");
         }
         else
@@ -51,7 +48,8 @@ public class RoomVanity : RoomScript<RoomVanity>
 
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("All items placed! Trigger global event!");
+            C.player_invis.Say("Something Clicked");
+            Audio.Play("DoorOpen");
         }
 
         yield return E.Break;
@@ -64,6 +62,7 @@ public class RoomVanity : RoomScript<RoomVanity>
         {
             item.Remove();
             ItemsPlaced.PinPlaced = true;
+            Prop("MumsPin").Show();
             C.player_invis.Say("Pin placed!");
         }
         else
@@ -73,9 +72,36 @@ public class RoomVanity : RoomScript<RoomVanity>
 
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("All items placed! Trigger global event!");
+            C.player_invis.Say("Something Clicked!");
+            Audio.Play("DoorOpen");
         }
 
         yield return E.Break;
     }
+
+	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
+	{
+        yield return C.Plr.ChangeRoom(R.Hallway);
+        yield return E.Break;
+	}
+
+    // The below is just to declare the props so no errors occur
+
+    IEnumerator OnInteractPropTeddybear( IProp prop )
+	{
+
+		yield return E.Break;
+	}
+
+	IEnumerator OnInteractPropMumsPin( IProp prop )
+	{
+
+		yield return E.Break;
+	}
+
+	IEnumerator OnInteractPropFeather( IProp prop )
+	{
+
+		yield return E.Break;
+	}
 }

@@ -113,7 +113,6 @@ MonoBehaviour:
   m_horizontal: 1
   m_offset: {x: 0, y: 0}
   m_offsetRatio: {x: 0, y: 0}
-  m_snapToPixel: 0
   m_camera: {fileID: 0}
 --- !u!1 &1164661929574550
 GameObject:
@@ -215,7 +214,6 @@ MonoBehaviour:
     m_width: 3.5
     m_color: {r: 0, g: 0, b: 0, a: 1}
   m_typeSpeed: 0
-  m_fontPixelStyle: 0
   m_unlocalizedText: Option 1
   m_outlineMeshes:
   - {fileID: 0}

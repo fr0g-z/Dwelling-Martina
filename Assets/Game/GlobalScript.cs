@@ -304,13 +304,13 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
         public static bool LockboxUnlocked = false;
     }
 
-    public class ClockSolved : MonoBehaviour
+	public class ClockSolved : MonoBehaviour
 	{
-		public static bool ClockSolved_ = false;  
-		
-    }
+		public static bool ClockSolved_ = false;
 
-	public class ItemsPlaced : MonoBehaviour
+	}
+    // / Track whether items have been placed in the vanity
+    public class ItemsPlaced : MonoBehaviour
 	{
 		public static bool PinPlaced = false;
 		public static bool TeddyPlaced = false;

@@ -131,14 +131,13 @@ public partial class QuestScriptEditor
 		new Regex( @"^Cursor\.(\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), 		// eg: Cursor.??
 		new Regex( @"^Parser\.(\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), 		// eg: Parser.??
 		new Regex( @"^Settings\.(\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), 	// eg: Settings.??
-		
 		new Regex( @"^e[A-Z]\w*\.(\w*)$", RegexOptions.Compiled ), 	// eg: eStateWindow.??
 		new Regex( @"^[CRIG]\.\w+\.Script\.(\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), 		// eg: C.Fred.Script. // eg: R.Kitchen.Script. // eg: I.Bucket.Script. // eg: G.Prompt.Script.
 
 		new Regex( @"^\s*(?:C\.\w+|Plr)\.(?:(?:AnimIdle|AnimTalk|AnimWalk|Pose|NextPose|Animation)\s*=\s*|PlayAnimation(?:BG)?\(\s*)(""?\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), // eg: C.Fred.AnimIdle = " // eg: C.Fred.PlayAnimation("
 		new Regex( @"^\s*:\w*:\s*(\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), // eg: :Dave: or ::
 		new Regex( @"^\s*P\.\w+\.(?:Animation\s*=\s*|PlayAnimation(?:BG)?\(\s*)(""?\w*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), // eg: P.Door.Animation = " // eg: P.Door.PlayAnimation("
-		new Regex( @"^\s*Audio\.(?:Play|Stop|IsPlaying|GetHandle)\w*\(\s*(""?.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), // eg: Audio.Play("
+		new Regex( @"^\s*Audio\.(?:Play|Stop|IsPlaying)\w*\(\s*(""?.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase ), // eg: Audio.Play("
 	};
 	
 	// Context's that should list functions in their class, rather than a custom list (like the names of characters)

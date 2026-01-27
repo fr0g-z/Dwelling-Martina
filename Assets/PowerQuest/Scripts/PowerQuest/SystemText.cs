@@ -1,11 +1,9 @@
-//#define RUNTIME_CSV_IMPORT_ENABLED // Uncomment to enable, and also copy CSVFile.dll from '/ThirdPary/Editor/' directory into '/ThirdParty/' directory, and in its settings untick editor, and tick Standalone instead.
-//#define LOG_SPEECH
+//#define RUNTIME_CSV_IMPORT_ENABLED // Uncomment to enable, and also move CSVFile.dll from '/ThirdPary/Editor/' directory into '/ThirdParty/' directory, and tick the "Any Platform" tickbox on it's settings.
 
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using PowerTools;
-using System.Text.RegularExpressions;
 #if RUNTIME_CSV_IMPORT_ENABLED
 using System.IO;
 #endif
@@ -39,15 +37,6 @@ public class LanguageData
 
 public partial class SystemText : PowerTools.Singleton<SystemText>
 { 
-	static readonly int NUM_LIP_SYNC_FRAMES = 6;
-	
-	//static readonly Regex REGEX_VOVOLCOMM = new Regex(@"\", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-	static readonly Regex REGEX_VOVOLLINE = new Regex(@"(\d+)\s+\+?(.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-	static readonly Regex REGEX_VOVOLLINESHORT = new Regex(@"(\d+)\s+([\+-])\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-	static readonly Regex REGEX_VOVOLDEFAULTUP = new Regex(@"DefaultUp\s+\+?(\d*\.?\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-	static readonly Regex REGEX_VOVOLDEFAULTDOWN = new Regex(@"DefaultDown\s+(-?\d*\.?\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-	static readonly Regex REGEX_VOVOLCHAR = new Regex(@"^\s*([a-z]+)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase);	
-
 	public enum ePlayerName
 	{
 		Character,
@@ -56,14 +45,13 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 		Ego
 	}
 
+
 	public enum eDefaultTextSource
 	{
 		Script, ImportedText
 	}
 
-	public class CharacterTextDataList : Dictionary< string, List<TextData> > { }	
-	
-	static float s_voicePan = 0;
+	public class CharacterTextDataList : Dictionary< string, List<TextData> > { }
 
 	[SerializeField] LanguageData[] m_languages = {new LanguageData()};
 	
@@ -75,13 +63,9 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 	// Master list of all strings
 	[SerializeField, HideInInspector] List<TextData> m_strings = new List<TextData>(); 
 
-	[SerializeField] System.Text.Encoding m_csvEncoding = System.Text.Encoding.Default;
-
-	[SerializeField] TextAsset m_voVolTweaksFile = null;
+	[SerializeField] System.Text.Encoding m_csvEncoding = System.Text.Encoding.Default; 
 		
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// Variables
-	
+
 	// Dictionary of character to string for quick lookup
 	CharacterTextDataList m_characterStrings = null;
 
@@ -94,20 +78,12 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 
 	// cache whether the X shape is used for lipsync
 	bool m_lipSyncUsesXShape = false;
-	// Cache map to handle optional Mouth shapes
-	int[] m_charToIndexMap = {0,1,2,3,4,5,0,0,0}; 
 	
 	ePlayerName m_lastPlayerName = ePlayerName.Character;
 		
 	// For alternate VO lines. Can be set before playing the next line to use an alternate take. Eg: NARR123B
 	string m_nextVoiceClipAffix = null;	
-
-	Dictionary<string, Dictionary<int,float> > m_voVolTweaks = new Dictionary<string, Dictionary<int, float>>();
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	///Functions
-	///
-	public string NextVoiceClipAffix { get=>m_nextVoiceClipAffix; set { m_nextVoiceClipAffix = value == null ? null : value.ToUpper(); } }
+	public string NextVoiceClipAffix { get=>m_nextVoiceClipAffix; set { m_nextVoiceClipAffix = value; } }
 
 	public int GetNumLanguages() { return m_languages.Length; }
 	// Returns the currently selected language id
@@ -143,40 +119,9 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 	}
 	public LanguageData[] GetLanguages() { return m_languages; }
 
+	public bool GetLipsyncUsesXShape() { return m_lipSyncUsesXShape; }
 	public string GetLipsyncExtendedMouthShapes()  { return m_lipSyncExtendedShapes; }
-	public void SetLipsyncExtendedMouthShapes(string value)  { m_lipSyncExtendedShapes = value; }	
-	
-	public static void PanNextLine(float pan = 0) { s_voicePan = pan; }
-
-	/// Takes a line's text data and the current animation time, and returns the normalized animation time (0-1) to be used for lip sync.
-	public float GetLipSyncAnimTime(TextData data, float time)
-	{
-		// Update frames for lip sync
-
-		// Get character from time
-		int index = -1;
-		if ( data != null )
-			index = System.Array.FindIndex( data.m_phonesTime, item => item > time );
-		index--;			
-				
-		char character = m_lipSyncUsesXShape ? 'X' : 'A';  // default to mouth closed
-		if ( index >= 0 && index < data.m_phonesCharacter.Length )
-			character = data.m_phonesCharacter[index];				
-		
-		// map character to frame- 
-		int finalLipSyncFrames = NUM_LIP_SYNC_FRAMES + m_lipSyncExtendedShapes.Length;
-		int characterId = Mathf.Min(character-'A', finalLipSyncFrames-1);
-		if ( characterId >= finalLipSyncFrames ) // Handle 'X' being off end of array- or finding extended shapes when they're not enabled in SystemText
-			characterId = m_lipSyncUsesXShape ? finalLipSyncFrames-1 : 0;
-		// map character Id (for optional extended shapes). 
-		characterId = m_charToIndexMap[characterId]; 
-				
-		//Debug.Log($"{character}: {characterId}, {((float)characterId+0.5f)/(float)finalLipSyncFrames}");
-		
-		float animNormalizedTime = ((float)characterId+0.5f)/(float)finalLipSyncFrames;
-
-		return animNormalizedTime;
-	}
+	public void SetLipsyncExtendedMouthShapes(string value)  { m_lipSyncExtendedShapes = value; }
 	
 	public static string Localize( string defaultText, int id = -1, string characterName = null )
 	{
@@ -246,7 +191,8 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 		return defaultText;
 	}
 
-	public static AudioHandle PlayAudio(int id, string characterName, Transform emitter = null, UnityEngine.Audio.AudioMixerGroup mixerGroupOverride = null, float vol = 1 )
+
+	public static AudioHandle PlayAudio(int id, string characterName, Transform emitter = null, UnityEngine.Audio.AudioMixerGroup mixerGroupOverride = null )
 	{
 		TextData data = m_instance.FindTextDataInternal(id, characterName);
 		if ( data == null )
@@ -256,20 +202,8 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 			return null;
 		}
 		
-		vol += m_instance.GetVoVolTweak(id,characterName);
-
-		#if LOG_SPEECH
-		if (Application.isEditor)
-			Debug.Log($"{characterName}{m_instance.m_nextVoiceClipAffix}({id}) - vol: {vol:0.00}, tweak: {((vol-1.0f)*100.0f):0}%");
-		#endif
-
-		AudioClip clip = m_instance.GetVoiceAudioClip(id, characterName);
-		
-		AudioHandle handle =  SystemAudio.Play( clip, (int)AudioCue.eAudioType.Dialog, emitter, vol,1,false, mixerGroupOverride );
-		if ( s_voicePan != 0 )
-			handle.panStereo = handle.panStereo+ s_voicePan;
-		s_voicePan = 0;
-		return handle;
+		AudioClip clip = m_instance.GetVoiceAudioClip(id, characterName);		
+		return SystemAudio.Play( clip, (int)AudioCue.eAudioType.Dialog, emitter, 1,1,false, mixerGroupOverride );
 	}
 
 	public static TextData FindTextData(int id, string characterName = null)
@@ -278,6 +212,7 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 			return null;
 		return m_instance.FindTextDataInternal(id,characterName);
 	}
+
 
 	// Parses an id from a line of text that starts with an &<id> , and strips the id from teh text. Eg- turns "&124 Hello" into 124 and "Hello"
 	public int ParseIdFromText(ref string text)
@@ -385,34 +320,8 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 
 	}
 	
-	public void EditorRemoveDuplicates()
-	{ 
-		foreach (var pair in m_characterStrings)
-		{ 
-			List<TextData> list = pair.Value;
-			for (int i = 0; i < list.Count-1; ++i )
-			{ 
-				int id = list[i].m_id;
-				for ( int j = i+1; j < list.Count && i < list.Count-1; ++j )
-				{ 
-					if ( id == list[j].m_id )
-					{ 
-						Debug.Log("Removed Duplicate: "+list[j].m_string);
-						if ( list[i] != list[j] )
-							m_strings.Remove(list[j]);
-						list.RemoveAt(j);						
-						j--;
-					}
-				}
-				
-			}
-			
-			
-		}
-		
-	}
-
-
+	 // NB: Now always importing default text from CSV
+	public bool EditorGetShouldImportDefaultStringFromCSV() { return true; } // m_defaultTextSource == eDefaultTextSource.ImportedText; }
 	public eDefaultTextSource EditorDefaultTextSource { get { return m_defaultTextSource; } set{ m_defaultTextSource = value; } }
 
 	public List<TextData> EditorGetTextDataOrdered()
@@ -449,8 +358,6 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 	{
 		return GetVoiceAudioClip(id, characterName) != null;
 	}
-	
-	public void EditorSetVoTweaksFile(TextAsset file) { m_voVolTweaksFile = file; }
 	
 	// This is used to specify which "name" a player is using (eg: Plr, Player, Ego, or the character's ScriptName), so it can be retrieved from the text system correctly
 	public ePlayerName LastPlayerName { get{ return m_lastPlayerName; } set{ m_lastPlayerName=value; } }
@@ -511,7 +418,6 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 		return null;
 	}
 
-
 	// Use this for initialization
 	void Awake() 
 	{
@@ -519,25 +425,6 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 		DontDestroyOnLoad(this);
 
 		m_lipSyncUsesXShape = m_lipSyncExtendedShapes.Contains("X");
-		
-		// Build map of character to animation index, based on the lipSyncExtended Shape
-		// ABCDEF G H X
-		// 012345 ? ? ?
-		m_charToIndexMap = new int[]{0,1,2,3,4,5,0,0,0};
-		for ( int i = 0; i < m_lipSyncExtendedShapes.Length; ++i )		
-			m_charToIndexMap[i+NUM_LIP_SYNC_FRAMES] = m_lipSyncExtendedShapes[i] -'A';
-
-		if ( m_voVolTweaksFile != null )
-		{
-			string logs = string.Empty;
-			string errors = string.Empty;
-			ParseVoVolTweaks(m_voVolTweaksFile, ref logs, ref errors);
-			if ( string.IsNullOrEmpty(errors) == false )
-			{
-				Debug.LogError("Error parsing Vo file:\n"+errors);
-			}
-		}
-		
 	}
 
 	// Since the character dictionary deserialises, recreate it if it's null on first use
@@ -570,137 +457,7 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 				}
 			}
 		}
-	}	
-	
-	float GetVoVolTweak(int id, string characterName)
-	{ 			
-		Dictionary<int,float> pair = null;		
-		float vol = 0;
-		if ( m_voVolTweaks.TryGetValue(characterName.ToUpper(), out pair) )
-			if ( pair.TryGetValue(id, out vol) )
-				return vol;
-		return 0.0f;			
 	}
-
-	public void ParseVoVolTweaks(TextAsset text, ref string logs, ref string errors)
-	{ 
-		m_voVolTweaks.Clear();
-		string[] lines = text.text.Split('\n');
-		
-		string charName = "";
-		float defaultUp = 0.08f;
-		float defaultDown = -0.08f;
-
-		logs = "";
-		errors = "";
-
-		//foreach (string line in lines)
-		//	Debug.Log(line);
-		int lineNum = 0;
-		foreach ( string line in lines )
-		{
-			++lineNum;
-
-			if ( string.IsNullOrWhiteSpace(line) )
-				continue;
-
-			Match match = null;
-			bool comment = false;
-			foreach( char c in line )
-			{ 
-				if ( c == '/' )
-				{ 
-					comment = true;
-					break;
-				}
-				if ( c != ' ' && c != '\t')
-					break;
-			}
-			if ( comment )
-				continue;
-
-			 
-			match = REGEX_VOVOLLINESHORT.Match(line);
-			if ( match.Success )
-			{ 
-				try
-				{ 
-					int id = int.Parse(match.Groups[1].Value);
-					float vol = match.Groups[2].Value[0] == '-' ? defaultDown : defaultUp;
-					AddLineVolTweak(id, charName, vol, ref logs);
-				}
-				catch { errors += $"Error(shrt) in character '{charName}', line({lineNum}): '{line}'\n"; }
-				continue;
-			}
-						
-			match = REGEX_VOVOLLINE.Match(line);				
-			if ( match.Success )
-			{ 
-				try
-				{ 
-					int id = int.Parse(match.Groups[1].Value);
-					float vol = float.Parse( match.Groups[2].Value, System.Globalization.NumberStyles.Float) * 0.01f;
-					AddLineVolTweak(id, charName, vol, ref logs);
-				}				
-				catch { errors += $"Error in character '{charName}', line({lineNum}): '{line}'\n"; }	
-				continue;
-			}
-			
-			match = REGEX_VOVOLDEFAULTUP.Match(line);
-			if ( match.Success )
-			{ 
-				try 
-				{ 
-					defaultUp = float.Parse( match.Groups[1].Value, System.Globalization.NumberStyles.Float) * 0.01f;
-					if ( Application.isEditor )
-						logs += ($"DefaultUp: {defaultUp}\n");
-				}
-				catch { errors += $"Error in default line({lineNum}): '{line}'\n"; }
-				continue;
-			}	
-			 
-			match = REGEX_VOVOLDEFAULTDOWN.Match(line);
-			if ( match.Success )
-			{ 
-				try
-				{ 
-					defaultDown = float.Parse( match.Groups[1].Value, System.Globalization.NumberStyles.Float) * 0.01f;
-					if (defaultDown > 0 )
-						defaultDown = -defaultDown;		
-					if ( Application.isEditor )
-						logs += ($"DefaultDown: {defaultDown}\n");	
-				}
-				catch { errors += $"Error in default line({lineNum}): '{line}'\n"; }	
-				continue;
-			}
-			
-			match = REGEX_VOVOLCHAR.Match(line);
-			if ( match.Success )
-			{ 
-				charName = match.Groups[1].Value.ToUpper();
-				continue;
-			}
-
-			errors += $"Error in character '{charName}', line({lineNum}): '{line}'\n";
-			
-		}
-
-	}
-
-	void AddLineVolTweak(int id, string charName, float vol, ref string logs)
-	{
-		if ( Application.isEditor )
-			logs += ($"{charName}{id}: {vol}\n");
-
-		Dictionary<int,float> pair = null;
-		if ( m_voVolTweaks.TryGetValue(charName, out pair) == false )
-		{ 
-			pair = new Dictionary<int, float>();
-			m_voVolTweaks[charName] = pair;
-		}
-		pair[id] = vol;
-	}
-
 
 	#if RUNTIME_CSV_IMPORT_ENABLED
 	static readonly int CSV_NUM_HEADERS = 4;
@@ -781,8 +538,7 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 					
 				}
 			}
-			
-			result = true;
+
 		}
 		catch (System.IO.IOException e )
 		{
@@ -802,6 +558,7 @@ public partial class SystemText : PowerTools.Singleton<SystemText>
 				stream.Close();
 		}
 		
+		result = true;
 		return result;
 	}
 	#endif

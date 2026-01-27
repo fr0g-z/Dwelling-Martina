@@ -65,17 +65,15 @@ MonoBehaviour:
   m_speechPortraitLocation: 0
   m_dialogTextPrefab: {fileID: 11401660, guid: e602015b16ad0c041abca0abc9116b9d, type: 3}
   m_dialogTextOffset: {x: 0, y: 1}
-  m_dialogTextCharacterInRange: {x: 50, y: 15}
   m_customSpeechGui: 
   m_displayBoxGui: DisplayBox
   m_dialogTreeGui: DialogTree
-  m_stopWalkingToTalk: 1
-  m_alwaysShowDisplayText: 1
-  m_displayTextAutoAdvance: 0
-  m_sayTextAutoAdvance: 1
-  m_textMinTime: 1.5
   m_textNoSkipTime: 0.25
+  m_stopWalkingToTalk: 1
+  m_sayTextAutoAdvance: 1
+  m_displayTextAutoAdvance: 0
   m_textAutoAdvanceDelay: 0
+  m_alwaysShowDisplayText: 1
   m_enableUse: 1
   m_enableLook: 1
   m_enableInventory: 1
@@ -114,6 +112,7 @@ MonoBehaviour:
   - {fileID: 1965011443382810268, guid: b09765173c5af364683556586bde20ff, type: 3}
   - {fileID: 1424659253934673171, guid: 3edd677a7052a3549969e4fe8d3d80aa, type: 3}
   - {fileID: 7821113468148132612, guid: 6a9ca32a05358954b9f8c44833fe9908, type: 3}
+  - {fileID: 8119717264383805384, guid: 97c1b7bd6b9ed424081287ffc1be8dc0, type: 3}
   m_characterPrefabs:
   - {fileID: 4924194864732359351, guid: 074dc1cf1eddd8f4bbe417732ef739c4, type: 3}
   m_guiPrefabs:

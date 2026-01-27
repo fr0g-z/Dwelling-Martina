@@ -31,7 +31,7 @@ public partial class Label : GuiControl, ILabel
 	public override string Text 
 	{
 		get { return TextComponent != null ? TextComponent.text : null; }
-		set { if ( TextComponent != null && TextComponent.text != value ) TextComponent.text = value; }
+		set { if ( TextComponent != null ) TextComponent.text = value; }
 	}
 	
 	public override Color Color 

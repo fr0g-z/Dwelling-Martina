@@ -77,7 +77,6 @@ MonoBehaviour:
     m_LipSyncEnabled: 0
     m_antiGlide: 0
     m_footstepSound: 
-    m_speechVolume: 1
     m_useSpriteAsHotspot: 0
     m_baseline: 0
     m_walkToPoint: {x: 0, y: 0}

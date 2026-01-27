@@ -53,13 +53,12 @@ public partial class PowerQuest
 		return result;
 	}
 
-	public List<QuestSaveSlotData> GetSaveSlotData() { return m_saveManager.GetSaveSlotData(m_saveVersionRequired); }
-	public QuestSaveSlotData GetSaveSlotData( int slot ) { return m_saveManager.GetSaveSlot(slot, m_saveVersionRequired); }
+	public List<QuestSaveSlotData> GetSaveSlotData() { return m_saveManager.GetSaveSlotData(); }
+	public QuestSaveSlotData GetSaveSlotData( int slot ) { return m_saveManager.GetSaveSlot(slot); }
 	public QuestSaveSlotData GetLastSaveSlotData() 
 	{ 
 		QuestSaveSlotData lastData = null;
-		List<QuestSaveSlotData> saveSlotData = GetSaveSlotData();
-		foreach( QuestSaveSlotData data in saveSlotData)
+		foreach( QuestSaveSlotData data in GetSaveSlotData())
 		{
 			if ( lastData == null || data.m_timestamp > lastData.m_timestamp )
 				lastData = data;
@@ -87,15 +86,6 @@ public partial class PowerQuest
 			if ( value.SaveDirtyEver )
 				data.Add( "Char"+value.ScriptName, value );
 		}
-		
-		bool decrementedTimesVisited = false;
-		if ( m_transitioning )
-		{
-			// If saved during OnEnter, decrement times visited so its the first time still when loaded
-			GetCurrentRoom().DebugSetVisited( GetCurrentRoom().TimesVisited-1 );	
-			decrementedTimesVisited=true;
-		}
-
 		foreach( Room value in m_rooms )
 		{
 			if ( value.SaveDirtyEver )
@@ -140,12 +130,7 @@ public partial class PowerQuest
 		if ( image == null  )
 			image = TakeSaveScreenshot();
 		
-		bool result = m_saveManager.Save(slot, description, m_saveVersion, data, image);
-		
-		if ( decrementedTimesVisited )
-			GetCurrentRoom().DebugSetVisited(GetCurrentRoom().TimesVisited+1 );	
-		
-		return result;
+		return m_saveManager.Save(slot, description, m_saveVersion, data, image);
 	}
 
 	public Texture2D TakeSaveScreenshot()
@@ -332,8 +317,6 @@ public partial class PowerQuest
 					}
 				}
 			}
-
-			ClearEnumCache();
 
 			//
 			// Call post-restore functions

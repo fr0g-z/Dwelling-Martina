@@ -1076,7 +1076,7 @@ public partial class PowerQuestEditor
 			menu.AddItem(path+"On Parser",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "OnParser") );
 		menu.AddItem(path+"On Any Click",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "OnAnyClick") );
 		menu.AddItem(path+"After Any Click",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "AfterAnyClick") );
-		menu.AddItem(path+"On Walk To",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "OnWalkTo", " Vector2 position ") );
+		menu.AddItem(path+"On Walk To",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "OnWalkTo") );
 		menu.AddItem(path+"Post-Restore Game (BG)",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "OnPostRestore", " int version ", false) );
 		menu.AddItem(path+"Unhandled Interact",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "UnhandledInteract", " IQuestClickable mouseOver ", true) );
 		menu.AddItem(path+"Unhandled Use Inv",true, () => QuestScriptEditor.Open( component, QuestScriptEditor.eType.Room, "UnhandledUseInv", " IQuestClickable mouseOver, IInventory item ", true) );

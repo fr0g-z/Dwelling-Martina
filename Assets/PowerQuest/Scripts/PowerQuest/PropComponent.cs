@@ -410,15 +410,13 @@ public partial class PropComponent : MonoBehaviour
 	{
 		if ( obj != null && (obj as GameObject) != null )
 		{
-			SystemAudio.Play((obj as GameObject).GetComponent<AudioCue>(), null, SystemAudio.AnimSoundMult);
+			SystemAudio.Play((obj as GameObject).GetComponent<AudioCue>());
 		}
 	}
 
 	void AnimSound(string sound)
 	{
-		AudioHandle handle = SystemAudio.Play(sound);	    
-		if ( SystemAudio.AnimSoundMult != 1.0f )
-			handle.volume = handle.volume * SystemAudio.AnimSoundMult;
+		SystemAudio.Play(sound);	    
 	}
 	
 	void AnimSoundStop(Object obj)
@@ -491,7 +489,6 @@ public partial class Prop : IQuestClickable, IProp, IQuestScriptable, IQuestSave
 	PropComponent m_instance = null;
 	int m_useCount = 0;
 	int m_lookCount = 0;
-	Coroutine m_fadeCoroutine = null;
 		
 
 	#endregion
@@ -625,8 +622,7 @@ public partial class Prop : IQuestClickable, IProp, IQuestScriptable, IQuestSave
 		return null;
 	}
 
-	public void PlayAnimationBG(string animName) { if ( m_instance != null && PowerQuest.Get.GetSkippingCutscene() == false ) m_instance.PlayAnimation(animName); }	
-	public void StopAnimation() { if ( m_instance != null ) m_instance.StopAnimation(); }	
+	public void PlayAnimationBG(string animName) { if ( m_instance != null && PowerQuest.Get.GetSkippingCutscene() == false ) m_instance.PlayAnimation(animName); }
 	public void PauseAnimation() { if ( m_instance != null ) m_instance.PauseAnimation(); }
 	public void ResumeAnimation() { if ( m_instance != null ) m_instance.ResumeAnimation(); }
 
@@ -710,17 +706,11 @@ public partial class Prop : IQuestClickable, IProp, IQuestScriptable, IQuestSave
 			//m_animation = name;
 		m_scriptName = name;	
 	}
-	
+		
 	/// Fade the sprite's alpha
-	public Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth ) 
-	{ 
-		if ( m_fadeCoroutine != null )
-			PowerQuest.Get.StopCoroutine(m_fadeCoroutine);
-		m_fadeCoroutine = PowerQuest.Get.StartCoroutine(CoroutineFade(start, end, duration, curve)); 
-		return m_fadeCoroutine;
-	}
+	public Coroutine Fade(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth ) { return PowerQuest.Get.StartCoroutine(CoroutineFade(start, end, duration, curve)); }
 	/// Fade the sprite's alpha (non-blocking)
-	public void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth ) { Fade(start,end,duration,curve); }// PowerQuest.Get.StartCoroutine(CoroutineFade(start, end, duration, curve)); }
+	public void FadeBG(float start, float end, float duration, eEaseCurve curve = eEaseCurve.Smooth ) { PowerQuest.Get.StartCoroutine(CoroutineFade(start, end, duration, curve)); }
 	
 	public float Alpha { 
 		get { return m_alpha; } 

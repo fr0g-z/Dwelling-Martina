@@ -1,4 +1,4 @@
-// Blah
+
 Shader "Powerhoof/Pixel Text Shader AA" {
 	Properties {
 		_MainTex ("Font Texture", 2D) = "white" {}
@@ -67,7 +67,7 @@ Shader "Powerhoof/Pixel Text Shader AA" {
 				v2f o;
 				o.vertex = mul(unity_ObjectToWorld, v.vertex);
 				o.vertex.x = floor(o.vertex.x+0.0001);
-				o.vertex.y = floor(o.vertex.y+0.0001);
+				o.vertex.y = floor(o.vertex.y+0.0001);				
 				o.vertex = mul(UNITY_MATRIX_VP, o.vertex + _Offset);
 				o.color = v.color * _Color;
 				o.texcoord = TRANSFORM_TEX(v.texcoord,_MainTex);
@@ -75,9 +75,12 @@ Shader "Powerhoof/Pixel Text Shader AA" {
 			}
 
 			fixed4 frag (v2f i) : SV_Target
-			{
+			{ 
+				
 				fixed4 col = i.color;
 				col.a = col.a * texture2DAA(_MainTex, i.texcoord).a;
+				//if ( tex2D(_MainTex, i.texcoord).a < 0.48f )
+				//	discard;				
 				return col;
 			}
 			ENDCG

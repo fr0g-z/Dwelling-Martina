@@ -227,17 +227,17 @@ public class QuestSaveManager
 	}
 
 	// Retrieves save data for all slots, loads it if it doesn't already exist
-	public List<QuestSaveSlotData> GetSaveSlotData(int requiredVersion = -1)
+	public List<QuestSaveSlotData> GetSaveSlotData() 
 	{ 
 		if ( m_loadedSaveSlots == false )
-			LoadSaveSlotData(requiredVersion);
+			LoadSaveSlotData();
 		return m_saveSlots; 
 	}
 
-	public QuestSaveSlotData GetSaveSlot(int id, int requiredVersion = -1)
+	public QuestSaveSlotData GetSaveSlot(int id)
 	{
 		if ( m_loadedSaveSlots == false )
-			LoadSaveSlotData(requiredVersion);
+			LoadSaveSlotData();
 		return m_saveSlots.Find(slot=> slot.m_slotId == id);
 	}
 
@@ -542,33 +542,25 @@ public class QuestSaveManager
 					for ( int i = 0; i < dictionarySize; ++i )
 					{
 						string key = bformatter.Deserialize(encoderStream) as string;
+						byte[] bytes = bformatter.Deserialize(encoderStream) as byte[];
+												
+						/* #Optimisation test: Write bytes to memstream, then reset position (try ing to minimise allocs, but maybe just as good to new memory streams each time...) /
+						memStream.SetLength(0);
+						memStream.Write(bytes,0,bytes.Length);
+						memStream.Position = 0;
+						/**/
+						using (MemoryStream memStream = new MemoryStream(bytes) )
+						/**/
+						{					
+							object value = bformatter.Deserialize(memStream) as object;
+							data.Add(key,value);	
 
-						try 
-						{ 
-							byte[] bytes = bformatter.Deserialize(encoderStream) as byte[];
-								
-							/* #Optimisation test: Write bytes to memstream, then reset position (try ing to minimise allocs, but maybe just as good to new memory streams each time...) /
-							memStream.SetLength(0);
-							memStream.Write(bytes,0,bytes.Length);
-							memStream.Position = 0;
-							/**/
-							using (MemoryStream memStream = new MemoryStream(bytes) )
-							/**/
-							{					
-								object value = bformatter.Deserialize(memStream) as object;
-								data.Add(key,value);	
-
-								// Mark data as no longer dirty since we just loaded it
-								if ( value is IQuestSaveCachable )
-								{
-									(value as IQuestSaveCachable).SaveDirty=false;
-									m_cachedSaveData[key] = bytes;
-								}
+							// Mark data as no longer dirty since we just loaded it
+							if ( value is IQuestSaveCachable )
+							{
+								(value as IQuestSaveCachable).SaveDirty=false;
+								m_cachedSaveData[key] = bytes;
 							}
-						}
-						catch ( System.Runtime.Serialization.SerializationException e)
-						{ 
-							Debug.Log($"Failed to deserialise {key}. Skipping it. \n" + e.Message);
 						}
 					}
 				}
@@ -655,7 +647,6 @@ public class QuestSaveManager
 	
 	// Allows overriding file io used in save system. For porting to other platforms that can't use regular file io (switch, etc)
 	public void SetSaveIoStrategy(ISaveIoStrategy strategy) { m_ioStrategy = strategy; }
-	public ISaveIoStrategy GetSaveIoStrategy() {  return m_ioStrategy; }
 
 	//  This function must be called after restoring data, from the caller of RestoreSave
 	public void OnPostRestore()
@@ -796,7 +787,7 @@ public class QuestSaveManager
 	// Searches for file names of format save*.sav
 	// Creates slot, and reads in displayname, timestamp, version information
 	// If zero or greater is passed as specificSlotOnly, only that slot will be loaded
-	void LoadSaveSlotData(int requiredVersion = -1)
+	void LoadSaveSlotData()
 	{		
 		if ( m_loadedSaveSlots )
 			Debug.LogWarning("Save slots should only be loaded once. Use ReloadSaveSlotData()");
@@ -813,7 +804,7 @@ public class QuestSaveManager
 			}
 			else 
 			{
-				if ( LoadHeader(slotData) && slotData.m_version >= requiredVersion )
+				if ( LoadHeader(slotData) )
 					m_saveSlots.Add(slotData);
 			}
 		}

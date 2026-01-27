@@ -31,7 +31,7 @@ public class SpriteAnimEventHandler : MonoBehaviour
 			// Data is in form "<functionname>\t<int>"
 			int splitAt = messageString.IndexOf(MESSAGE_DELIMITER);
 			int result = 0;
-			int.TryParse(messageString.Substring(splitAt+1), System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out result);
+			int.TryParse(messageString.Substring(splitAt+1), out result);
 			messageString = messageString.Substring(0,splitAt);
 			return result;
 		}
@@ -42,7 +42,7 @@ public class SpriteAnimEventHandler : MonoBehaviour
 			// Data is in form "<functionname>\t<float>"
 			int splitAt = messageString.IndexOf(MESSAGE_DELIMITER);
 			float result = 0;
-			float.TryParse(messageString.Substring(splitAt+1),System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out result);
+			float.TryParse(messageString.Substring(splitAt+1), out result);
 			messageString = messageString.Substring(0,splitAt);
 			return result;
 		}

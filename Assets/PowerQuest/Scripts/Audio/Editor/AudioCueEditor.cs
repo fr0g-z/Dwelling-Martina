@@ -358,7 +358,7 @@ public class AudioCueEditor : Editor {
 			if ( SystemAudio.GetValid() )
 			{
 				AudioHandle h = SystemAudio.GetHandle(m_object.gameObject.name);
-				if ( h.isPlaying )
+				if ( h != null && h.isPlaying )
 				{
 					if ( h.volume < m_object.m_volume.Min || h.volume > m_object.m_volume.Max )
 						h.volume = m_object.m_volume.GetRandom();

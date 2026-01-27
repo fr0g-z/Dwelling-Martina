@@ -68,8 +68,6 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 	}
 
 	static List<AudioHandle> s_defaultAudioHandleList = new List<AudioHandle>();
-	
-	static readonly AudioHandle HANDLE_EMPTY = new AudioHandle(null);
 
 	static readonly string STRING_NAME_PREFIX = "Audio: ";
 
@@ -130,7 +128,6 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 	bool m_restartMusicIfAlreadyPlaying = false;
 	
 	float m_falloffDistanceMultiplier = 1;
-	float m_animSoundMult = 1;
 
 	//float m_musicLoopStart = 0;
 	//float m_musicLoopEnd = 0;
@@ -143,10 +140,21 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 
 	/// A multiplier on the falloff distance for volume/panning. Useful when you want to bring it in close, or expand it outwards temporarily
 	public static float FalloffDistanceMultiplier { get{ return m_instance.m_falloffDistanceMultiplier; } set{ m_instance.m_falloffDistanceMultiplier = value; } }
-	
-	// Volume multiplier applied to Animation event sounds. So these can be changed at runtime
-	public static float AnimSoundMult { get {return Get.m_animSoundMult; } set { Get.m_animSoundMult = value; } }
 
+
+	/// Retrieves the volume for audio of a particular type (eg: Sound effects, Music, Dialog) 
+	public static float GetVolume( AudioCue.eAudioType type )
+	{
+		SystemAudio self = SystemAudio.Get;
+		for ( int i = 0; i < self.m_volumeByType.Count; ++i )
+		{
+			if ( self.m_volumeByType[i].m_type == type )
+			{
+				return Mathf.Clamp01(self.m_volumeByType[i].m_volume);
+			}
+		}
+		return 1.0f;
+	}
 
 	/// Retrieves a sound cue by name
 	public static AudioCue GetCue(string cueName)
@@ -155,7 +163,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 	}
 
 	/// Returns true if the cue is currently playing, otherwise false
-	public static bool IsPlaying(string cueName) { return GetHandle(cueName).isPlaying; }
+	public static bool IsPlaying(string cueName) { return AudioHandle.IsPlaying(GetHandle(cueName)); }
 
 	/// Play a cue by name. This is the main way to play sounds. If emmitter is set, the sound will falloff/pan as it goes off camera. 
 	/**
@@ -549,10 +557,10 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		if ( handle == null )
 			return;
 		ClipInfo clipInfo = m_instance.m_activeAudio.Find( clip=>clip.handle == handle );
-		if ( clipInfo != null && clipInfo.paused == false && handle.source != null ) // nb: don't allow pause of Stopped handle.
+		if ( clipInfo != null && clipInfo.paused == false ) 
 		{
 			clipInfo.paused = true;
-			handle.Pause();
+			handle.source.Pause();
 		}
 	}
 
@@ -562,10 +570,11 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		if ( handle == null )
 			return;
 		ClipInfo clipInfo = m_instance.m_activeAudio.Find( clip=>clip.handle == handle );
-		if ( clipInfo != null && clipInfo.paused == true) 
+		if ( clipInfo != null && clipInfo.paused == true ) 
 		{
-			clipInfo.paused = false;			
-			handle.UnPause();	
+			clipInfo.paused = false;
+			//source.UnPause();
+			handle.source.Play();	
 		}
 	}
 
@@ -593,20 +602,11 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		}
 	}
 
-	/// Gets a playing AudioHandle by its cue name. Returns an empty cue if it isn't being played.
-	/**
-	eg.
-	
-			Audio.Play("Telephone");
-			Audio.GetHandle("Telephone").panStereo = 0.7f;
-			float windVolume = Audio.GetHandle("windVolume").volume;
-			if ( Audio.IsPlaying("Rain") )
-				Audio.GetHandle("Rain").Fade(0.2f,0.3f);
-	*/
+	/// Gets a playing AudioHandle by its cue name
 	public static AudioHandle GetHandle(string cueName)
 	{	
 		ClipInfo info = SystemAudio.Get.m_activeAudio.Find(item=>item.cue != null && string.Equals( item.cue.name, cueName, System.StringComparison.OrdinalIgnoreCase ) );
-		return info == null ? HANDLE_EMPTY : info.handle;
+		return  info == null ? null :  info.handle;
 	}
 
 	/// Gets any currently playing AudioHandles by their cue name
@@ -623,8 +623,8 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		return null;
 	}
 
-	/// Stops the specified sound by it's cue name. With options to fade out 'overTime', or wait to stop 'afterDelay', both in seconds.
-	public static void Stop(string cueName, float overTime = 0, float afterDelay = 0)
+	/// Stops the specified sound by it's cue name
+	public static void Stop(string cueName, float overTime = 0)
 	{
 		// Copy list because stop may remove some
 		//ClipInfo[] allAudio = new ClipInfo[m_instance.m_activeAudio.Count];
@@ -633,12 +633,12 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		{
 			if ( clip != null && clip.cue != null && string.Equals( clip.cue.name, cueName, System.StringComparison.OrdinalIgnoreCase ) )
 			{
-				Stop(clip.handle,overTime,afterDelay);
+				Stop(clip.handle,overTime);
 			}
 		}
 	}
-	
-	/// Stops the specified sound by it's cue name. With options to fade out 'overTime', or wait to stop 'afterDelay', both in seconds.
+
+	/// Stops the specified sound by it's handle
 	public static void Stop(AudioHandle handle, float overTime = 0, float afterDelay = 0)
 	{		
 		if ( handle != null )
@@ -667,15 +667,10 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		}
 		
 		// Stop immediately
-		handle.UnPause();
 		if ( clipInfo != null )
-		{
-			clipInfo.stopAfterFade=true; // this ensures it'll be removed from active audio
-			clipInfo.paused = false; // Flag as un-paused on stop to ensure we know it's supposed to stop.
-		}
+			clipInfo.stopAfterFade=true; // this ensures it'll be removed from active audio				
 		handle.source.Stop();
 		handle.source.gameObject.SetActive(false);
-
 		return true;
 	}
 
@@ -765,6 +760,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		//m_instance.m_musicLoopStart = 0;
 		//m_instance.m_musicLoopEnd = 0;
 	}
+
 	
 	/// Flag to set whether playing the same music cue again will restart it, or leave the old one playing
 	public static bool ShouldRestartMusicIfAlreadyPlaying => m_instance.m_restartMusicIfAlreadyPlaying;
@@ -793,16 +789,16 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 
 	/// <summary>
 	/// Sets a sound's volume and stereo pan based on distance to it.
-	/// Use this function when you want sounds to be louder when standing near them, and quieter as you walk away.
-	/// The function should be placed in your room's Update() function.
-	/// eg. 
-	/// ~~~
+	///  Use this function when you want sounds to be louder when standing near them, and quieter as you walk away.
+	///  The function should be placed in your room's Update() function.
+	///  eg. 
+	///  ~~~
 	///	void Update()
-	/// {
-	///		// FireCrackle gets louder as you get close to the fireplace
-	/// 	AudioCue.UpdateCustomFalloff( "FireCrackle", P.Fireplace.LookAtPoint, C.Plr.Position, 10, 200, 0.2f, 1.0f );
-	/// }
-	/// ~~~
+	//  {
+	//		// Plays fire dist
+	//  	AudioCue.UpdateCustomFalloff( "FireCrackle", P.Fireplace.LookAtPoint, C.Plr.Position, 10, 200, 0.2f, 1.0f );
+	//  }
+	///  ~~~
 	/// </summary>
 	/// <param name="cueName">Cue name to fade.</param>
 	/// <param name="soundPos">The location of the sound. Eg: `P.Fireplace.LookAtPoint`.</param>
@@ -837,20 +833,6 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 				handle.volume = vol;
 			handle.panStereo = pan;
 		}
-	}
-		
-	/// Retrieves the volume for audio of a particular type (eg: Sound effects, Music, Dialog) 
-	public static float GetVolume( AudioCue.eAudioType type )
-	{
-		SystemAudio self = SystemAudio.Get;
-		for ( int i = 0; i < self.m_volumeByType.Count; ++i )
-		{
-			if ( self.m_volumeByType[i].m_type == type )
-			{
-				return Mathf.Clamp01(self.m_volumeByType[i].m_volume);
-			}
-		}
-		return 1.0f;
 	}
 
 	#endregion
@@ -902,7 +884,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 			source.source.panStereo = pan;
 		}
 	}
-
+	
 	/// Sets the volume (from 0.0 to 1.0) for audio of a particular type (eg: Sound effects, Music, Dialog). 
 	public void SetVolume( AudioCue.eAudioType type, float volume )
 	{		
@@ -949,32 +931,10 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 				info.targetVolume *= volChange; 
 			}
 		}
+
 	}
 
-	/// Retrieves the Audio Mixer.
-	public AudioMixer AudioMixer { get 
-	{		
-		if ( m_narratorMixerGroup != null )
-			return m_narratorMixerGroup.audioMixer;
-		foreach ( AudioTypeVolume volType in m_volumeByType )
-		{ 
-			if ( volType.m_mixerGroup != null )
-				return volType.m_mixerGroup.audioMixer;
-		}
-		return null;
-	} }
-	
-	/// Retrieves the mixer group for narration (as set in the Audio inspector)
 	public AudioMixerGroup NarratorMixerGroup => m_narratorMixerGroup;
-		
-	/// Advanced: Retrieves the mixer group for audio of a particular type (eg: Sound effects, Music, Dialog)
-	public AudioMixerGroup GetMixerGroup( AudioCue.eAudioType type ) 
-	{     
-		AudioTypeVolume volumeByType = SystemAudio.Get.m_volumeByType.Find(item=>item.m_type == type);
-		if ( volumeByType != null )
-			return volumeByType.m_mixerGroup;
-		return null;
-	}
 
 	public bool GetAnyMusicPlaying() 
 	{		
@@ -1031,7 +991,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		{
 			try 
 			{
-				if (/*!audioClip.handle.isPlaying && */audioClip.paused ) 
+				if (!audioClip.handle.isPlaying) 
 				{					
 					UnPause(audioClip.handle);
 				}
@@ -1071,9 +1031,6 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 			vol = volumeOverride;
 			m_musicVolOverride = volumeOverride;
 		}
-		
-		vol *= GetVolume(AudioCue.eAudioType.Music);
-
 		m_activeMusic.Fade(vol,fadeTime);
 	}
 
@@ -1124,9 +1081,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 		{
 			clipInfo.defaultVolume = targetVolume;
 			if ( stopOnFinish )
-			{
 				handle.Stop();
-			}
 			return;
 		}
 
@@ -1525,8 +1480,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 			ClipInfo audioClip = m_activeAudio[i];
 			
 			UpdateActiveAudioClipLoopPoints(audioClip);
-
-			if (audioClip.handle == null || ((audioClip.handle.isPlaying == false) && audioClip.paused == false ) ) 
+			if (audioClip.handle == null || (audioClip.handle.isPlaying == false && audioClip.paused == false ) ) 
 			{
 				toRemove.Add(audioClip);
 			} 
@@ -1582,11 +1536,8 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 				audioClip.defaultVolume = Mathf.MoveTowards(audioClip.defaultVolume,audioClip.targetVolume, audioClip.fadeDelta*Time.deltaTime);
 
 				// If flagged to stop on fadeout, stop the source
-				if ( audioClip.stopAfterFade && Mathf.Approximately(audioClip.targetVolume, audioClip.defaultVolume) && audioClip.handle.isPlaying  )
-				{
+				if ( audioClip.stopAfterFade && Mathf.Approximately(audioClip.targetVolume, audioClip.defaultVolume) && audioClip.handle.isPlaying  )				
 					audioClip.handle.source.Stop();
-					audioClip.paused = false; // Flag as un-paused on stop to ensure we know it's supposed to stop.
-				}
 			}
 		}
 
@@ -1711,7 +1662,7 @@ public partial class SystemAudio : SingletonAuto<SystemAudio>
 public class AudioHandle
 {
 	public AudioHandle(AudioSource source, string fromCue = null ) { m_source = source; m_cueName = fromCue; }
-		
+
 	public static bool IsPlaying( AudioHandle handle ) { return handle != null && handle.isPlaying; }
 	public static bool IsNullOrStopped( AudioHandle handle ) { return handle == null || handle.isPlaying == false; }
 
@@ -1720,11 +1671,8 @@ public class AudioHandle
 	/// Retrieves the unity AudioSource this handle is using
 	public AudioSource source { get { return m_source; } }	
 	public string cueName { get { return m_cueName; } }	
-		
-	/// Is the clip playing right now? (Read Only). Returns true even if clip is paused.
-	public bool isPlaying { get { return m_source != null && (m_source.isPlaying || m_paused); } }
-	/// Is the clip paused right now? (Read Only)
-	public bool isPaused {  get {  return m_source != null && m_paused; } }
+	/// Is the clip playing right now? (Read Only). Note: will return false when AudioSource.Pause is called.
+	public bool isPlaying { get { return m_source != null && m_source.isPlaying; } }
 	/// The base volume of clip (0.0 to 1.0) Before falloff, ducking, etc is applied. To get the final volume, use source.volume. 
 	public float volume { get { return m_source == null ? 0 : SystemAudio.Get.GetVolume(this); } set { if ( m_source != null ) SystemAudio.Get.SetVolume(this,value); } }
 	/// The pitch of the audio source. See Unity docs for more info.
@@ -1739,33 +1687,10 @@ public class AudioHandle
 	public float startDelay { set { AfterDelay(value); } }
 	/// The audio clip that is playing
 	public AudioClip clip { get { return m_source == null ? null : m_source.clip; } }
-
 	/// Pauses playing the clip
-	public void Pause() 
-	{
-		if ( m_paused || SystemAudio.GetValid() == false ) 
-			return;
-		
-		// This will recurse back here with m_paused true, so doesn't matter where its called from
-		m_paused = true; 
-		SystemAudio.Pause(this); // recurses- so after setting paused flag
-		if ( m_source != null )
-			m_source.Pause();
-	}
-
+	public void Pause() { SystemAudio.Pause(this); }
 	/// Resumes playing the clip after pausing
-	public void UnPause() 
-	{
-		if ( m_paused == false || SystemAudio.GetValid() == false)
-			return;
-
-		// This will recurse back here but with m_paused false, so doesn't matter where its called from
-		m_paused = false; 		
-		SystemAudio.UnPause(this); // recurses- so after setting paused flag
-		if ( m_source != null )
-			m_source.Play();			
-	}
-
+	public void UnPause() { SystemAudio.UnPause(this); }
 	/// Stops the clip, optionally fading out over time, and/or after a delay
 	public void Stop(float overTime = 0.0f, float afterDelay = 0.0f) 
 	{ 			
@@ -1773,21 +1698,20 @@ public class AudioHandle
 			return;		
 		if ( SystemAudio.Get.StopHandleInternal(this, overTime,afterDelay) )
 			m_source = null; // need to clear the source, and don't want to expose it, so doing it here. SystemAudio.Stop calls through to this to make sure its cleared.
-		m_paused = false;
 	}
 
+
 	/// Makes the clip start after the passed in time (if called immediately after play) eg. `Audio.Play("GunshotEcho").AfterDelay(1.0f);
-	public AudioHandle AfterDelay(float time)
+	public void AfterDelay(float time)
 	{
 		if ( m_source == null )
 		{
 			Debug.LogWarning("Attempted to set start delay on sound handle that is not playing");
-			return this;
+			return;
 		}
 
 		m_source.Stop();
 		m_source.PlayDelayed(time);
-		return this;
 	}
 
 	/// Fades in the sound from zero, call directly after playing the sound to fade it in. eg `Audio.Play("MoodyAmbience").FadeIn(1);`
@@ -1807,8 +1731,6 @@ public class AudioHandle
 	// The audio source
 	AudioSource m_source = null;
 	string m_cueName = null;
-	// Unity has no way of telling if paused or not, so keeping a flag here.
-	bool m_paused = false;
 }
 #endregion
 

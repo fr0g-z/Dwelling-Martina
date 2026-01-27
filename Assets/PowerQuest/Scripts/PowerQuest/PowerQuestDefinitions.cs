@@ -213,7 +213,7 @@ public partial class PowerQuest
 
 	static readonly YieldInstruction EMPTY_YIELD_INSTRUCTION = new YieldInstruction(); // Used to prevent having to wait a frame in UpdateBlocking which happens when a routine returns yield break
 	static readonly YieldInstruction CONSUME_YIELD_INSTRUCTION = new YieldInstruction(); // Used to prevent falling through to default interaction in an empty function
-
+	static readonly float TEXT_DISPLAY_TIME_MIN = 1.0f;
 	static readonly float TEXT_DISPLAY_TIME_CHARACTER = 0.1f;
 	static readonly string DEFAULT_FADE_SOURCE = "";
 

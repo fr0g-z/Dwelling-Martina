@@ -122,6 +122,12 @@ public partial class PowerQuest
 	}
 }
 
+/// Functions/Properties added here are accessable from the 'C.<characterName>.' object in quest script
+public partial interface ICharacter
+{
+	/// Start character saying something, unskippable. Useful in background conversations \sa StartBackgroundSequence
+	Coroutine SayNoSkip(string dialog, int id = -1);
+}
 
 public partial class Character
 {
@@ -132,7 +138,7 @@ public partial class Character
 		{			
 			PowerQuest.Get.StopCoroutine(m_coroutineSay);
 			EndSay();
-			//PowerQuest.Get.OnSay(); // Don't call this- it stops any active "Display" so breaks any foreground sequence. may have caused issues elsewhere too?
+			PowerQuest.Get.OnSay();
 		}
 
 		if ( CallbackOnSay != null )
@@ -150,7 +156,7 @@ public partial class Character
 			yield break;
 
 		QuestText sayText = StartSay( text, id );
-		yield return PowerQuest.Get.WaitForDialog(PowerQuest.Get.GetTextDisplayTime(text), m_dialogAudioSource, true, false, sayText);		
+		yield return PowerQuest.Get.WaitForDialog(PowerQuest.Get.GetTextDisplayTime(text), m_dialogAudioSource, PowerQuest.Get.GetShouldSayTextAutoAdvance(), false, sayText);		
 		EndSay();
 	}	
 

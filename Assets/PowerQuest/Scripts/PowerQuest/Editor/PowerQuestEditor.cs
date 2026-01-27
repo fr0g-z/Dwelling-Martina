@@ -1134,8 +1134,6 @@ public partial class PowerQuestEditor : EditorWindow
 			EditorSettings.m_spellCheckEnabled = value;  
 			QuestScriptEditor.InitSpellCheck(true); 
 		} }
-
-
 	public List<string> SpellCheckIgnoredWords { get {return EditorSettings.m_spellCheckIgnoredWords;} }
 	public string SpellCheckDictionaryPath 
 	{ 
@@ -1148,6 +1146,7 @@ public partial class PowerQuestEditor : EditorWindow
 			QuestScriptEditor.InitSpellCheck(true); 
 		} }
 
+	
 	void OnPlaymodeStateChanged(PlayModeStateChange stateChange)
 	{
 		bool startedPlaying = false;

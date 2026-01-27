@@ -13,4 +13,18 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 		yield return C.Plr.ChangeRoom(R.Kitchen);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotThe_Door( IHotspot hotspot )
+	{
+		if (ItemsPlaced.AllItemsPlaced)
+		{
+            C.Plr.ChangeRoom(R.END);
+            yield return E.Break;
+		}
+		else
+		{
+			C.player_invis.Say("The door is locked.");
+        }
+        yield return E.Break;
+	}
 }

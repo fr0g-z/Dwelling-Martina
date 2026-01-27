@@ -273,9 +273,6 @@ public class PowerSpriteImportEditor : Editor
 
 			GUI.enabled = true;
 
-			if ( QuestEditorSettings.Get != null )
-				m_showReimportSpritesButton = QuestEditorSettings.Get.m_spriteReimportButtonEnabled;
-
 		};
 		m_list.onAddCallback += (list) =>
 		{
@@ -453,8 +450,6 @@ public class PowerSpriteImportEditor : Editor
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Importer config:", EditorStyles.miniBoldLabel);			
 			m_showReimportSpritesButton = GUILayout.Toggle(m_showReimportSpritesButton, "Show Reimport Sprites button");
-			if (QuestEditorSettings.Get != null )
-				QuestEditorSettings.Get.m_spriteReimportButtonEnabled = m_showReimportSpritesButton;
 			m_asepritePath = EditorGUILayout.TextField("Aseprite Path", m_asepritePath);			
 			EditorGUILayout.Space();
 			//importTags |= GUILayout.Button( "Import Aseprite Tags" );

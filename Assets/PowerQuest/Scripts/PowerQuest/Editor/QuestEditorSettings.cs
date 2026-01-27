@@ -26,8 +26,6 @@ public class QuestEditorSettings : ScriptableObject
 	[SerializeField] internal List<string> m_spellCheckIgnoredWords = new List<string>();
 	[SerializeField] internal string m_spellCheckDictionaryPath = "Assets/Plugins/PowerQuest/ThirdParty/Editor/SpellCheck/en_US.dic";
 
-	[SerializeField] internal bool m_spriteReimportButtonEnabled = false;
-
 	[Tooltip(@"Regex for functions that should have 'yield return' hidden in script editor. Eg: 'E\.MyBlockingFunc\(', or 'C\.\w+\.MyBlockingFunc\('")]
 	public string[] m_yieldRegexes = new string[]{};
 	[NonReorderable] // if reorderable can't fold  out internals :/

@@ -132,9 +132,7 @@ public partial class CharacterComponent : MonoBehaviour
 	// used for automatically setting hotspots
 	PolygonCollider2D m_autoHotspotCollider = null;
 	Sprite m_lastHotspotSprite = null;
-		
-	int m_nudged = 0; // used to nudge position when pathfinder stuck, seems to help
-	bool m_voHadAudioSource = false; // Flag set when line has audio so know whether to hide lipsync mouth when it ends
+
 
 	#endregion
 	#region Public access Functions
@@ -367,15 +365,6 @@ public partial class CharacterComponent : MonoBehaviour
 		UpdateSolid();
 	}	
 
-	public void UpdateBaseline()
-	{		
-		int sortOrder = -Mathf.RoundToInt((m_data.GetPosition().y + m_data.Baseline)*10.0f);
-		if ( m_sprite != null )
-			m_sprite.sortingOrder = sortOrder;
-		if ( m_mouth != null && m_mouth.gameObject.activeSelf )
-			m_mouth.GetComponent<SpriteRenderer>().sortingOrder = sortOrder + 1;
-	}
-
 	// Calculates and returns the polygon for the solid collider that other characters can't walk through. Public for editor
 	public Vector2[] CalcSolidPoly()
 	{
@@ -409,23 +398,11 @@ public partial class CharacterComponent : MonoBehaviour
 				}
 			}
 
-			if ( m_autoHotspotCollider == null ) //&& m_sprite != null && m_sprite.sprite != null ) // NB: This was fix for build-only error when spawning character with no sprite set in animation due to anim. But this broke the collider in this case too... So now setting temp sprite
+			if ( m_autoHotspotCollider == null && m_sprite != null && m_sprite.sprite != null )
 			{
-				// Make sure there's a sprite or we get an error in builds only (unity's fault)
-				bool tempSpriteUnityFix = false;
-				if ( m_sprite != null && m_sprite.sprite == null )
-				{ 
-					if ( PowerQuest.Get.GetInventorySprites().Count > 0 )
-						m_sprite.sprite = PowerQuest.Get.GetInventorySprites()[0];
-					tempSpriteUnityFix = true;
-				}
-
 				// Add automatic collider
 				m_autoHotspotCollider = gameObject.AddComponent<PolygonCollider2D>();
 				m_autoHotspotCollider.isTrigger = true;
-
-				if ( tempSpriteUnityFix )
-					m_sprite.sprite = null;
 			}
 			if ( m_autoHotspotCollider != null )
 				m_autoHotspotCollider.enabled = true;
@@ -572,7 +549,6 @@ public partial class CharacterComponent : MonoBehaviour
 	// Update is called once per frame
 	void Update() 
 	{	
-		m_nudged = 0;
 		if ( m_firstUpdate )
 		{
 			m_firstUpdate = false;
@@ -699,15 +675,7 @@ public partial class CharacterComponent : MonoBehaviour
 
 		// Update sorting order
 		if ( m_sprite != null )
-		{
-			//m_sprite.sortingOrder = -Mathf.RoundToInt((m_data.GetPosition().y + m_data.Baseline)*10.0f);
-			int sortOrder = -Mathf.RoundToInt((m_data.GetPosition().y + m_data.Baseline)*10.0f);
-			if ( m_sprite != null )
-				m_sprite.sortingOrder = sortOrder;
-
-			if ( m_mouth != null && m_mouth.gameObject.activeSelf )
-				m_mouth.GetComponent<SpriteRenderer>().sortingOrder = sortOrder + 1;
-		}
+			m_sprite.sortingOrder = -Mathf.RoundToInt((m_data.GetPosition().y + m_data.Baseline)*10.0f);
 
 		if ( m_data.UseSpriteAsHotspot && PowerQuest.Get.GetBlocked() == false && m_data.Clickable && m_lastHotspotSprite != m_sprite.sprite && m_autoHotspotCollider != null && m_sprite != null )
 		{
@@ -797,7 +765,7 @@ public partial class CharacterComponent : MonoBehaviour
 
 			Vector2 direction = m_targetPos - position;
 			float dist = Utils.NormalizeMag(ref direction);
-			Vector2 finalWalkSpeed = new Vector2( (m_walkSpeedOverride.x >= 0 ? m_walkSpeedOverride.x :  m_data.WalkSpeed.x), (m_walkSpeedOverride.y >= 0 ? m_walkSpeedOverride.y :  m_data.WalkSpeed.y) );			
+			Vector2 finalWalkSpeed = new Vector2( (m_walkSpeedOverride.x != -1 ? m_walkSpeedOverride.x :  m_data.WalkSpeed.x), (m_walkSpeedOverride.y != -1 ? m_walkSpeedOverride.y :  m_data.WalkSpeed.y) );			
 			float speed =  (Mathf.Abs(direction.x) * finalWalkSpeed.x) + (Mathf.Abs(direction.y) * finalWalkSpeed.y);
 			if ( m_data.AdjustSpeedWithScaling )
 				speed *= transform.localScale.y; // scale by speed
@@ -1197,73 +1165,6 @@ public partial class CharacterComponent : MonoBehaviour
 		}
 	}
 
-	// Calculates pathfinding and returns the first point the player will walk towards. (NB: Expensive)
-	public Vector2 CalcWalkToFirstPoint( Vector2 pos, bool couldntFindPath = false )
-	{ 
-		Pathfinder pathfinder = PowerQuest.Get.Pathfinder;
-		if ( pathfinder.GetValid() == false )
-			return Vector2.zero;
-		
-		// Update which characters collision should be enabled in this pathfinder
-		foreach ( Character character in PowerQuest.Get.GetCharacters_SaveFlagNotDirtied() )
-		{		
-			if ( character.Instance != null )
-			{
-				if ( GetData().Solid && character != GetData() && character.Solid && character.Room == PowerQuest.Get.GetCurrentRoom() ) // other character's solid, and not this player
-					pathfinder.EnableObstacle(character.Instance.transform);
-				else 
-					pathfinder.DisableObstacle(character.Instance.transform);				
-			}
-		}
-
-		// Find closest Pos that's navigatable			
-		Vector2 originalPos = pos;
-		if ( pathfinder.IsPointInArea(pos) == false )
-			pos = pathfinder.GetClosestPointToArea(pos);			
-				
-		Vector2[] path = pathfinder.FindPath(m_data.Position, pos);
-
-		if ( path != null && path.Length > 1 )
-		{
-			return path[1];
-		}
-		else if ( path == null || path.Length == 0 )
-		{
-			if ( couldntFindPath == false )
-			{
-				// First time, try again using clipper (possibly slow and definitely buggy, so not doing do it by default. Need more time to get it working as resplacement)
-				
-				// Make sure we're inside a poly first
-				Vector2 currPos = m_data.Position;
-				if ( pathfinder.IsPointInArea(currPos) == false )
-					currPos = pathfinder.GetClosestPointToArea(currPos);
-
-				RoomComponent rc = PowerQuest.Get.GetCurrentRoom().Instance;
-				if ( rc != null )
-					pos = rc.GetClosestPoint(currPos, originalPos);
-				return CalcWalkToFirstPoint(pos, true );
-			}
-			else 
-			{
-				if ( GetData().Solid )
-				{
-					// Try finding path with 'Solid' off- Since the clipper version doesn't always like that
-					//Debug.Log("Couldn't Find Path, trying with 'solid' flag off");
-					GetData().Solid = false;
-					Vector2 result = CalcWalkToFirstPoint(pos, couldntFindPath );
-					GetData().Solid = true;
-					return result;
-				}
-				/*
-				else 
-				{
-					Debug.Log("Couldn't Find Path.");
-				}*/
-			}		
-		}
-		return Vector2.zero;
-	}
-
 	public void WalkTo( Vector2 pos, bool anywhere, bool playWalkAnim, bool couldntFindPath = false )
 	{
 		if ( m_state == eState.Walk && m_targetEndPos == pos && m_playWalkAnim == playWalkAnim)
@@ -1295,14 +1196,9 @@ public partial class CharacterComponent : MonoBehaviour
 				pos = rc.GetClosestPoint(m_data.Position, pos);}
 			}
 			/**/
-
-			// Clipper has an accuracy of 1/1000, so snap to this before pathfinding
-			//pos = pos.SnapRound(0.001f);
-			m_data.Position = m_data.Position.SnapRound(0.001f);
-
 			Vector2 originalPos = pos;
 			if ( pathfinder.IsPointInArea(pos) == false )
-				pos = pathfinder.GetClosestPointToArea(pos);				
+				pos = pathfinder.GetClosestPointToArea(pos);			
 				
 			m_targetPos = pos;
 			m_targetEndPos = m_targetPos;
@@ -1319,16 +1215,10 @@ public partial class CharacterComponent : MonoBehaviour
 			{
 				if ( couldntFindPath == false )
 				{
-					// First time, try again using clipper (possibly slow and definitely buggy, so not doing do it by default. Need more time to get it working as replacement)
-					
-					// Make sure we're inside a poly first
-					Vector2 currPos = m_data.Position;
-					if ( pathfinder.IsPointInArea(currPos) == false )
-						currPos = pathfinder.GetClosestPointToArea(currPos);
-
+					// First time, try again using clipper (possibly slow and definitely buggy, so not doing do it by default. Need more time to get it working as resplacement)
 					RoomComponent rc = PowerQuest.Get.GetCurrentRoom().Instance;
 					if ( rc != null )
-						pos = rc.GetClosestPoint(currPos, originalPos);						
+						pos = rc.GetClosestPoint(m_data.Position, originalPos);
 					WalkTo(pos, anywhere, playWalkAnim, true );
 				}
 				else 
@@ -1342,23 +1232,9 @@ public partial class CharacterComponent : MonoBehaviour
 						GetData().Solid = true;
 
 					}
-					else if ( m_nudged < 2 )
-					{
-						// When path still fails, try nudging player in a couple of directions
-						Debug.Log("Couldn't Find Path- Nudging "+(m_nudged+1));
-
-						Vector2 nudge = (Vector2.one * 0.6f);
-						if ( m_nudged == 1 )
-							nudge *= -2.0f;						
-						++m_nudged;
-						m_data.Position = m_data.Position + nudge;						
-						WalkTo(pos + nudge, false, playWalkAnim, false );
-					}
 					else 
 					{
-						// Finally, if still failing- Give up trying to find path, walk there ignoring "anywhere". (To stop rare case where could soft lock)
 						Debug.Log("Couldn't Find Path.");
-						WalkTo(pos, true, playWalkAnim, true );
 					}
 				}
 			}
@@ -1385,7 +1261,7 @@ public partial class CharacterComponent : MonoBehaviour
 		OnAnimStateChange();
 	}
 
-	public Vector2 GetTextPosition(bool avoidOtherCharacters = false)
+	public Vector2 GetTextPosition()
 	{
 		if ( m_data.TextPositionOverride != Vector2.zero )
 			return m_data.TextPositionOverride;
@@ -1393,33 +1269,6 @@ public partial class CharacterComponent : MonoBehaviour
 		if ( m_sprite == null || m_sprite.sprite == null || m_sprite.enabled == false )
 			return m_data.Position; // if sprite is hidden, just use plr position
 
-		Vector2 result = GetTextPositionInternal();
-		
-		// Check for any other characters that this text would overlap
-		if ( avoidOtherCharacters )
-		{ 		
-			const float otherHeightOffset = -4; // Hack to position raised text slightly lower than other character's usual text. TODO- scale based on game scale.
-			float avoidX = PowerQuest.Get.DialogTextCharacterInRange.x;
-			float avoidY = PowerQuest.Get.DialogTextCharacterInRange.y;
-			foreach ( Character character in PowerQuest.Get.GetCharacters_SaveFlagNotDirtied() )
-			{ 
-				if ( character != GetData() && character.VisibleInRoom )
-				{ 				
-					Vector2 theirPos = (character.Instance as CharacterComponent).GetTextPositionInternal();
-
-					// check within X range and dialog would actually overlap, include the solidSize to avoid overlapping
-					if ( Mathf.Abs(result.x-theirPos.x) < avoidX && (theirPos.y - result.y) < avoidY)
-						result.y = Mathf.Max(theirPos.y+otherHeightOffset,result.y);
-				}
-			}
-		}
-
-		return result;
-	}
-	
-	// Get the text position for this character only (ignoring other characters on screen)
-	public Vector2 GetTextPositionInternal()
-	{		
 		float maxHeight = 0;
 		if ( m_sprite != null && m_sprite.sprite != null && m_sprite.enabled )
 		{
@@ -1429,14 +1278,12 @@ public partial class CharacterComponent : MonoBehaviour
 				if (item.y > maxHeight) 
 					maxHeight = item.y;
 			} );
-			if ( m_powerSprite != null)
+			if ( m_powerSprite != null )
 				maxHeight += m_powerSprite.Offset.y;
 		}
 		maxHeight *= transform.localScale.y;
-				
-		Vector2 result = (Vector2)m_sprite.transform.position + new Vector2(0,maxHeight);
-		result += PowerQuest.Get.GetDialogTextOffset() + m_data.TextPositionOffset.Scaled( transform.localScale ); 
-		return result;
+
+		return (Vector2)m_sprite.transform.position + new Vector2(0,maxHeight) + PowerQuest.Get.GetDialogTextOffset() + m_data.TextPositionOffset.Scaled( transform.localScale );
 	}
 
 	public void OnSkipCutscene()
@@ -2071,19 +1918,15 @@ public partial class CharacterComponent : MonoBehaviour
 	    if ( obj == null || (obj as GameObject) == null )
 			return;
 		if ( m_data == null || m_data.VisibleInRoom == false )
-			return;					
-		SystemAudio.Play((obj as GameObject).GetComponent<AudioCue>(), transform,SystemAudio.AnimSoundMult);
+			return;		
+		SystemAudio.Play((obj as GameObject).GetComponent<AudioCue>(), transform);
 	}
 
 	void AnimSound(string sound)
 	{
 		if ( m_data == null || m_data.VisibleInRoom == false )
 			return;
-
-		// Not sure this actually works... not tested
-		AudioHandle handle = SystemAudio.Play(sound, transform);
-		if ( SystemAudio.AnimSoundMult != 1.0f )
-			handle.volume = handle.volume * SystemAudio.AnimSoundMult;
+		SystemAudio.Play(sound, transform);	    
 	}
 	
 	void AnimSoundStop(Object obj)
@@ -2213,19 +2056,9 @@ public partial class CharacterComponent : MonoBehaviour
 	Vector2 m_walkSpeedOverride = -Vector2.one;
 	// Overrides walk speed temporarily (until end of anim, or WalkSpeedReset tag is hit). If 'speed' is less than one, it's treated as a multiplier (eg: 0.5 will make character walk half-speed)
 	void AnimWalkSpeed(float speed) { AnimWalkSpeedX(speed); AnimWalkSpeedY(speed); }
-	void AnimWalkSpeedX(float speed) 
-	{ 
-		if ( speed < 0.0f )
-			return; 
-		m_walkSpeedOverride.x = (speed > -1.0f && speed < 1.0f ) ? (m_data.WalkSpeed.x * speed) : speed; 
-	}
-	void AnimWalkSpeedY(float speed) 
-	{ 
-		if ( speed < 0.0f )
-			return; 
-		m_walkSpeedOverride.y = (speed > -1.0f && speed < 1.0f ) ? (m_data.WalkSpeed.y * speed) : speed; 
-	}
-	void AnimWalkSpeedReset() { m_walkSpeedOverride = -Vector2.one;}
+	void AnimWalkSpeedX(float speed) { m_walkSpeedOverride.x = (speed > -1.0f && speed < 1.0f ) ? (m_data.WalkSpeed.x * speed) : speed; }
+	void AnimWalkSpeedY(float speed) { m_walkSpeedOverride.y = (speed > -1.0f && speed < 1.0f ) ? (m_data.WalkSpeed.y * speed) : speed; }
+	void AnimWalkSpeedReset() { m_walkSpeedOverride = -Vector2.one; }
 	
 	// spawn game object at character's node
 	void AnimSpawn(GameObject obj)
@@ -2249,6 +2082,8 @@ public partial class CharacterComponent : MonoBehaviour
 
 	#endregion
 	#region Lipsync stuff
+
+	static readonly int NUM_LIP_SYNC_FRAMES = 6;
 
 	void UpdateLipSync()
 	{
@@ -2296,43 +2131,36 @@ public partial class CharacterComponent : MonoBehaviour
 			{
 				// Attach mouth to node
 				m_mouth.gameObject.SetActive(true);
-				m_mouth.GetComponent<SpriteRenderer>().sortingOrder = m_sprite.sortingOrder + 1;
+				m_mouth.GetComponent<SpriteRenderer>().sortingOrder = GetComponent<SpriteRenderer>().sortingOrder + 1;
 			}
 
 			SpriteAnim talkAnimator = useMouth ? m_mouth : m_spriteAnimator;
 
 			// Update frames for lip sync
 			TextData data = SystemText.FindTextData( m_currLineId, m_data.ScriptName );
-
 			// get time from audio source
 			float time = 0; 
-			
-			// Some timers to try getitng lip sync lining up with audio delay a bit better. 
-			float lipSyncTimeOffset = Time.deltaTime + 0.016f; // Offset of lip sync time to audio clip time
-			const float lipSyncHideEarlyTime = -0.085f; // Time from end of audio clip to hide mouth, since mouth should always be closed at end
+			if ( m_data.GetDialogAudioSource() != null )
+					time = m_data.GetDialogAudioSource().time;//-0.1f; - previously had an offset for latency. But better without in recent testing
 
-			AudioSource audioSource = m_data.GetDialogAudioSource();
-			if ( audioSource != null )
-			{ 
-				m_voHadAudioSource = true;
-				time = audioSource.time + lipSyncTimeOffset;
-				
-				if ( PowerQuest.Get.Paused == false && (m_data.GetDialogAudioSource().isPlaying == false || audioSource.clip == null || time >= audioSource.clip.length+lipSyncHideEarlyTime))
-				{ 
-					// Had audio but it ended- hide the mouth and don't do anything else
-					m_mouth.gameObject.SetActive(false);
-					return;
-				}
-			}
-			else if ( m_voHadAudioSource )
-			{
-				// Had audio but it ended- hide the mouth and don't do anything else
-				m_mouth.gameObject.SetActive(false);					
-				return;
-			}
-			
-			// Get animation ratio time from SystemText util
-			float newAnimTime = SystemText.Get.GetLipSyncAnimTime(data, time);
+			// Get character from time
+			int index = -1;
+			if ( data != null )
+				index = System.Array.FindIndex( data.m_phonesTime, item => item > time );
+			index--;
+
+			char character = SystemText.Get.GetLipsyncUsesXShape() ? 'X' : 'A'; // default is mouth closed
+			if ( index >= 0 && index < data.m_phonesCharacter.Length )
+				character = data.m_phonesCharacter[index];
+
+
+			// map character to frame
+			int finalLipSyncFrames = NUM_LIP_SYNC_FRAMES + SystemText.Get.GetLipsyncExtendedMouthShapes().Length;
+			int characterId = Mathf.Min(character-'A', finalLipSyncFrames-1);
+
+			// Debug.Log(character+": "+characterId+", "+((float)characterId+0.5f)/(float)finalLipSyncFrames);
+
+			float newAnimTime = ((float)characterId+0.5f)/(float)finalLipSyncFrames;
 
 			if ( data == null || data.m_phonesTime.Length <= 0 )
 			{				
@@ -2379,7 +2207,6 @@ public partial class CharacterComponent : MonoBehaviour
 			// Else, hide mouth (if there is one)
 			if ( m_mouth != null )
 				m_mouth.gameObject.SetActive(false);
-			m_voHadAudioSource = false;
 		}
 	}
 }
