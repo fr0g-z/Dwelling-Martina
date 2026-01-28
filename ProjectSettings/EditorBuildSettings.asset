@@ -47,4 +47,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/END/SceneRoomEND.unity
     guid: b6e7578160e7d744392519bff6487c8f
+  - enabled: 1
+    path: Assets/Game/Rooms/TextDump/SceneRoomTextDump.unity
+    guid: e83c9127c06e77d419af42c4b22fbd94
   m_configObjects: {}

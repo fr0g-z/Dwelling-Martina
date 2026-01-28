@@ -61,6 +61,7 @@ namespace PowerScript
 		public static IRoom Insidelockbox  { get { return PowerQuest.Get.GetRoom("Insidelockbox"); } }
 		public static IRoom Clock          { get { return PowerQuest.Get.GetRoom("Clock"); } }
 		public static IRoom END            { get { return PowerQuest.Get.GetRoom("END"); } }
+		public static IRoom TextDump       { get { return PowerQuest.Get.GetRoom("TextDump"); } }
 		// #ROOM# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
