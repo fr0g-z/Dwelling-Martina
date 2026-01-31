@@ -12,13 +12,13 @@ using PowerTools.Quest;
 */
 
 public partial class GlobalScript : GlobalScriptBase<GlobalScript>
-{	
-	////////////////////////////////////////////////////////////////////////////////////
-	// Global Game Variables
-	
-	/// Just an example of using an enum for game state.
-	/// This can be accessed from other scripts, eg: if ( Globals.m_progressExample == eProgress.DrankWater )...
-	public enum eProgress
+{
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Global Game Variables
+
+    /// Just an example of using an enum for game state.
+    /// This can be accessed from other scripts, eg: if ( Globals.m_progressExample == eProgress.DrankWater )...
+    public enum eProgress
 	{
 		None,
 		GotWater,
@@ -295,7 +295,7 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 	public IEnumerator UnhandledUseInv(IQuestClickable mouseOver, Inventory item)
 	{		
 		// This function is called when the uses an item on things that don't have a response
-		yield return C.Display( "You can't use that" ); 
+		yield return C.Display( "that doesnt go there" ); 
 	}
 
     public class updatelockbox : MonoBehaviour

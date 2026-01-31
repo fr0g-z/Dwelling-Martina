@@ -8,7 +8,23 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 {
 
 
-	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
+    bool saidLine = false;
+
+    IEnumerator OnEnterRoomAfterFade()
+    {
+	
+			if (I.MumsPin.Owned)
+			{
+				yield return C.player_invis.Say("My mums hairpin...why is this here?");
+			}
+		    else
+		    {
+			yield return C.player_invis.Say("");
+		    }
+			yield return E.Break;
+    }
+
+    IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
 		yield return C.Plr.ChangeRoom(R.Hallway);
 		yield return E.Break;
@@ -16,7 +32,8 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
 	IEnumerator OnInteractHotspotMom_bedroom( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Mom_room);
+       
+        yield return C.Plr.ChangeRoom(R.Mom_room);
 		yield return E.Break;
 	}
 

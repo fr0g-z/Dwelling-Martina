@@ -5,8 +5,9 @@ using PowerScript;
 using static GlobalScript;
 
 public class RoomClock : RoomScript<RoomClock>
-{ 
-	IEnumerator OnInteractHotspotLeaveroom( IHotspot hotspot )
+{
+    
+    IEnumerator OnInteractHotspotLeaveroom( IHotspot hotspot )
 	{
         yield return C.Plr.ChangeRoom(R.Hallway_2);
         yield return E.Break;

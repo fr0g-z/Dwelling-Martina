@@ -6,6 +6,14 @@ using static GlobalScript;
 
 public class RoomVanity : RoomScript<RoomVanity>
 {
+    IEnumerator OnEnterRoomAfterFade()
+    {
+       
+            yield return C.player_invis.Say("looks like i need three items to put here...but what?");
+       
+
+        yield return E.Break;
+    }
 
     // Feather hotspot
     IEnumerator OnUseInvHotspotFeather(IHotspot hotspot, IInventory item)

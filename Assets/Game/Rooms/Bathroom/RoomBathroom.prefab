@@ -31,6 +31,8 @@ Transform:
   - {fileID: 2752682196694080012}
   - {fileID: 5410354506199002994}
   - {fileID: 5756230519231078922}
+  - {fileID: 369140227406455872}
+  - {fileID: 6445199810223465339}
   - {fileID: 2546194199924311044}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -66,6 +68,8 @@ MonoBehaviour:
   m_hotspotComponents:
   - {fileID: 2739120648664022092}
   - {fileID: 5437642463830909527}
+  - {fileID: 1893290972622473054}
+  - {fileID: 5047521301728118818}
   m_propComponents:
   - {fileID: 7827230370540771786}
   m_regionComponents: []
@@ -75,6 +79,184 @@ MonoBehaviour:
   m_sprites:
   - {fileID: 21300000, guid: 2cda05b35f1996b439e20465310dc9dc, type: 3}
   m_variantShouldOverrideArt: 0
+--- !u!1 &2562818246101334173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 369140227406455872}
+  - component: {fileID: 1893290972622473054}
+  - component: {fileID: 4135583649323353186}
+  m_Layer: 0
+  m_Name: HotspotSink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &369140227406455872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2562818246101334173}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4524140512694879106}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1893290972622473054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2562818246101334173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b0df7c458d97544b909b49c6789dea5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_data:
+    m_description: Sink
+    m_cursor: 
+    m_clickable: 1
+    m_baseline: 0
+    m_walkToPoint: {x: 0, y: 0}
+    m_lookAtPoint: {x: 0, y: 0}
+    m_scriptName: Sink
+--- !u!60 &4135583649323353186
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2562818246101334173}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -284.24503, y: -150.369}
+      - {x: -327.54102, y: -107.073006}
+      - {x: -327.54102, y: -45.844}
+      - {x: -284.24503, y: -2.548}
+      - {x: -223.016, y: -2.548}
+      - {x: -179.72, y: -45.844}
+      - {x: -179.72, y: -107.073006}
+      - {x: -223.016, y: -150.369}
+--- !u!1 &3455500633527631580
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6445199810223465339}
+  - component: {fileID: 5047521301728118818}
+  - component: {fileID: 6883579760679157986}
+  m_Layer: 0
+  m_Name: HotspotShower
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6445199810223465339
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455500633527631580}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4524140512694879106}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5047521301728118818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455500633527631580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b0df7c458d97544b909b49c6789dea5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_data:
+    m_description: Shower
+    m_cursor: Wash hands here
+    m_clickable: 1
+    m_baseline: 0
+    m_walkToPoint: {x: 0, y: 0}
+    m_lookAtPoint: {x: 0, y: 0}
+    m_scriptName: Shower
+--- !u!60 &6883579760679157986
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455500633527631580}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -491.78003, y: -532.684}
+      - {x: -508.88303, y: -516.434}
+      - {x: -559.104, y: -516.434}
+      - {x: -633.247, y: -442.29102}
+      - {x: -633.82605, y: -406.889}
+      - {x: -656.46204, y: -358.716}
+      - {x: -654.14105, y: -191.18001}
+      - {x: -579.997, y: -117.036}
+      - {x: -451.92703, y: -121.67901}
+      - {x: -373.221, y: -195.742}
+      - {x: -335.851, y: -207.57501}
+      - {x: -247.77802, y: -293.32703}
+      - {x: -247.77802, y: -426.04}
+      - {x: -254.74301, y: -439.96902}
+      - {x: -342.815, y: -528.04205}
+      - {x: -356.74503, y: -532.684}
 --- !u!1 &3649386818332802486
 GameObject:
   m_ObjectHideFlags: 0
@@ -312,7 +494,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4524140512694879106}
-  m_RootOrder: 3
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7827230370540771786
 MonoBehaviour:

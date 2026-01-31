@@ -10,8 +10,8 @@ public class InventoryMumsPin : InventoryScript<InventoryMumsPin>
 
 	IEnumerator OnLookAtInventory( IInventory thisItem )
 	{
-
-		yield return E.Break;
+        yield return C.Display("It's my mums pin");
+        yield return E.Break;
 	}
 
 	IEnumerator OnUseInvInventory( IInventory thisItem, IInventory item )

@@ -50,7 +50,8 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 		Audio.Play("Bucket");
 		prop.Disable();
 		I.Feather.AddAsActive();
-		yield return E.Break;
+        yield return C.player_invis.Say("A white Feather...its dirty i should wash my hands");
+        yield return E.Break;
 	}
 
 	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
