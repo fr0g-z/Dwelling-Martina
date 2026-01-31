@@ -7,21 +7,18 @@ using static GlobalScript;
 public class RoomHallway_2 : RoomScript<RoomHallway_2>
 {
 
+    bool m_mumsPinDialogueShown = false;
 
-    bool saidLine = false;
 
     IEnumerator OnEnterRoomAfterFade()
     {
-	
-			if (I.MumsPin.Owned)
-			{
-				yield return C.player_invis.Say("My mums hairpin...why is this here?");
-			}
-		    else
-		    {
-			yield return C.player_invis.Say("");
-		    }
-			yield return E.Break;
+        if (I.MumsPin.Owned && m_mumsPinDialogueShown == false)
+        {
+            m_mumsPinDialogueShown = true;
+            yield return C.player_invis.Say("My mums hairpin...why is this here?");
+        }
+
+        yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotHallway( IHotspot hotspot )

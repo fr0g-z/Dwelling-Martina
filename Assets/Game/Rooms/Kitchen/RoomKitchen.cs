@@ -25,6 +25,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
         yield return C.Display("You pick up the Teddy Bear");
         Audio.Play("Bucket");
         prop.Disable();
+        yield return C.player_invis.Say("My childhood teddy...i thought i lost this");
         I.TeddyBear.AddAsActive();
         yield return E.Break;
 	}
