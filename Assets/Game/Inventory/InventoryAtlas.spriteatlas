@@ -59,7 +59,7 @@ SpriteAtlas:
   - MumsPin
   - BucketCursorInactive_0
   - BucketCursor_0
-  - feather
+  - Feather
   - Norbert
   - Bucket_0
   m_RenderDataMap: {}

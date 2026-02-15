@@ -27,4 +27,16 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
         }
         yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotDollhouse( IHotspot hotspot )
+	{
+        yield return E.ChangeRoom(R.Insidedollhouse);
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotDollhouse( IHotspot hotspot )
+	{
+
+		yield return E.Break;
+	}
 }

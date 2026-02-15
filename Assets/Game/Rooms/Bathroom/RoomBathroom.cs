@@ -31,7 +31,8 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotSink( IHotspot hotspot )
 	{
-        yield return C.player_invis.Say("The water isnt turning on...");
+        yield return E.ChangeRoom(R.Sink);
+        //yield return C.player_invis.Say("The water isnt turning on...");
         yield return E.Break;
 	}
 

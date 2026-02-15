@@ -50,4 +50,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/TextDump/SceneRoomTextDump.unity
     guid: e83c9127c06e77d419af42c4b22fbd94
+  - enabled: 1
+    path: Assets/Game/Rooms/Insidedollhouse/SceneRoomInsidedollhouse.unity
+    guid: 0a6d6709ae7279a4ea2c8d8d0ef4c643
+  - enabled: 1
+    path: Assets/Game/Rooms/Sink/SceneRoomSink.unity
+    guid: 186fd2f2a9191214b97f7da44c136118
   m_configObjects: {}
