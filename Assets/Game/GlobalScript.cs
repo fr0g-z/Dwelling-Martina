@@ -325,4 +325,9 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		}
 	}
 
+	public class ShowerSplash : MonoBehaviour
+	{
+		public static bool ShowerSplashed = false;
+	}
+	
 }

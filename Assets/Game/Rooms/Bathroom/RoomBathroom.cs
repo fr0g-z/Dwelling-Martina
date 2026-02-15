@@ -39,6 +39,8 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 	IEnumerator OnInteractHotspotShower( IHotspot hotspot )
 	{
         yield return C.player_invis.Say("The water splashed me...i need to change now");
+		ShowerSplash.ShowerSplashed = true;
         yield return E.Break;
 	}
+
 }

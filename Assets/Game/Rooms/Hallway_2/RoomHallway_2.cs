@@ -29,15 +29,21 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
 	IEnumerator OnInteractHotspotMom_bedroom( IHotspot hotspot )
 	{
-       
-        yield return C.Plr.ChangeRoom(R.Mom_room);
-		yield return E.Break;
+		if (ShowerSplash.ShowerSplashed == false)
+		{
+			yield return C.player_invis.Say("I Should Probably Freshen up");
+		}
+		else
+		{
+			yield return C.Plr.ChangeRoom(R.Mom_room);
+			yield return E.Break;
+		}
 	}
 
 	IEnumerator OnInteractHotspotBathroom( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Bathroom);
-		yield return E.Break;
+			yield return C.Plr.ChangeRoom(R.Bathroom);
+		    yield return E.Break;
 	}
 
 	IEnumerator OnInteractHotspotKitchen( IHotspot hotspot )
