@@ -29,4 +29,16 @@ public class RoomKitchen : RoomScript<RoomKitchen>
         I.TeddyBear.AddAsActive();
         yield return E.Break;
 	}
+
+	IEnumerator OnLookAtHotspotUndertable( IHotspot hotspot )
+	{
+        
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotUndertable( IHotspot hotspot )
+	{
+        yield return C.Plr.ChangeRoom(R.UnderTable);
+        yield return E.Break;
+	}
 }

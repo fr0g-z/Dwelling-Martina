@@ -516,9 +516,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7490292337463648594}
-  m_LocalRotation: {x: -0, y: -0, z: -0.09411607, w: 0.99556124}
-  m_LocalPosition: {x: 219, y: -108, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
+  m_LocalRotation: {x: 0, y: 0, z: 0.0941161, w: -0.99556124}
+  m_LocalPosition: {x: 215.1705, y: -124.3164, z: 0}
+  m_LocalScale: {x: 0.2309181, y: 0.30228943, z: 0.05}
   m_Children: []
   m_Father: {fileID: 429302896976502290}
   m_RootOrder: 4
@@ -546,7 +546,7 @@ MonoBehaviour:
     m_baseline: 0
     m_baselineFixed: 0
     m_walkToPoint: {x: 0, y: 0}
-    m_lookAtPoint: {x: 0, y: 0}
+    m_lookAtPoint: {x: 3.0543213, y: -3.0542755}
     m_scriptName: Feather
   m_parallaxDepth: 0
   m_parallaxAlignment: {x: 0, y: 0}
@@ -567,7 +567,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3839.9998, y: 2160}
+    oldSize: {x: 384, y: 216}
     newSize: {x: 3839.9998, y: 2160}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -575,20 +575,14 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -123.87896, y: -455.4273}
-      - {x: -156.3118, y: -411.2488}
-      - {x: -415.2452, y: -407.23264}
-      - {x: -447.67804, y: -370.1325}
-      - {x: -412.55368, y: -201.19972}
-      - {x: -437.14673, y: -141.20201}
-      - {x: -451.18848, y: 385.1748}
-      - {x: -418.7556, y: 422.28058}
-      - {x: 399.39578, y: 410.2205}
-      - {x: 435.33908, y: 369.1099}
-      - {x: 403.74515, y: -366.11633}
-      - {x: 360.78098, y: -419.2813}
-      - {x: -44.41726, y: -412.99127}
-      - {x: -78.01858, y: -455.4273}
+    - - {x: 33.090298, y: -156.00325}
+      - {x: -54.40664, y: -108.08108}
+      - {x: -21.885675, y: -40.05829}
+      - {x: -36.473026, y: 65.73205}
+      - {x: 305.3462, y: 107.076675}
+      - {x: 313.10947, y: 72.86688}
+      - {x: 292.7975, y: 69.90675}
+      - {x: 146.69662, y: -141.24536}
 --- !u!95 &294061658207225176
 Animator:
   serializedVersion: 5
@@ -662,7 +656,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1080
+  m_SortingOrder: 1243
   m_Sprite: {fileID: 21300000, guid: 50b1be8a45fa0544595f6c43290bcd34, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

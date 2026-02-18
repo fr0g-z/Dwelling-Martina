@@ -27,11 +27,11 @@ public class RoomVanity : RoomScript<RoomVanity>
         }
         else
         {
-            C.player_invis.Say("Wrong item for Feather hotspot!");
+            C.player_invis.Say("Wrong item!");
         }
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("Something Clicked!");
+            C.player_invis.Say("Something Opened!");
             Audio.Play("DoorOpen");
 
         }
@@ -51,12 +51,12 @@ public class RoomVanity : RoomScript<RoomVanity>
         }
         else
         {
-            C.player_invis.Say("Wrong item for TeddyBear hotspot!");
+            C.player_invis.Say("Wrong item!");
         }
 
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("Something Clicked");
+            C.player_invis.Say("Something Opened!");
             Audio.Play("DoorOpen");
         }
 
@@ -75,12 +75,12 @@ public class RoomVanity : RoomScript<RoomVanity>
         }
         else
         {
-            C.player_invis.Say("Wrong item for Pin hotspot!");
+            C.player_invis.Say("Wrong item!");
         }
 
         if (ItemsPlaced.AllItemsPlaced)
         {
-            C.player_invis.Say("Something Clicked!");
+            C.player_invis.Say("Something Opened!");
             Audio.Play("DoorOpen");
         }
 
