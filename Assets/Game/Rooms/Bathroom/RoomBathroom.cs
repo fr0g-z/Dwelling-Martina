@@ -11,7 +11,8 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Hallway_2);
+        Audio.Play("Dooropen");
+        yield return C.Plr.ChangeRoom(R.Hallway_2);
 		yield return E.Break;
 	}
 
@@ -31,8 +32,9 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotSink( IHotspot hotspot )
 	{
-        yield return E.ChangeRoom(R.Sink);
-        //yield return C.player_invis.Say("The water isnt turning on...");
+        
+        // yield return E.ChangeRoom(R.Sink);
+        yield return C.player_invis.Say("The water isnt turning on...");
         yield return E.Break;
 	}
 

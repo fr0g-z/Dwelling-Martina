@@ -56,7 +56,8 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 
 	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Hallway);
+        Audio.Play("Dooropen");
+        yield return C.Plr.ChangeRoom(R.Hallway);
 		yield return E.Break;
 	}
 }
