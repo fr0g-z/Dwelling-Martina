@@ -15,9 +15,9 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
         yield return E.Break;
 	}
 
-	IEnumerator OnLookAtHotspotBack( IHotspot hotspot )
-	{
-
-		yield return E.Break;
-	}
+    IEnumerator OnExitRoom()
+    {
+        GameObject.Find("DollhousePuzzle").SetActive(false);
+        yield return E.Break;
+    }
 }
