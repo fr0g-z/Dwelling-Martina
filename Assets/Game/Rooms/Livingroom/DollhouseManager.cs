@@ -7,6 +7,7 @@ public class DollhouseManager : MonoBehaviour
 
     public GameObject latch;
     public AudioSource placeSound;
+    public bool puzzleCompleted = false;
 
     private Dictionary<string, string> placements = new Dictionary<string, string>();
 
@@ -27,6 +28,8 @@ public class DollhouseManager : MonoBehaviour
 
     void CheckPuzzle()
     {
+        if (puzzleCompleted) return;
+
         bool correct1 =
             placements.ContainsKey("DollA") &&
             placements["DollA"] == "Slot2";
@@ -37,10 +40,11 @@ public class DollhouseManager : MonoBehaviour
 
         if (correct1 && correct2)
         {
+            puzzleCompleted = true;
             latch.SetActive(true);
 
-           
-            
+            Debug.Log("Puzzle Complete");
         }
     }
+
 }

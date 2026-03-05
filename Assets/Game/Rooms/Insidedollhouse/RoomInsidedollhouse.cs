@@ -20,4 +20,12 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
         GameObject.Find("DollhousePuzzle").SetActive(false);
         yield return E.Break;
     }
+
+    IEnumerator OnEnterRoom()
+    {
+        GameObject.Find("DollhousePuzzle").SetActive(true);
+        yield return E.Break;
+    }
+
+
 }
