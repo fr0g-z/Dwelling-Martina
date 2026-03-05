@@ -62,4 +62,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/Basement/SceneRoomBasement.unity
     guid: defed7a0292485b4b9a91eb6cf09b514
+  - enabled: 1
+    path: Assets/Game/Rooms/StartCutscene/SceneRoomStartCutscene.unity
+    guid: cbb1e674e1b1c734db13177f377fc193
   m_configObjects: {}

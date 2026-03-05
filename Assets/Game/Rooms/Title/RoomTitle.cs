@@ -52,7 +52,7 @@ public class RoomTitle : RoomScript<RoomTitle>
 		G.InventoryBar.Show();
 		
 		// Move the player to the room
-		E.ChangeRoomBG(R.TextDump);
+		E.ChangeRoomBG(R.StartCutscene);
 		yield return E.ConsumeEvent;
 	}
 

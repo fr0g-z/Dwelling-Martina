@@ -101,6 +101,7 @@ MonoBehaviour:
   m_cameraPrefab: {fileID: 11462848, guid: b254fcd8f583c324ba3da9904a492986, type: 3}
   m_roomPrefabs:
   - {fileID: 114788632828080210, guid: 908a928d57ccea1418803714fc2b24b8, type: 3}
+  - {fileID: 1557360801222784929, guid: 50cf3317fa8a5e54097c6aafb9cab6f0, type: 3}
   - {fileID: 6955407501034180368, guid: 36f000661f4ff7243a63d544832c03a3, type: 3}
   - {fileID: 7445828160067339299, guid: 3b17c96a44190f2428cb5861b336f3a9, type: 3}
   - {fileID: 8757590944494733166, guid: 0158e350d2ce01f4eabdd16da73af0bd, type: 3}
