@@ -25,6 +25,7 @@ namespace PowerScript
 		public static IInventory MumsPin        { get { return PowerQuest.Get.GetInventory("MumsPin"); } }
 		public static IInventory TeddyBear      { get { return PowerQuest.Get.GetInventory("TeddyBear"); } }
 		public static IInventory Hook           { get { return PowerQuest.Get.GetInventory("Hook"); } }
+		public static IInventory SecretDoll     { get { return PowerQuest.Get.GetInventory("SecretDoll"); } }
 		// #INVENTORY# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 

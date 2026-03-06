@@ -27,11 +27,26 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
         yield return E.Break;
     }
 
+    IEnumerator OnLookAtPropDollFlap(IProp prop)
+    {
+        yield return E.Break;
+    }
 
+    public IEnumerator puzzleComplete()
+    {
 
-	IEnumerator OnInteractPropDollFlap( IProp prop )
+        if (DollHouseDone.DollhouseDone == true)
+        {
+            Prop("DollFlap").Hide();
+            C.player_invis.Say("The Latch Opened!!");
+            yield return E.Break; // stop the coroutine
+        }
+       
+    }
+
+	IEnumerator OnInteractPropDollReward( IProp prop )
 	{
-
-		yield return E.Break;
+        I.SecretDoll.AddAsActive();
+        yield return E.Break;
 	}
 }

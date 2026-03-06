@@ -329,5 +329,9 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 	{
 		public static bool ShowerSplashed = false;
 	}
-	
+
+    public class DollHouseDone : MonoBehaviour
+    {
+        public static bool DollhouseDone = false;
+    }
 }
