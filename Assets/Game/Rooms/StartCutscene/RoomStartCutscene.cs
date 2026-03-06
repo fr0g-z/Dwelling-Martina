@@ -13,6 +13,7 @@ public class RoomStartCutscene : RoomScript<RoomStartCutscene>
     
     IEnumerator OnEnterRoomAfterFade()
 	{
+        Cursor.Visible = true;
         video = GameObject.Find("Intro").GetComponent<VideoPlayer>();
         video.Play();
        
