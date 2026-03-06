@@ -28,4 +28,10 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
     }
 
 
+
+	IEnumerator OnInteractPropDollFlap( IProp prop )
+	{
+
+		yield return E.Break;
+	}
 }

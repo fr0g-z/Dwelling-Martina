@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ce766e56e02440045babf8c2718e031b
+guid: c6a7f9abb1d1f4642869f51cc9a6449c
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -47,11 +47,11 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 1
-  spriteBorder: {x: 1260, y: 206, z: 1913, w: 458}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: 0.38
+  spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -103,40 +103,7 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites: []
-    outline:
-    - - {x: -196.87498, y: -472.49997}
-      - {x: -194.99998, y: -470.62497}
-      - {x: -191.24998, y: -470.62497}
-      - {x: -185.62498, y: -468.74997}
-      - {x: -183.74998, y: -453.74997}
-      - {x: -114.37499, y: -13.124999}
-      - {x: -184, y: 134}
-      - {x: -89.99999, y: 451.87497}
-      - {x: -243.74998, y: 525}
-      - {x: -459.37497, y: 525}
-      - {x: -578, y: 376}
-      - {x: -556.875, y: -213.74998}
-      - {x: -502.49997, y: -718.12494}
-      - {x: -412.49997, y: -753.74994}
-      - {x: -223.12498, y: -753.74994}
-      - {x: -140.625, y: -731.24994}
-      - {x: -159.37498, y: -613.12494}
-      - {x: -183.74998, y: -470.62497}
-      - {x: -193.12498, y: -470.62497}
-    - - {x: -489.37497, y: 133.125}
-      - {x: -489.37497, y: 127.49999}
-      - {x: -485.62497, y: 125.62499}
-      - {x: -479.99997, y: 125.62499}
-      - {x: -478.12497, y: 129.375}
-      - {x: -530, y: 135}
-      - {x: -510, y: 145}
-    - - {x: -410.62497, y: 513.75}
-      - {x: -410.62497, y: 509.99997}
-      - {x: -406.87497, y: 506.24997}
-      - {x: -404.99997, y: 506.24997}
-      - {x: -399.37497, y: 511.87497}
-      - {x: -401.24997, y: 517.5}
-      - {x: -406.87497, y: 517.5}
+    outline: []
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
