@@ -38,6 +38,7 @@ public class RoomCloset : RoomScript<RoomCloset>
         }
         else
         {
+            Audio.Play("lock");
             G.CombLock.Visible = true;
             yield return E.Break;
 

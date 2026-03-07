@@ -10,7 +10,8 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 	IEnumerator OnInteractHotspotKitchen( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Kitchen);
+        Audio.Play("hallwayfootsteps");
+        yield return C.Plr.ChangeRoom(R.Kitchen);
 		yield return E.Break;
 	}
 

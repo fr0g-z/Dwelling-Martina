@@ -10,6 +10,8 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 
     IEnumerator OnEnterRoomAfterFade()
     {
+		Audio.Play("Gamesoundtrack");
+
         // Move player to starting point
         C.Plr.SetPosition(Point("Character"));
 
@@ -24,6 +26,7 @@ public class RoomBedroom : RoomScript<RoomBedroom>
     }
     IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
 	{
+		
 		if ( hotspot.FirstLook )
 			yield return C.player_invis.Say("I cant see anything through the window");
 		else
@@ -33,7 +36,8 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 
 	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
 	{
-		yield return C.player_invis.Say("The Window is rusted shut");
+        Audio.Play("window");
+        yield return C.player_invis.Say("The Window is rusted shut");
 		yield return E.Break;
 	}
 

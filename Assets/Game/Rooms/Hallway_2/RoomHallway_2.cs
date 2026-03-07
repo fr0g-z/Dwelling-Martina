@@ -23,7 +23,8 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
     IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Hallway);
+        Audio.Play("hallwayfootsteps");
+        yield return C.Plr.ChangeRoom(R.Hallway);
 		yield return E.Break;
 	}
 
@@ -32,6 +33,7 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
         
         if (ShowerSplash.ShowerSplashed == false)
 		{
+			Audio.Play("lockeddoor");
 			yield return C.player_invis.Say("I Should Probably Freshen up");
 		}
 		else
@@ -51,7 +53,8 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
 	IEnumerator OnInteractHotspotKitchen( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Kitchen);
+        Audio.Play("hallwayfootsteps");
+        yield return C.Plr.ChangeRoom(R.Kitchen);
 		yield return E.Break;
 	}
 

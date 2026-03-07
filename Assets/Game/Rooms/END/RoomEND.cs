@@ -8,7 +8,7 @@ public class RoomEND : RoomScript<RoomEND>
 {
     public void OnEnterRoom()
     {
-   
+        Audio.Stop("Gamesoundtrack");
         G.InventoryBar.Hide();
         G.Toolbar.Hide();
 

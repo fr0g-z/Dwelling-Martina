@@ -23,7 +23,8 @@ public class RoomHallway : RoomScript<RoomHallway>
 
 	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Hallway_2);
+        Audio.Play("hallwayfootsteps");
+        yield return C.Plr.ChangeRoom(R.Hallway_2);
 		yield return E.Break;
 	}
 }
