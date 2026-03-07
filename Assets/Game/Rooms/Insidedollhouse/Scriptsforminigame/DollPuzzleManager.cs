@@ -16,7 +16,7 @@ public class DollPuzzleManager : MonoBehaviour
 
     // NEW: reference to the flap sprite in Unity
     public GameObject flapSprite; // assign DollFlapSprite in the Inspector
-
+    public GameObject dollsprite;
     // Track which dolls are in which slots
     private Dictionary<int, GameObject> currentDollSlots = new Dictionary<int, GameObject>();
 
@@ -75,13 +75,26 @@ public class DollPuzzleManager : MonoBehaviour
         }
     }
 
+    
+ 
+   
     private void PuzzleComplete()
     {
         // NEW: Hide the Unity flap sprite
         if (flapSprite != null)
             flapSprite.SetActive(false);
 
-        C.player_invis.Say("The Latch Opened!!");
+        if (dollsprite != null)
+            StartCoroutine(hidedollafterdelay(1f)); // personal note: f = seconds to hide doll
+        
+        I.SecretDoll.AddAsActive();
+        C.player_invis.Say("The Roof Opened!!");
         Debug.Log("Puzzle Complete!");
+    }
+
+    private IEnumerator hidedollafterdelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        dollsprite.SetActive(false);
     }
 }

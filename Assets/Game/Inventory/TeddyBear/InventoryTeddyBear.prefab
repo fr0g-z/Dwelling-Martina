@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_data:
     m_description: TeddyBear
-    m_animGui: Norbert
+    m_animGui: Norbertinv
     m_animCursor: Norbert
     m_animCursorInactive: Norbert
     m_stack: 0

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_data:
     m_description: Feather
-    m_animGui: Feather
+    m_animGui: Featherinv
     m_animCursor: Feather
     m_animCursorInactive: Feather
     m_stack: 0

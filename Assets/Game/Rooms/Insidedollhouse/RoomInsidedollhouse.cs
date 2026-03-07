@@ -39,6 +39,7 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
         {
             Prop("DollFlap").Hide();
             C.player_invis.Say("The Latch Opened!!");
+            I.SecretDoll.AddAsActive();
             yield return E.Break; // stop the coroutine
         }
        
@@ -46,7 +47,7 @@ public class RoomInsidedollhouse : RoomScript<RoomInsidedollhouse>
 
 	IEnumerator OnInteractPropDollReward( IProp prop )
 	{
-        I.SecretDoll.AddAsActive();
+        
         yield return E.Break;
 	}
 }

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_data:
     m_description: MumsPin
-    m_animGui: MumsPin
+    m_animGui: MumsPininv
     m_animCursor: MumsPin
     m_animCursorInactive: MumsPin
     m_stack: 0
