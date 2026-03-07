@@ -7,10 +7,10 @@ using static GlobalScript;
 public class RoomBathroom : RoomScript<RoomBathroom>
 {
 
-  
 
-    IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
+    {
+        Audio.Stop("drippingwater");
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Hallway_2);
 		yield return E.Break;
@@ -18,8 +18,8 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotPillbox( IHotspot hotspot )
 	{
-		
-	   G.Pills.Visible = true;
+        Audio.Play("pills");
+        G.Pills.Visible = true;
 
        yield return E.Break;
 	}
@@ -32,8 +32,8 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotSink( IHotspot hotspot )
 	{
-        
-        // yield return E.ChangeRoom(R.Sink);
+
+        Audio.Play("drippingwater");
         yield return C.player_invis.Say("The water isnt turning on...");
         yield return E.Break;
 	}
