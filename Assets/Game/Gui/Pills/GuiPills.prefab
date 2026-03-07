@@ -62,7 +62,7 @@ MonoBehaviour:
     m_scriptClass: GuiPills
   m_animations: []
   m_sprites:
-  - {fileID: 21300000, guid: 0b8d34995eaca3f42b93f38964164925, type: 3}
+  - {fileID: 21300000, guid: 17b49dcf98dc0f44d998352de126fb78, type: 3}
   m_controlComponents:
   - {fileID: 5810179801419949550}
   - {fileID: 7703133390411055204}
@@ -233,8 +233,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 8689108373640875137}
     m_Modifications:
     - target: {fileID: 3713800946280121344, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5203739
+      objectReference: {fileID: 0}
+    - target: {fileID: 3713800946280121344, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.5066182
+      objectReference: {fileID: 0}
+    - target: {fileID: 3713800946280121344, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: -2.6413
+      objectReference: {fileID: 0}
+    - target: {fileID: 3713800946280121344, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.8513
       objectReference: {fileID: 0}
     - target: {fileID: 6690161430560335701, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
       propertyPath: m_anim
@@ -307,7 +319,7 @@ PrefabInstance:
     - target: {fileID: 8012255500758172001, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0b8d34995eaca3f42b93f38964164925, type: 3}
+      objectReference: {fileID: 21300000, guid: 17b49dcf98dc0f44d998352de126fb78, type: 3}
     - target: {fileID: 8012255500758172001, guid: 74607e6814f3be547bab0095e3b1fd0b, type: 3}
       propertyPath: m_SortingOrder
       value: -562
