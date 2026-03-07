@@ -37,7 +37,7 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
 	{
         Audio.Play("window");
-        yield return C.player_invis.Say("The Window is rusted shut");
+        yield return C.player_invis.Say("The Window is boarded shut");
 		yield return E.Break;
 	}
 
