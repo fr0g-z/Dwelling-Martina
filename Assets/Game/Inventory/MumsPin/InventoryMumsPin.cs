@@ -1,0 +1,28 @@
+using UnityEngine;
+using System.Collections;
+using PowerTools.Quest;
+using PowerScript;
+using static GlobalScript;
+
+public class InventoryMumsPin : InventoryScript<InventoryMumsPin>
+{
+
+
+	IEnumerator OnLookAtInventory( IInventory thisItem )
+	{
+        yield return C.Display("It's my mums pin");
+        yield return E.Break;
+	}
+
+	IEnumerator OnUseInvInventory( IInventory thisItem, IInventory item )
+	{
+
+		yield return E.Break;
+	}
+
+	IEnumerator OnInteractInventory( IInventory thisItem )
+	{
+
+		yield return E.Break;
+	}
+}

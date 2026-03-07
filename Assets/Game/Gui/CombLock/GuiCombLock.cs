@@ -72,25 +72,37 @@ public class GuiCombLock : GuiScript<GuiCombLock>
 		yield return E.Break;
 	}
 
-	IEnumerator OnClickenter( IGuiControl control )
-	{
-		if (Label("Input").Text == "1234")
-		{
-			Label("Input").Text = ("*UNLOCKED*");
-			yield return E.WaitSkip(1.0f);
-			Gui.Hide();
-			yield return C.player_invis.Say("Its unlocked");
-		}
-		else
-		{
-			Label("Input").Text = "";
-			yield return E.WaitSkip(1.0f);
-			Audio.Play("Bucket");
-			Gui.Hide();
-			yield return C.player_invis.Say("hmmm that wasn't it");
-			yield return E.WaitSkip();
-			Gui.Show();
-		}
-		yield return E.Break;
-	}
+    IEnumerator OnClickenter(IGuiControl control)
+    {
+        if (updatelockbox.LockboxUnlocked)
+        {
+            Gui.Hide();
+            yield return C.player_invis.Say("It's already unlocked");
+            yield return E.ChangeRoom(R.Insidelockbox);
+            yield return E.Break;
+        }
+
+        if (Label("Input").Text == "1234")
+        {
+            updatelockbox.LockboxUnlocked = true;
+            Label("Input").Text = "*UNLOCKED*";
+            yield return E.WaitSkip(1.0f);
+            Gui.Hide();
+            yield return C.player_invis.Say("It's unlocked");
+            yield return E.ChangeRoom(R.Insidelockbox);
+            yield return E.Break;
+        }
+        else
+        {
+            Label("Input").Text = "";
+            yield return E.WaitSkip(1.0f);
+            Audio.Play("Bucket");
+            Gui.Hide();
+            yield return C.player_invis.Say("Hmmm that wasn't it");
+            yield return E.WaitSkip();
+            Gui.Show();
+        }
+
+        yield return E.Break;
+    }
 }

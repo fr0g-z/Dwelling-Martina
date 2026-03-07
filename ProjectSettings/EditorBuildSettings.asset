@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -38,4 +38,31 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/Livingroom/SceneRoomLivingroom.unity
     guid: 795c4a17a1e19d84c867c3c53ec8452c
+  - enabled: 1
+    path: Assets/Game/Rooms/Insidelockbox/SceneRoomInsidelockbox.unity
+    guid: a7b06533b50e1a245b02a57ee6387eff
+  - enabled: 1
+    path: Assets/Game/Rooms/Clock/SceneRoomClock.unity
+    guid: 33f5d0fe0326db8448a4cf63c1856cc3
+  - enabled: 1
+    path: Assets/Game/Rooms/END/SceneRoomEND.unity
+    guid: b6e7578160e7d744392519bff6487c8f
+  - enabled: 1
+    path: Assets/Game/Rooms/TextDump/SceneRoomTextDump.unity
+    guid: e83c9127c06e77d419af42c4b22fbd94
+  - enabled: 1
+    path: Assets/Game/Rooms/Insidedollhouse/SceneRoomInsidedollhouse.unity
+    guid: 0a6d6709ae7279a4ea2c8d8d0ef4c643
+  - enabled: 1
+    path: Assets/Game/Rooms/Sink/SceneRoomSink.unity
+    guid: 186fd2f2a9191214b97f7da44c136118
+  - enabled: 1
+    path: Assets/Game/Rooms/UnderTable/SceneRoomUnderTable.unity
+    guid: f30c969f91ba09d40993e3973fc088ca
+  - enabled: 1
+    path: Assets/Game/Rooms/Basement/SceneRoomBasement.unity
+    guid: defed7a0292485b4b9a91eb6cf09b514
+  - enabled: 1
+    path: Assets/Game/Rooms/StartCutscene/SceneRoomStartCutscene.unity
+    guid: cbb1e674e1b1c734db13177f377fc193
   m_configObjects: {}

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2d555e6e10d0ac147a534d2ab0559616
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - hourHand: {instanceID: 0}
+  - minuteHand: {instanceID: 0}
+  - secretDoor: {instanceID: 0}
+  - doorAudio: {fileID: 8300000, guid: c07743729a025d64887d74aa20816325, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

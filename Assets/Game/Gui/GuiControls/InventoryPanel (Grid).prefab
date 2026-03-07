@@ -66,10 +66,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_autoLayoutChildren: 0
-  m_itemSpacing: {x: 96, y: 96}
+  m_itemSpacing: {x: 94.8, y: 96}
   m_columnsPerRow: 4
   m_scrollColumns: 0
-  m_scrollRows: 4
+  m_scrollRows: 3
   m_overdraw: {x: 0, y: 0}
   m_items: []
-  m_size: {x: 0, y: 0}
+  m_size: {x: 380, y: 382}

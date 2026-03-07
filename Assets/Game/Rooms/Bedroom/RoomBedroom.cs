@@ -6,10 +6,27 @@ using static GlobalScript;
 
 public class RoomBedroom : RoomScript<RoomBedroom>
 {
+	bool saidLine = false;
 
+    IEnumerator OnEnterRoomAfterFade()
+    {
+		Audio.Play("Gamesoundtrack");
 
-	IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
+        // Move player to starting point
+        C.Plr.SetPosition(Point("Character"));
+
+        // Say the line only once
+        if (!saidLine)
+        {
+            saidLine = true;
+            yield return C.player_invis.Say("Weird dream… I should freshen up…");
+        }
+
+        yield return E.Break;
+    }
+    IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
 	{
+		
 		if ( hotspot.FirstLook )
 			yield return C.player_invis.Say("I cant see anything through the window");
 		else
@@ -19,19 +36,14 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 
 	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
 	{
-		yield return C.player_invis.Say("The Window is rusted shut");
-		yield return E.Break;
-	}
-
-	IEnumerator OnEnterRoomAfterFade()
-	{
-		C.Plr.SetPosition(Point("Character"));
+        Audio.Play("window");
+        yield return C.player_invis.Say("The Window is boarded shut");
 		yield return E.Break;
 	}
 
 	IEnumerator OnLookAtPropFeather( IProp prop )
 	{
-		yield return C.player_invis.Say("A Feather");
+		yield return C.player_invis.Say("A Feather, why is this here?");
 		
 		yield return E.Break;
 	}
@@ -42,12 +54,14 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 		Audio.Play("Bucket");
 		prop.Disable();
 		I.Feather.AddAsActive();
-		yield return E.Break;
+        yield return C.player_invis.Say("A white Feather...its dirty i should wash my hands");
+        yield return E.Break;
 	}
 
 	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Hallway);
+        Audio.Play("Dooropen");
+        yield return C.Plr.ChangeRoom(R.Hallway);
 		yield return E.Break;
 	}
 }
