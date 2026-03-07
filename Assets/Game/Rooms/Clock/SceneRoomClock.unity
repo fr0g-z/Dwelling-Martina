@@ -235,6 +235,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2059038, guid: dba8cdb55bc7ac6458f9a539610fe130, type: 3}
+      propertyPath: orthographic size
+      value: 541.34937
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dba8cdb55bc7ac6458f9a539610fe130, type: 3}
 --- !u!1001 &1819562457
@@ -291,6 +295,10 @@ PrefabInstance:
     - target: {fileID: 424708, guid: b254fcd8f583c324ba3da9904a492986, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2059038, guid: b254fcd8f583c324ba3da9904a492986, type: 3}
+      propertyPath: orthographic size
+      value: 538.92786
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b254fcd8f583c324ba3da9904a492986, type: 3}
@@ -362,7 +370,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 79.86137
+  field of view: 78.95843
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
