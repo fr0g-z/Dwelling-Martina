@@ -11,30 +11,63 @@ public class DollPuzzleManager : MonoBehaviour
 
     public int totalCorrectNeeded = 2;
 
-    public GameObject slot1; // the slot where doll 1 needs to go
-    public GameObject slot5; // the slot where doll 3 needs to go
+    public GameObject slot1;
+    public GameObject slot5;
 
-    // NEW: reference to the flap sprite in Unity
-    public GameObject flapSprite; // assign DollFlapSprite in the Inspector
+    public GameObject flapSprite;
     public GameObject dollsprite;
-    // Track which dolls are in which slots
-    private Dictionary<int, GameObject> currentDollSlots = new Dictionary<int, GameObject>();
 
-    // Target slots → target doll IDs
+    private Dictionary<int, GameObject> currentDollSlots = new Dictionary<int, GameObject>();
     public Dictionary<GameObject, int> targetSlots = new Dictionary<GameObject, int>();
+
+    // --- PERSISTENCE ---
+    public bool puzzleCompletedPersist = false;                     // remembers if puzzle done
+    public Dictionary<int, GameObject> persistedDollSlots = new Dictionary<int, GameObject>();   // remembers doll positions
 
     private bool puzzleComplete = false;
 
     void Awake()
     {
         Instance = this;
-        // Map slots to the target doll IDs
+
         targetSlots = new Dictionary<GameObject, int>()
         {
-            {slot1, 1}, // Doll 1 must be in slot2
-            {slot5, 3}  // Doll 3 must be in slot6
+            {slot1, 1},
+            {slot5, 3}
         };
+
+        // Restore puzzle completion
+        if (puzzleCompletedPersist)
+        {
+            puzzleComplete = true;
+
+            if (flapSprite != null)
+                flapSprite.SetActive(false);
+
+            if (dollsprite != null)
+                dollsprite.SetActive(false);
+        }
+
+        // Restore doll positions
+        foreach (var kv in persistedDollSlots)
+        {
+            int dollID = kv.Key;
+            GameObject slot = kv.Value;
+
+            if (slot != null)
+            {
+                DollDrag doll = FindDollByID(dollID);
+                if (doll != null)
+                {
+                    doll.transform.position = slot.transform.position;
+                    currentDollSlots[dollID] = slot;
+                    doll.SetLastSlot(slot); // Update lastSlot in drag script
+                }
+            }
+        }
     }
+
+    public bool IsPuzzleComplete() => puzzleComplete;
 
     public void UpdateDollSlot(int dollID, GameObject slot)
     {
@@ -42,10 +75,13 @@ public class DollPuzzleManager : MonoBehaviour
         {
             if (currentDollSlots.ContainsKey(dollID))
                 currentDollSlots.Remove(dollID);
+
+            persistedDollSlots[dollID] = null;
         }
         else
         {
             currentDollSlots[dollID] = slot;
+            persistedDollSlots[dollID] = slot;
         }
 
         CheckPuzzleComplete();
@@ -71,22 +107,20 @@ public class DollPuzzleManager : MonoBehaviour
         if (correctCount >= totalCorrectNeeded)
         {
             puzzleComplete = true;
+            puzzleCompletedPersist = true;
             PuzzleComplete();
         }
     }
 
-    
- 
-   
     private void PuzzleComplete()
     {
-        // NEW: Hide the Unity flap sprite
         if (flapSprite != null)
             flapSprite.SetActive(false);
 
         if (dollsprite != null)
-            StartCoroutine(hidedollafterdelay(1f)); // personal note: f = seconds to hide doll
-        
+            StartCoroutine(hidedollafterdelay(1f));
+
+        //Example calls from your original manager
         I.SecretDoll.AddAsActive();
         C.player_invis.Say("The Roof Opened!!");
         Debug.Log("Puzzle Complete!");
@@ -96,5 +130,15 @@ public class DollPuzzleManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         dollsprite.SetActive(false);
+    }
+
+    private DollDrag FindDollByID(int dollID)
+    {
+        foreach (DollDrag doll in FindObjectsOfType<DollDrag>())
+        {
+            if (doll.dollID == dollID)
+                return doll;
+        }
+        return null;
     }
 }
