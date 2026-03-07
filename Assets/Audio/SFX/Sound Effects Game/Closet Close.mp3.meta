@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: dba6ce6fcbdfaeb4cbb528007db39912
+labels:
+- SFX
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
