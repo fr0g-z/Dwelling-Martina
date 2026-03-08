@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_data:
-    m_description: Pin
+    m_description: Place Item Here
     m_cursor: 
     m_clickable: 1
     m_baseline: 0
@@ -610,7 +610,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_data:
-    m_description: Feather
+    m_description: Place Item Here
     m_cursor: 
     m_clickable: 1
     m_baseline: 0
@@ -642,15 +642,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -140.438, y: -447.614}
-      - {x: -140.438, y: -322.41602}
-      - {x: -130.139, y: -304.39203}
-      - {x: 162.427, y: -301.81702}
-      - {x: 185.60101, y: -429.59003}
-      - {x: 183.02602, y: -437.31503}
-      - {x: 178.15701, y: -437.31503}
-      - {x: 177.876, y: -447.614}
-      - {x: -11.693001, y: -460.489}
+    - - {x: 202.294, y: -301.415}
+      - {x: 202.294, y: -467.415}
+      - {x: -142.07501, y: -467.415}
+      - {x: -142.07501, y: -301.415}
+      - {x: 157.70201, y: -301.415}
 --- !u!1 &4987897168727568643
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,7 +850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_data:
-    m_description: TeddyBear
+    m_description: Place Item Here
     m_cursor: 
     m_clickable: 1
     m_baseline: 0
