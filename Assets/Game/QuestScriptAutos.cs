@@ -65,7 +65,6 @@ namespace PowerScript
 		public static IRoom END            { get { return PowerQuest.Get.GetRoom("END"); } }
 		public static IRoom TextDump       { get { return PowerQuest.Get.GetRoom("TextDump"); } }
 		public static IRoom Insidedollhouse { get { return PowerQuest.Get.GetRoom("Insidedollhouse"); } }
-		public static IRoom Sink           { get { return PowerQuest.Get.GetRoom("Sink"); } }
 		public static IRoom UnderTable     { get { return PowerQuest.Get.GetRoom("UnderTable"); } }
 		public static IRoom Basement       { get { return PowerQuest.Get.GetRoom("Basement"); } }
 		public static IRoom StartCutscene  { get { return PowerQuest.Get.GetRoom("StartCutscene"); } }
