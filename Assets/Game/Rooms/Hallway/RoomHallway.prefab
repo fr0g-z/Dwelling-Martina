@@ -28,8 +28,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2343362725261519382}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -1.2732, y: 3.8196, z: 0}
+  m_LocalScale: {x: 1.1351289, y: 1.0786219, z: 1}
   m_Children: []
   m_Father: {fileID: 7934567086358671709}
   m_RootOrder: 4
@@ -134,8 +134,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: cd121830980120f4ea197fa95dff4834, type: 3}
+  m_SortingOrder: -38
+  m_Sprite: {fileID: 21300000, guid: c34f07170533ed5488b566ff8396f680, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -221,6 +221,7 @@ MonoBehaviour:
   - {fileID: 7432735948952741037}
   m_animations: []
   m_sprites:
+  - {fileID: 21300000, guid: c34f07170533ed5488b566ff8396f680, type: 3}
   - {fileID: 21300000, guid: a122eeb276673834b8e6c1f22b4fdcbe, type: 3}
   - {fileID: 21300000, guid: cd121830980120f4ea197fa95dff4834, type: 3}
   m_variantShouldOverrideArt: 0
