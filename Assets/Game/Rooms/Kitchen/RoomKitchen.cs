@@ -43,4 +43,22 @@ public class RoomKitchen : RoomScript<RoomKitchen>
         yield return C.Plr.ChangeRoom(R.UnderTable);
         yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotCage( IHotspot hotspot )
+	{
+       // yield return C.Plr.ChangeRoom(R.Cage);
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotNotes( IHotspot hotspot )
+	{
+		G.Counternotes.Visible = true;
+		yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotNotes( IHotspot hotspot )
+	{
+
+		yield return E.Break;
+	}
 }

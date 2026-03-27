@@ -48,9 +48,6 @@ EditorBuildSettings:
     path: Assets/Game/Rooms/END/SceneRoomEND.unity
     guid: b6e7578160e7d744392519bff6487c8f
   - enabled: 1
-    path: Assets/Game/Rooms/TextDump/SceneRoomTextDump.unity
-    guid: e83c9127c06e77d419af42c4b22fbd94
-  - enabled: 1
     path: Assets/Game/Rooms/Insidedollhouse/SceneRoomInsidedollhouse.unity
     guid: 0a6d6709ae7279a4ea2c8d8d0ef4c643
   - enabled: 1
@@ -62,4 +59,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/StartCutscene/SceneRoomStartCutscene.unity
     guid: cbb1e674e1b1c734db13177f377fc193
+  - enabled: 1
+    path: Assets/Game/Rooms/KitchenCabinet/SceneRoomKitchenCabinet.unity
+    guid: ac2e0ff7ef57fa5499be913a33435d01
+  - enabled: 1
+    path: Assets/Game/Rooms/Cage/SceneRoomCage.unity
+    guid: 796831471812f4647834a6b137d38ff0
   m_configObjects: {}

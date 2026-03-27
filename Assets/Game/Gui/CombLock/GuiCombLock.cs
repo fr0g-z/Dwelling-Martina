@@ -82,7 +82,7 @@ public class GuiCombLock : GuiScript<GuiCombLock>
             yield return E.Break;
         }
 
-        if (Label("Input").Text == "1234")
+        if (Label("Input").Text == "2154")
         {
             updatelockbox.LockboxUnlocked = true;
             Label("Input").Text = "*UNLOCKED*";

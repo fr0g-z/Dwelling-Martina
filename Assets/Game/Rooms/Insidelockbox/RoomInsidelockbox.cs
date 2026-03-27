@@ -37,4 +37,10 @@ public class RoomInsidelockbox : RoomScript<RoomInsidelockbox>
 
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotAlbum( IHotspot hotspot )
+	{
+        G.Albumletter.Visible = true;
+        yield return E.Break;
+	}
 }

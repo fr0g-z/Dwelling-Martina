@@ -44,6 +44,9 @@ namespace PowerScript
 		public static IGui CombLock       { get { return PowerQuest.Get.GetGui("CombLock"); } }
 		public static IGui Deathdoc       { get { return PowerQuest.Get.GetGui("Deathdoc"); } }
 		public static IGui Pills          { get { return PowerQuest.Get.GetGui("Pills"); } }
+		public static IGui VanityNote     { get { return PowerQuest.Get.GetGui("VanityNote"); } }
+		public static IGui Counternotes   { get { return PowerQuest.Get.GetGui("Counternotes"); } }
+		public static IGui Albumletter    { get { return PowerQuest.Get.GetGui("Albumletter"); } }
 		// #GUI# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
@@ -63,11 +66,12 @@ namespace PowerScript
 		public static IRoom Insidelockbox  { get { return PowerQuest.Get.GetRoom("Insidelockbox"); } }
 		public static IRoom Clock          { get { return PowerQuest.Get.GetRoom("Clock"); } }
 		public static IRoom END            { get { return PowerQuest.Get.GetRoom("END"); } }
-		public static IRoom TextDump       { get { return PowerQuest.Get.GetRoom("TextDump"); } }
 		public static IRoom Insidedollhouse { get { return PowerQuest.Get.GetRoom("Insidedollhouse"); } }
 		public static IRoom UnderTable     { get { return PowerQuest.Get.GetRoom("UnderTable"); } }
 		public static IRoom Basement       { get { return PowerQuest.Get.GetRoom("Basement"); } }
 		public static IRoom StartCutscene  { get { return PowerQuest.Get.GetRoom("StartCutscene"); } }
+		public static IRoom KitchenCabinet { get { return PowerQuest.Get.GetRoom("KitchenCabinet"); } }
+		public static IRoom Cage           { get { return PowerQuest.Get.GetRoom("Cage"); } }
 		// #ROOM# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
