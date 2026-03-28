@@ -26,6 +26,7 @@ namespace PowerScript
 		public static IInventory TeddyBear      { get { return PowerQuest.Get.GetInventory("TeddyBear"); } }
 		public static IInventory Hook           { get { return PowerQuest.Get.GetInventory("Hook"); } }
 		public static IInventory SecretDoll     { get { return PowerQuest.Get.GetInventory("SecretDoll"); } }
+		public static IInventory Keyundercouch  { get { return PowerQuest.Get.GetInventory("Keyundercouch"); } }
 		// #INVENTORY# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
@@ -72,6 +73,7 @@ namespace PowerScript
 		public static IRoom StartCutscene  { get { return PowerQuest.Get.GetRoom("StartCutscene"); } }
 		public static IRoom KitchenCabinet { get { return PowerQuest.Get.GetRoom("KitchenCabinet"); } }
 		public static IRoom Cage           { get { return PowerQuest.Get.GetRoom("Cage"); } }
+		public static IRoom UnderCouch     { get { return PowerQuest.Get.GetRoom("UnderCouch"); } }
 		// #ROOM# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 

@@ -51,6 +51,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: f2253f00d386f234c87af1b1c9607ee0, type: 3}
   - {fileID: 21300000, guid: 65796a31e4a93504f8332926987fcd44, type: 3}
+  - {fileID: 21300000, guid: cee749637ad11314ea0cccc42fef93e4, type: 3}
   - {fileID: 21300000, guid: dd8b01e45c43e4047a86862b8960549f, type: 3}
   - {fileID: 21300000, guid: b9742215e0e78b94a9147ecc6e3d978c, type: 3}
   - {fileID: 21300000, guid: 30076d355b0a9c049ab08f06198eb054, type: 3}
@@ -62,6 +63,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - MumsPin
   - BucketCursorInactive_0
+  - Keyundercouchinv
   - Featherinv
   - SecretDollinv
   - Norbert

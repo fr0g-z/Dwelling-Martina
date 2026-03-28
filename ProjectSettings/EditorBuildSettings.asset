@@ -65,4 +65,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Game/Rooms/Cage/SceneRoomCage.unity
     guid: 796831471812f4647834a6b137d38ff0
+  - enabled: 1
+    path: Assets/Game/Rooms/UnderCouch/SceneRoomUnderCouch.unity
+    guid: e5648d158997d544890d432d234b7e04
   m_configObjects: {}

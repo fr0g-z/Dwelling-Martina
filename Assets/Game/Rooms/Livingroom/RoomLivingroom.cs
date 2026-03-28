@@ -40,4 +40,10 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotUnderCouch( IHotspot hotspot )
+	{
+		yield return E.ChangeRoom(R.UnderCouch);
+		yield return E.Break;
+	}
 }

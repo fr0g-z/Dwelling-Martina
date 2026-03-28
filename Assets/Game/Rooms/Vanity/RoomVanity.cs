@@ -118,4 +118,10 @@ public class RoomVanity : RoomScript<RoomVanity>
         G.VanityNote.Visible = true;
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotFeather( IHotspot hotspot )
+	{
+
+		yield return E.Break;
+	}
 }

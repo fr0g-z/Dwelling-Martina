@@ -46,7 +46,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotCage( IHotspot hotspot )
 	{
-       // yield return C.Plr.ChangeRoom(R.Cage);
+        yield return C.Plr.ChangeRoom(R.Cage);
         yield return E.Break;
 	}
 
