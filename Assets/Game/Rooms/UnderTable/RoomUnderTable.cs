@@ -28,7 +28,15 @@ public class RoomUnderTable : RoomScript<RoomUnderTable>
 
 	IEnumerator OnInteractHotspotBasement( IHotspot hotspot )
 	{
-        yield return C.Plr.ChangeRoom(R.Basement);
+        if (ItemsPlaced.SecretSolution)
+        {
+            C.Plr.ChangeRoom(R.Basement);
+            yield return E.Break;
+        }
+        else
+        {
+            C.player_invis.Say("The Latch is locked.");
+        }
         yield return E.Break;
-	}
+    }
 }

@@ -17,18 +17,42 @@ public class RoomVanity : RoomScript<RoomVanity>
 
     // Feather hotspot
     IEnumerator OnUseInvHotspotFeather(IHotspot hotspot, IInventory item)
-    {
+    {       
+        if (item.ScriptName == "SecretDoll" && !ItemsPlaced.SecretDollPlaced)
+        {
+            item.Remove();
+            ItemsPlaced.SecretDollPlaced = true;
+
+            Prop("SecretDoll").Show();
+            C.player_invis.Say("...this feels wrong.");
+           
+            if (ItemsPlaced.SecretSolution)
+            {
+                C.player_invis.Say("Something opened... somewhere else.");
+                Audio.Play("DoorOpen");
+                Hotspot("Feather").Disable();
+
+                //Prop("BasementDoorClosed").Hide();
+                //Prop("BasementDoorOpen").Show();
+            }
+
+            yield return E.Break;
+            yield break;
+        }
+
         if (item.ScriptName == "Feather" && !ItemsPlaced.FeatherPlaced)
-        {       
-            item.Remove(); 
+        {
+            item.Remove();
             ItemsPlaced.FeatherPlaced = true;
             Prop("Feather").Show();
             C.player_invis.Say("Feather placed!");
+            Hotspot("Feather").Disable();
         }
         else
         {
             C.player_invis.Say("Wrong item!");
         }
+
         if (ItemsPlaced.AllItemsPlaced)
         {
             C.player_invis.Say("Something Opened!");

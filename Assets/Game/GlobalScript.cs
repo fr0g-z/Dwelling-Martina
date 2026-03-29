@@ -315,15 +315,22 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		public static bool PinPlaced = false;
 		public static bool TeddyPlaced = false;
 		public static bool FeatherPlaced = false;
-
-		public static bool AllItemsPlaced
+        public static bool SecretDollPlaced = false;
+        public static bool AllItemsPlaced
 		{
 			get
 			{
 				return PinPlaced && TeddyPlaced && FeatherPlaced;
 			}
 		}
-	}
+        public static bool SecretSolution
+        {
+            get
+            {
+                return SecretDollPlaced && TeddyPlaced && PinPlaced;
+            }
+        }
+    }
 
 	public class ShowerSplash : MonoBehaviour
 	{
