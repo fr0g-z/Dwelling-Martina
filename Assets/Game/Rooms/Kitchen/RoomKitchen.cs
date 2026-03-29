@@ -61,4 +61,10 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotCabinet( IHotspot hotspot )
+	{
+		yield return C.Plr.ChangeRoom(R.KitchenCabinet);
+		yield return E.Break;
+	}
 }
