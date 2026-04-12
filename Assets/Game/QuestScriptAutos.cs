@@ -38,9 +38,7 @@ namespace PowerScript
 		public static IGui HoverText  { get { return PowerQuest.Get.GetGui("HoverText"); } }
 		public static IGui DisplayBox    { get { return PowerQuest.Get.GetGui("DisplayBox"); } }
 		public static IGui Prompt         { get { return PowerQuest.Get.GetGui("Prompt"); } }
-		public static IGui Toolbar          { get { return PowerQuest.Get.GetGui("Toolbar"); } }
 		public static IGui InventoryBar   { get { return PowerQuest.Get.GetGui("InventoryBar"); } }
-		public static IGui Options        { get { return PowerQuest.Get.GetGui("Options"); } }
 		public static IGui Save           { get { return PowerQuest.Get.GetGui("Save"); } }
 		public static IGui CombLock       { get { return PowerQuest.Get.GetGui("CombLock"); } }
 		public static IGui Deathdoc       { get { return PowerQuest.Get.GetGui("Deathdoc"); } }
@@ -48,6 +46,7 @@ namespace PowerScript
 		public static IGui VanityNote     { get { return PowerQuest.Get.GetGui("VanityNote"); } }
 		public static IGui Counternotes   { get { return PowerQuest.Get.GetGui("Counternotes"); } }
 		public static IGui Albumletter    { get { return PowerQuest.Get.GetGui("Albumletter"); } }
+		public static IGui BedNote        { get { return PowerQuest.Get.GetGui("BedNote"); } }
 		// #GUI# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 

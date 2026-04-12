@@ -35,4 +35,10 @@ public class RoomMom_room : RoomScript<RoomMom_room>
 		yield return C.Plr.ChangeRoom(R.Closet);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotNote( IHotspot hotspot )
+	{
+        G.BedNote.Visible = true;
+		yield return E.Break;
+	}
 }

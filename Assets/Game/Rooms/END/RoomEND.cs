@@ -10,7 +10,7 @@ public class RoomEND : RoomScript<RoomEND>
     {
         Audio.Stop("Gamesoundtrack");
         G.InventoryBar.Hide();
-        G.Toolbar.Hide();
+        
 
 
     }

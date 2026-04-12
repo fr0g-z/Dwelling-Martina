@@ -19,7 +19,7 @@ public class RoomCage : RoomScript<RoomCage>
     {
         if (item == I.Keyundercouch)
         {
-            C.player_invis.Say("What The Dog Doin.");
+            C.player_invis.Say("i remember this bird..why is it here?");
             prop.Disable();
             Prop("Dooropen").Enable();
             item.Remove();

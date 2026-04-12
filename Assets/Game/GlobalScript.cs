@@ -109,7 +109,7 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		{
 			// Show menu gui
 			if ( Input.GetKeyDown(KeyCode.F1) )
-				G.Options.Show();
+				
 		
 			// Quicksave
 			if ( Input.GetKeyDown(KeyCode.F5) )
