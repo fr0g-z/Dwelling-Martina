@@ -30,6 +30,9 @@ public class RoomUnderTable : RoomScript<RoomUnderTable>
 	{
         if (ItemsPlaced.SecretSolution)
         {
+            Prop("BasementDoorClosed").Hide();
+            Prop("BasementDoorOpen").Show();
+
             C.Plr.ChangeRoom(R.Basement);
             yield return E.Break;
         }
@@ -38,5 +41,15 @@ public class RoomUnderTable : RoomScript<RoomUnderTable>
             C.player_invis.Say("The Latch is locked.");
         }
         yield return E.Break;
+    }
+
+    void OnEnterRoom()
+    {
+        if (ItemsPlaced.SecretSolution)
+        {
+            Prop("BasementDoorClosed").Hide();
+            Prop("BasementDoorOpen").Show();
+        }
+
     }
 }

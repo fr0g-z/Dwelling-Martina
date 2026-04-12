@@ -24,7 +24,7 @@ public class RoomVanity : RoomScript<RoomVanity>
             ItemsPlaced.SecretDollPlaced = true;
 
             Prop("SecretDoll").Show();
-            C.player_invis.Say("...this feels wrong.");
+            C.player_invis.Say("Future");
            
             if (ItemsPlaced.SecretSolution)
             {
@@ -32,8 +32,7 @@ public class RoomVanity : RoomScript<RoomVanity>
                 Audio.Play("DoorOpen");
                 Hotspot("Feather").Disable();
 
-                R.RoomUnderTable.Prop("BasementDoorClosed").Hide();
-                R.RoomUnderTable.Prop("BasementDoorOpen").Show();
+               
             }
 
             yield return E.Break;
@@ -45,7 +44,7 @@ public class RoomVanity : RoomScript<RoomVanity>
             item.Remove();
             ItemsPlaced.FeatherPlaced = true;
             Prop("Feather").Show();
-            C.player_invis.Say("Feather placed!");
+            C.player_invis.Say("Future");
             Hotspot("Feather").Disable();
         }
         else
@@ -71,7 +70,7 @@ public class RoomVanity : RoomScript<RoomVanity>
             item.Remove();
             ItemsPlaced.TeddyPlaced = true;
             Prop("Teddybear").Show();
-            C.player_invis.Say("TeddyBear placed!");
+            C.player_invis.Say("Past");
         }
         else
         {
@@ -82,6 +81,15 @@ public class RoomVanity : RoomScript<RoomVanity>
         {
             C.player_invis.Say("Something Opened!");
             Audio.Play("DoorOpen");
+        }
+
+        if (ItemsPlaced.SecretSolution)
+        {
+            C.player_invis.Say("Something opened... somewhere else.");
+            Audio.Play("DoorOpen");
+            Hotspot("Feather").Disable();
+
+
         }
 
         yield return E.Break;
@@ -95,7 +103,7 @@ public class RoomVanity : RoomScript<RoomVanity>
             item.Remove();
             ItemsPlaced.PinPlaced = true;
             Prop("MumsPin").Show();
-            C.player_invis.Say("Pin placed!");
+            C.player_invis.Say("Present");
         }
         else
         {
@@ -106,6 +114,15 @@ public class RoomVanity : RoomScript<RoomVanity>
         {
             C.player_invis.Say("Something Opened!");
             Audio.Play("DoorOpen");
+        }
+
+        if (ItemsPlaced.SecretSolution)
+        {
+            C.player_invis.Say("Something opened... somewhere else.");
+            Audio.Play("DoorOpen");
+            Hotspot("Feather").Disable();
+
+
         }
 
         yield return E.Break;

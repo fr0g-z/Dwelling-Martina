@@ -342,4 +342,5 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
     {
         public static bool DollhouseDone = false;
     }
+
 }
