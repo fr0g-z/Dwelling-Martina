@@ -263,7 +263,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!21 &1532283413
+--- !u!21 &1719363704
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
