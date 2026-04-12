@@ -29,11 +29,19 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
         yield return E.Break;
 	}
 
-	IEnumerator OnInteractHotspotDollhouse( IHotspot hotspot )
+	IEnumerator OnInteractHotspotDollhouse( IHotspot hotspot)
 	{
-        yield return E.ChangeRoom(R.Insidedollhouse);
+		if (DollHouseDone.DollhouseDone == true)
+		{
+			C.player_invis.Say("I dont have anymore time to play");
+			yield return E.Break;
+		}
+		else
+		{
+			yield return E.ChangeRoom(R.Insidedollhouse);
+		}
         yield return E.Break;
-	}
+    }
 
 	IEnumerator OnLookAtHotspotDollhouse( IHotspot hotspot )
 	{

@@ -32,8 +32,8 @@ public class RoomVanity : RoomScript<RoomVanity>
                 Audio.Play("DoorOpen");
                 Hotspot("Feather").Disable();
 
-                //Prop("BasementDoorClosed").Hide();
-                //Prop("BasementDoorOpen").Show();
+                R.RoomUnderTable.Prop("BasementDoorClosed").Hide();
+                R.RoomUnderTable.Prop("BasementDoorOpen").Show();
             }
 
             yield return E.Break;

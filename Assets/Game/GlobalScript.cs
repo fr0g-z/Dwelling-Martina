@@ -236,19 +236,20 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 		}
 	}
 
-    ////////////////////////////////////////////////////////////////////////////////////
-    // Unhandled interactions
+	////////////////////////////////////////////////////////////////////////////////////
+	// Unhandled interactions
 
-    /// Called when player interacted with something that had not specific "interact" script
-    public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
-    {
-        if (G.Deathdoc.Visible)
-            yield break;  
+	/// Called when player interacted with something that had not specific "interact" script
+	public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
+	{
+		if (G.Deathdoc.Visible)
+		yield break;
 
-		if (G.Pills.Visible);
-            yield break;
-
-        // existing logic
+		if (G.Pills.Visible) 
+		yield break;
+	}
+    public IEnumerator handledInteract(IQuestClickable mouseOver)
+	{   // existing logic
         if (mouseOver.ClickableType == eQuestClickableType.Inventory)
         {
             E.ActiveInventory = (IInventory)mouseOver;

@@ -89,6 +89,7 @@ public class DollPuzzleManager : MonoBehaviour
 
     private void CheckPuzzleComplete()
     {
+                
         if (puzzleComplete) return;
 
         int correctCount = 0;
@@ -124,6 +125,7 @@ public class DollPuzzleManager : MonoBehaviour
         I.SecretDoll.AddAsActive();
         C.player_invis.Say("The Roof Opened!!");
         Debug.Log("Puzzle Complete!");
+        DollHouseDone.DollhouseDone = true;
     }
 
     private IEnumerator hidedollafterdelay(float delay)
