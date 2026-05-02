@@ -45,4 +45,16 @@ public class RoomBathroom : RoomScript<RoomBathroom>
         yield return E.Break;
 	}
 
+
+	IEnumerator OnInteractHotspotMirror( IHotspot hotspot )
+	{
+        G.Bathmirror.Visible = true;
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotMirror( IHotspot hotspot )
+	{
+        C.player_invis.Say("Its covered...");
+        yield return E.Break;
+	}
 }

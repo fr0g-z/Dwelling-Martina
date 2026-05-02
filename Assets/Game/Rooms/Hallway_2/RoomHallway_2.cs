@@ -63,4 +63,10 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
         yield return C.Plr.ChangeRoom(R.Clock);
         yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotPainting( IHotspot hotspot )
+	{
+        G.Painting.Visible = true;
+        yield return E.Break;
+	}
 }

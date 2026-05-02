@@ -47,6 +47,11 @@ namespace PowerScript
 		public static IGui Counternotes   { get { return PowerQuest.Get.GetGui("Counternotes"); } }
 		public static IGui Albumletter    { get { return PowerQuest.Get.GetGui("Albumletter"); } }
 		public static IGui BedNote        { get { return PowerQuest.Get.GetGui("BedNote"); } }
+		public static IGui Bathmirror     { get { return PowerQuest.Get.GetGui("Bathmirror"); } }
+		public static IGui Bloodynote     { get { return PowerQuest.Get.GetGui("Bloodynote"); } }
+		public static IGui Floordrawing   { get { return PowerQuest.Get.GetGui("Floordrawing"); } }
+		public static IGui Walldrawing    { get { return PowerQuest.Get.GetGui("Walldrawing"); } }
+		public static IGui Painting       { get { return PowerQuest.Get.GetGui("Painting"); } }
 		// #GUI# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 

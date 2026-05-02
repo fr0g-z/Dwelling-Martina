@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using PowerTools.Quest;
 using PowerScript;
@@ -85,5 +85,17 @@ public class RoomBedroom : RoomScript<RoomBedroom>
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Hallway);
 		yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotFloordrawing( IHotspot hotspot )
+	{
+        G.Floordrawing.Visible = true;
+		yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotHanginpic( IHotspot hotspot )
+	{
+        G.Walldrawing.Visible = true;
+        yield return E.Break;
 	}
 }

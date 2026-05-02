@@ -54,4 +54,31 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 		yield return E.ChangeRoom(R.UnderCouch);
 		yield return E.Break;
 	}
+
+	IEnumerator OnInteractHotspotNOTE_TABLE( IHotspot hotspot )
+	{
+        {
+            G.BedNote.Visible = true;
+            yield return E.Break;
+        }
+        
+	}
+
+	IEnumerator OnLookAtHotspotNOTE_TABLE( IHotspot hotspot )
+	{
+
+		yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotBloodynote( IHotspot hotspot )
+	{
+		G.Bloodynote.Visible = true;
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotPlant( IHotspot hotspot )
+	{
+		yield return E.Break;
+
+    }
 }
