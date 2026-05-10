@@ -21,52 +21,52 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
         yield return E.Break;
     }
 
-    IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
+    {
         Audio.Play("hallwayfootsteps");
         yield return C.Plr.ChangeRoom(R.Hallway);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotMom_bedroom( IHotspot hotspot )
-	{
-        
+    IEnumerator OnInteractHotspotMom_bedroom(IHotspot hotspot)
+    {
+
         if (ShowerSplash.ShowerSplashed == false)
-		{
-			Audio.Play("lockeddoor");
-			yield return C.player_invis.Say("I Should Probably Freshen up");
-		}
-		else
-		{
+        {
+            Audio.Play("lockeddoor");
+            yield return C.player_invis.Say("I Should Probably Freshen up");
+        }
+        else
+        {
             Audio.Play("Dooropen");
             yield return C.Plr.ChangeRoom(R.Mom_room);
-			yield return E.Break;
-		}
-	}
+            yield return E.Break;
+        }
+    }
 
-	IEnumerator OnInteractHotspotBathroom( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotBathroom(IHotspot hotspot)
+    {
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Bathroom);
-		    yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotKitchen( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotKitchen(IHotspot hotspot)
+    {
         Audio.Play("hallwayfootsteps");
         yield return C.Plr.ChangeRoom(R.Kitchen);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotClock( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotClock(IHotspot hotspot)
+    {
         yield return C.Plr.ChangeRoom(R.Clock);
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotPainting( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotPainting(IHotspot hotspot)
+    {
         G.Painting.Visible = true;
         yield return E.Break;
-	}
+    }
 }

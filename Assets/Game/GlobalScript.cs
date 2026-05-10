@@ -4,343 +4,334 @@ using System.Collections.Generic;
 using PowerScript;
 using PowerTools.Quest;
 
-///	Global Script: The home for your game specific logic
-/**		
- * - The functions in this script are used in every room in your game.
- * - Add your own variables and functions in here and you can access them with `Globals.` (eg: `Globals.m_myCoolInteger`)
- * - If you've used Adventure Game Studio, this is equivalent to the Global Script in that
-*/
-
+/// <summary>
+/// Global Script — contains game-wide logic, variables, and unhandled interaction fallbacks.
+/// Accessible from any room or script via Globals.
+/// Equivalent to AGS's Global Script.
+/// </summary>
 public partial class GlobalScript : GlobalScriptBase<GlobalScript>
 {
     ////////////////////////////////////////////////////////////////////////////////////
-    // Global Game Variables
+    // Enums
 
-    /// Just an example of using an enum for game state.
-    /// This can be accessed from other scripts, eg: if ( Globals.m_progressExample == eProgress.DrankWater )...
+    /// <summary>Tracks overall game progression state.</summary>
     public enum eProgress
-	{
-		None,
-		GotWater,
-		DrankWater,
-		WonGame
-	};
-	public eProgress m_progressExample = eProgress.None;
-	
-	/// Just an example of using a global variable that can be accessed in any room with `Globals.m_spokeToBarney`.
-	/// All variables like this in Quest Scripts are automatically saved
-	public bool m_spokeToBarney = false;
-	
-	////////////////////////////////////////////////////////////////////////////////////
-	// Global Game Functions
-	
-	/// Called when game first starts
-	public void OnGameStart()
-	{     
-	} 
+    {
+        None,
+        GotWater,
+        DrankWater,
+        WonGame
+    }
 
-	/// Called after restoring a game. Use this if you need to update any references based on saved data.
-	public void OnPostRestore(int version)
-	{
-	}
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Global Variables
+    // All public variables here are automatically saved by PowerQuest.
 
-	/// Blocking script called whenever you enter a room, before fading in. Non-blocking functions only
-	public void OnEnterRoom()
-	{
-	}
+    public eProgress m_progressExample = eProgress.None;
+    public bool m_spokeToBarney = false;
 
-	/// Blocking script called whenever you enter a room, after fade in is complete
-	public IEnumerator OnEnterRoomAfterFade()
-	{
-		yield return E.Break;
-	}
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Game Lifecycle
 
-	/// Blocking script called whenever you exit a room, as it fades out
-	public IEnumerator OnExitRoom( IRoom oldRoom, IRoom newRoom )
-	{
-		yield return E.Break;
-	} 
+    /// <summary>Called once when the game first starts.</summary>
+    public void OnGameStart()
+    {
+    }
 
-	/// Blocking script called every frame when nothing's blocking, you can call blocking functions in here that you'd like to occur anywhere in the game
-	public IEnumerator UpdateBlocking()
-	{
-		// Add anything that should happen every frame when nothing's blocking the script here.
-		yield return E.Break;
-	}
+    /// <summary>Called after a save game is restored. Re-initialize any non-saved references here.</summary>
+    public void OnPostRestore(int version)
+    {
+    }
 
-	/// Called every frame. Non-blocking functions only
-	public void Update()
-	{
-		// Add anything that should happen every frame here.
-	}	
+    /// <summary>Called before fade-in when entering any room. Non-blocking only.</summary>
+    public void OnEnterRoom()
+    {
+    }
 
-	/// Called every frame, even when paused. Non-blocking functions only
-	public void UpdateNoPause()
-	{	
-		// Add anything that should happen every frame, even when paused, here.
-		
-		// Update keyboard/mouse shortcuts
-		UpdateInput();
-			
-	}
- 	
-	/// Update keyboard and mouse shortcuts
-	void UpdateInput()
-	{	
-		// Add any custom keyboard/mouse shortcuts here
-		
-		// Set up a debug key
-		bool debugKeyHeld = E.IsDebugBuild && (Input.GetKey(KeyCode.BackQuote) || Input.GetKey(KeyCode.Backslash));
-		
-		if ( E.Paused == false )
-		{
-			// Skip cutscene if escape key released. (done on release, so that it can also be used to skip dialog while down)
-			if ( Input.GetKeyUp(KeyCode.Escape) )
-				E.SkipCutscene();
-		
-			// Skip dialog buttons
-			if ( Input.GetMouseButtonDown(0) )
-				E.SkipDialog(true); // Skip dialog with left click (if it's been up for long enough)
-			if ( Input.GetKey(KeyCode.Escape) || Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Space) )
-				E.SkipDialog(false); // Alternate skip buttons don't have the delay built in. Hold escape to skip through really quick
-		}
-		
-		if ( E.GetBlocked() == false && E.Paused == false )
-		{
-			// Show menu gui
-			if ( Input.GetKeyDown(KeyCode.F1) )
-				
-		
-			// Quicksave
-			if ( Input.GetKeyDown(KeyCode.F5) )
-				E.Save(1, "Quicksave");
-		
-			// Quickload
-			if (  Input.GetKeyDown(KeyCode.F7) )
-				E.RestoreSave(1);
-		
-			// Restart
-			if ( Input.GetKeyDown(KeyCode.F9) )
-			{
-				if ( debugKeyHeld ) // Holding ~ + F9 sets flag to restart at current room
-					E.Restart( E.GetCurrentRoom(), E.GetCurrentRoom().Instance.m_debugStartFunction );
-				else
-					E.Restart();
-			}
-		}
-		
-		// Call through to gui system for keyboard navigation
-		if ( Input.GetKey(KeyCode.UpArrow) )
-			E.NavigateGui(eGuiNav.Up);
-		if ( Input.GetKey(KeyCode.DownArrow) )
-			E.NavigateGui(eGuiNav.Down);
-		if ( Input.GetKey(KeyCode.RightArrow) )
-			E.NavigateGui(eGuiNav.Right);
-		if ( Input.GetKey(KeyCode.LeftArrow) )
-			E.NavigateGui(eGuiNav.Left);
-		
-		if ( Input.GetKeyDown(KeyCode.Return) )
-			E.NavigateGui(eGuiNav.Ok);
-		if ( Input.GetKeyDown(KeyCode.Escape) )
-			E.NavigateGui(eGuiNav.Cancel);
-		
-		
-		// Debug keys
-		if ( debugKeyHeld )
-		{
-			// Cheat to Give all items
-			if ( Input.GetKeyDown(KeyCode.I) )
-				PowerQuest.Get.GetInventoryItems_SaveFlagNotDirtied().ForEach(item=>item.Owned = true);
-		
-			// Cheats to speed up/slow down time
-			if ( Input.GetKeyDown(KeyCode.PageDown) )
-				Systems.Time.SetDebugTimeMultiplier( Systems.Time.GetDebugTimeMultiplier()*0.8f );
-			if ( Input.GetKeyDown(KeyCode.PageUp) )
-				Systems.Time.SetDebugTimeMultiplier( Systems.Time.GetDebugTimeMultiplier() + 0.2f );
-			if ( Input.GetKeyDown(KeyCode.End) )
-				Systems.Time.SetDebugTimeMultiplier( 1.0f );
-		}
-		
-		// This one makes holding '.' while debugging speed the game up and skip over text.
-		if ( E.IsDebugBuild && Input.GetKeyDown(KeyCode.Period) )
-			Systems.Time.SetDebugTimeMultiplier(4);
-		else if ( E.IsDebugBuild && Input.GetKeyUp(KeyCode.Period) )
-			Systems.Time.SetDebugTimeMultiplier(1);
-		if ( E.IsDebugBuild && Input.GetKey(KeyCode.Period) )
-			E.SkipDialog(false);
-		
-	}
+    /// <summary>Called after fade-in completes when entering any room.</summary>
+    public IEnumerator OnEnterRoomAfterFade()
+    {
+        yield return E.Break;
+    }
 
-	/// Blocking script called whenever the player clicks anywwere. This function is called before any other click interaction. If this function blocks, it will stop any other interaction from happening.
-	public IEnumerator OnAnyClick()
-	{
-		yield return E.Break;
-	}
+    /// <summary>Called as any room fades out on exit.</summary>
+    public IEnumerator OnExitRoom(IRoom oldRoom, IRoom newRoom)
+    {
+        yield return E.Break;
+    }
 
-	/// Blocking script called whenever the player tries to walk somewhere. Even if `C.Player.Moveable` is set to false.
-	public IEnumerator OnWalkTo()
-	{
-		yield return E.Break;
-	}
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Update Loops
 
-	/// Called when the mouse is clicked in the game screen. Use this to customise your game interface by calling E.ProcessClick() with the verb that should be used. By default this is set up for a 2 click interface
-	public void OnMouseClick( bool leftClick, bool rightClick )
-	{
-		bool mouseOverSomething = E.GetMouseOverClickable() != null;
-		
-		// Check if should clear inventory
-		if ( C.Plr.HasActiveInventory && ( rightClick || (mouseOverSomething == false && leftClick ) || Cursor.NoneCursorActive ) )
-		{
-			// Clear inventory on Right click, or left click on empty space, or on hotspot with cursor set to "None"
-			I.Active = null;
-		}
-		else if ( Cursor.NoneCursorActive ) // Checks if cursor is set to "None"
-		{
-			// Special case for clickables with cursor set to "None"- Don't do anything
-		}
-		else if ( E.GetMouseOverType() == eQuestClickableType.Gui )  // Checks if clicked on a gui
-		{
-			// Clicked on a gui - Don't do anything
-		}
-		else if ( leftClick ) // Checks if player left clicked
-		{
-			if ( mouseOverSomething ) // Check if they clicked on anything
-			{
-				if ( C.Plr.HasActiveInventory && Cursor.InventoryCursorOverridden == false )
-				{
-					// Left click with active inventory, use the inventory item
-					E.ProcessClick( eQuestVerb.Inventory );
-				}
-				else if ( E.GetMouseOverType() == eQuestClickableType.Inventory )
-				{
-					// Left clicked on inventory item, make it the active item. Remove this "if statement" if you want to be able to "use" items by clicking on them
-					I.Active = (IInventory)E.GetMouseOverClickable();
-				}
-				else
-				{
-					// Left click on item, so use it
-					E.ProcessClick(eQuestVerb.Use);
-				}
-			}
-			else  // They've clicked empty space
-			{
-				// Left click empty space, so walk
-				E.ProcessClick( eQuestVerb.Walk );
-			}
-		}
-		else if ( rightClick )
-		{
-			// If right clicked something, look at it (if 'look' enabled in PowerQuest Settings)
-			if ( mouseOverSomething )
-				E.ProcessClick( eQuestVerb.Look );
-		}
-	}
+    /// <summary>Blocking update — runs every frame when nothing else is blocking the script.</summary>
+    public IEnumerator UpdateBlocking()
+    {
+        yield return E.Break;
+    }
 
-	////////////////////////////////////////////////////////////////////////////////////
-	// Unhandled interactions
+    /// <summary>Non-blocking update — runs every frame.</summary>
+    public void Update()
+    {
+    }
 
-	/// Called when player interacted with something that had not specific "interact" script
-	public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
-	{
-		if (G.Deathdoc.Visible)
-		yield break;
+    /// <summary>Non-blocking update — runs every frame, even when the game is paused.</summary>
+    public void UpdateNoPause()
+    {
+        UpdateInput();
+    }
 
-		if (G.Pills.Visible) 
-		yield break;
-	}
-    public IEnumerator handledInteract(IQuestClickable mouseOver)
-	{   // existing logic
-        if (mouseOver.ClickableType == eQuestClickableType.Inventory)
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Input
+
+    /// <summary>Handles all keyboard shortcuts and debug controls.</summary>
+    void UpdateInput()
+    {
+        bool debugKeyHeld = E.IsDebugBuild &&
+            (Input.GetKey(KeyCode.BackQuote) || Input.GetKey(KeyCode.Backslash));
+
+        if (!E.Paused)
         {
-            E.ActiveInventory = (IInventory)mouseOver;
+            // Skip cutscene on Escape release (release allows it to also skip dialog while held)
+            if (Input.GetKeyUp(KeyCode.Escape))
+                E.SkipCutscene();
+
+            // Skip dialog — left click has a built-in delay to avoid accidental skips
+            if (Input.GetMouseButtonDown(0))
+                E.SkipDialog(true);
+            if (Input.GetKey(KeyCode.Escape) || Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Space))
+                E.SkipDialog(false);
         }
-        else
+
+        if (!E.GetBlocked() && !E.Paused)
         {
-            int option = E.Occurrence("unhandledInteract") % 3;
-            if (option == 0)
-                yield return C.Display("You can't use that");
-            else if (option == 1)
-                yield return C.Display("That doesn't work");
-            else if (option == 2)
-                yield return C.Display("Nothing happened");
+            // F1 — show menu (hook up your menu GUI here)
+            // if (Input.GetKeyDown(KeyCode.F1))
+            //     G.YourMenuGui.Visible = true;
+
+            if (Input.GetKeyDown(KeyCode.F5))
+                E.Save(1, "Quicksave");
+
+            if (Input.GetKeyDown(KeyCode.F7))
+                E.RestoreSave(1);
+
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                if (debugKeyHeld)
+                    E.Restart(E.GetCurrentRoom(), E.GetCurrentRoom().Instance.m_debugStartFunction);
+                else
+                    E.Restart();
+            }
+        }
+
+        // GUI keyboard navigation
+        if (Input.GetKey(KeyCode.UpArrow)) E.NavigateGui(eGuiNav.Up);
+        if (Input.GetKey(KeyCode.DownArrow)) E.NavigateGui(eGuiNav.Down);
+        if (Input.GetKey(KeyCode.RightArrow)) E.NavigateGui(eGuiNav.Right);
+        if (Input.GetKey(KeyCode.LeftArrow)) E.NavigateGui(eGuiNav.Left);
+        if (Input.GetKeyDown(KeyCode.Return)) E.NavigateGui(eGuiNav.Ok);
+        if (Input.GetKeyDown(KeyCode.Escape)) E.NavigateGui(eGuiNav.Cancel);
+
+        // Debug-only shortcuts
+        if (debugKeyHeld)
+        {
+            // Give all inventory items
+            if (Input.GetKeyDown(KeyCode.I))
+                PowerQuest.Get.GetInventoryItems_SaveFlagNotDirtied().ForEach(item => item.Owned = true);
+
+            // Time scale controls
+            if (Input.GetKeyDown(KeyCode.PageDown))
+                Systems.Time.SetDebugTimeMultiplier(Systems.Time.GetDebugTimeMultiplier() * 0.8f);
+            if (Input.GetKeyDown(KeyCode.PageUp))
+                Systems.Time.SetDebugTimeMultiplier(Systems.Time.GetDebugTimeMultiplier() + 0.2f);
+            if (Input.GetKeyDown(KeyCode.End))
+                Systems.Time.SetDebugTimeMultiplier(1.0f);
+        }
+
+        // Hold '.' to speed through game during debug
+        if (E.IsDebugBuild)
+        {
+            if (Input.GetKeyDown(KeyCode.Period))
+                Systems.Time.SetDebugTimeMultiplier(4);
+            else if (Input.GetKeyUp(KeyCode.Period))
+                Systems.Time.SetDebugTimeMultiplier(1);
+
+            if (Input.GetKey(KeyCode.Period))
+                E.SkipDialog(false);
         }
     }
-    /// Called when player looked at something that had not specific "Look at" script
-    public IEnumerator UnhandledLookAt(IQuestClickable mouseOver)
-	{
-		// This function is called when the player looks at something that doesn't have a response
-		
-		// In the title screen we don't want any response when looking at things, so we 'return' to stop the script
-		if ( R.Current.ScriptName == "Title")
-			yield break;
-		
-		// This bit of logic randomly chooses between three options
-		int option = Random.Range(0,3);
-		if ( option == 0 )
-			yield return C.Display("It's nothing interesting");
-		else if ( option == 1 )
-			yield return C.Display("You don't see anything");
-		else if ( option == 2 ) // in this one we do some fancy manipulation to include the name of what was clicked
-			yield return C.Display($"The {mouseOver.Description.ToLower()} isn't very interesting");
-	}
 
-	/// Called when player used one inventory item on another that doesn't have a response
-	public IEnumerator UnhandledUseInvInv(Inventory invA, Inventory invB)
-	{
-		// Called when player used one inventory item on another that doesn't have a response
-		yield return C.Display( "You can't use those together" ); 
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Click Handling
 
-	}
-
-	/// Called when player used inventory on something that didn't have a response
-	public IEnumerator UnhandledUseInv(IQuestClickable mouseOver, Inventory item)
-	{		
-		// This function is called when the uses an item on things that don't have a response
-		yield return C.Display( "that doesnt go there" ); 
-	}
-
-    public class updatelockbox : MonoBehaviour
+    /// <summary>
+    /// Called before any other click interaction fires.
+    /// Block here to intercept all clicks globally.
+    /// </summary>
+    public IEnumerator OnAnyClick()
     {
-        // This variable will persist across rooms and scripts
+        yield return E.Break;
+    }
+
+    /// <summary>Called whenever the player tries to walk, even if Moveable is false.</summary>
+    public IEnumerator OnWalkTo()
+    {
+        yield return E.Break;
+    }
+
+    /// <summary>
+    /// Main mouse click handler. Determines which verb to fire based on context.
+    /// Two-click interface: left click = Use/Walk, right click = Look.
+    /// </summary>
+    public void OnMouseClick(bool leftClick, bool rightClick)
+    {
+        bool mouseOverSomething = E.GetMouseOverClickable() != null;
+
+        if (C.Plr.HasActiveInventory &&
+            (rightClick || (!mouseOverSomething && leftClick) || Cursor.NoneCursorActive))
+        {
+            // Deselect inventory on: right click, left click on empty space, or None cursor
+            I.Active = null;
+        }
+        else if (Cursor.NoneCursorActive)
+        {
+            // None cursor active — suppress all interaction
+        }
+        else if (E.GetMouseOverType() == eQuestClickableType.Gui)
+        {
+            // GUI element clicked — let the GUI handle it
+        }
+        else if (leftClick)
+        {
+            if (mouseOverSomething)
+            {
+                if (C.Plr.HasActiveInventory && !Cursor.InventoryCursorOverridden)
+                {
+                    // Use active inventory item on the clicked target
+                    E.ProcessClick(eQuestVerb.Inventory);
+                }
+                else if (E.GetMouseOverType() == eQuestClickableType.Inventory)
+                {
+                    // Select clicked inventory item as active
+                    // Remove this block if you want left click to "use" inventory items instead
+                    I.Active = (IInventory)E.GetMouseOverClickable();
+                }
+                else
+                {
+                    // Standard left click — interact/use
+                    E.ProcessClick(eQuestVerb.Use);
+                }
+            }
+            else
+            {
+                // Left click on empty space — walk
+                E.ProcessClick(eQuestVerb.Walk);
+            }
+        }
+        else if (rightClick)
+        {
+            if (mouseOverSomething)
+                E.ProcessClick(eQuestVerb.Look);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Unhandled Interaction Fallbacks
+
+    /// <summary>
+    /// Fires when the player interacts with something that has no specific OnInteract handler.
+    /// Suppressed while certain GUIs are visible to avoid bleed-through responses.
+    /// </summary>
+    public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
+    {
+        // Suppress fallback dialogue when blocking GUIs are open
+        if (G.Deathdoc.Visible || G.Pills.Visible)
+            yield break;
+
+        // Rotate through three generic responses
+        int option = E.Occurrence("unhandledInteract") % 3;
+        if (option == 0)
+            yield return C.Display("You can't use that");
+        else if (option == 1)
+            yield return C.Display("That doesn't work");
+        else
+            yield return C.Display("Nothing happened");
+    }
+
+    /// <summary>
+    /// Fires when the player looks at something with no specific OnLookAt handler.
+    /// Suppressed on the title screen.
+    /// </summary>
+    public IEnumerator UnhandledLookAt(IQuestClickable mouseOver)
+    {
+        if (R.Current.ScriptName == "Title")
+            yield break;
+
+        int option = Random.Range(0, 3);
+        if (option == 0)
+            yield return C.Display("It's nothing interesting");
+        else if (option == 1)
+            yield return C.Display("You don't see anything");
+        else
+            yield return C.Display($"The {mouseOver.Description.ToLower()} isn't very interesting");
+    }
+
+    /// <summary>Fires when the player uses one inventory item on another with no specific handler.</summary>
+    public IEnumerator UnhandledUseInvInv(Inventory invA, Inventory invB)
+    {
+        yield return C.Display("You can't use those together");
+    }
+
+    /// <summary>Fires when the player uses an inventory item on something with no specific handler.</summary>
+    public IEnumerator UnhandledUseInv(IQuestClickable mouseOver, Inventory item)
+    {
+        yield return C.Display("That doesn't go there");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Persistent State Trackers
+    // Using static classes to share state across rooms without saving to PowerQuest's save system.
+    // NOTE: Static variables reset on game restart — initialise them in OnGameStart if needed.
+
+    /// <summary>Tracks whether the lockbox puzzle has been solved.</summary>
+    public static class updatelockbox
+    {
         public static bool LockboxUnlocked = false;
     }
 
-	public class ClockSolved : MonoBehaviour
-	{
-		public static bool ClockSolved_ = false;
-
-	}
-    // / Track whether items have been placed in the vanity
-    public class ItemsPlaced : MonoBehaviour
-	{
-		public static bool PinPlaced = false;
-		public static bool TeddyPlaced = false;
-		public static bool FeatherPlaced = false;
-        public static bool SecretDollPlaced = false;
-        public static bool AllItemsPlaced
-		{
-			get
-			{
-				return PinPlaced && TeddyPlaced && FeatherPlaced;
-			}
-		}
-        public static bool SecretSolution
-        {
-            get
-            {
-                return SecretDollPlaced && TeddyPlaced && PinPlaced;
-            }
-        }
+    /// <summary>Tracks whether the clock puzzle has been solved.</summary>
+    public static class ClockSolved
+    {
+        public static bool ClockSolved_ = false;
     }
 
-	public class ShowerSplash : MonoBehaviour
-	{
-		public static bool ShowerSplashed = false;
-	}
+    /// <summary>
+    /// Tracks items placed in the vanity puzzle.
+    /// AllItemsPlaced — checks the three required items.
+    /// SecretSolution — checks the alternate secret combination.
+    /// </summary>
+    public static class ItemsPlaced
+    {
+        public static bool PinPlaced = false;
+        public static bool TeddyPlaced = false;
+        public static bool FeatherPlaced = false;
+        public static bool SecretDollPlaced = false;
 
-    public class DollHouseDone : MonoBehaviour
+        public static bool AllItemsPlaced =>
+            PinPlaced && TeddyPlaced && FeatherPlaced;
+
+        public static bool SecretSolution =>
+            SecretDollPlaced && TeddyPlaced && PinPlaced;
+    }
+
+    /// <summary>Tracks whether the shower splash event has been triggered.</summary>
+    public static class ShowerSplash
+    {
+        public static bool ShowerSplashed = false;
+    }
+
+    /// <summary>Tracks whether the doll house puzzle has been completed.</summary>
+    public static class DollHouseDone
     {
         public static bool DollhouseDone = false;
     }
-
 }

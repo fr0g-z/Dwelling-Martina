@@ -8,63 +8,63 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 {
 
 
-	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
+    {
         Audio.Play("hallwayfootsteps");
         yield return C.Plr.ChangeRoom(R.Hallway_2);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotLivingroom( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotLivingroom(IHotspot hotspot)
+    {
         Audio.Play("hallwayfootsteps");
         yield return C.Plr.ChangeRoom(R.Livingroom);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractPropTeddyBear( IProp prop )
-	{
+    IEnumerator OnInteractPropTeddyBear(IProp prop)
+    {
         yield return C.Display("You pick up the Teddy Bear");
         Audio.Play("Bucket");
         prop.Disable();
         yield return C.player_invis.Say("My childhood teddy...i thought i lost this");
         I.TeddyBear.AddAsActive();
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnLookAtHotspotUndertable( IHotspot hotspot )
-	{
-        
+    IEnumerator OnLookAtHotspotUndertable(IHotspot hotspot)
+    {
+
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotUndertable( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotUndertable(IHotspot hotspot)
+    {
         yield return C.Plr.ChangeRoom(R.UnderTable);
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotCage( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotCage(IHotspot hotspot)
+    {
         yield return C.Plr.ChangeRoom(R.Cage);
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotNotes( IHotspot hotspot )
-	{
-		G.Counternotes.Visible = true;
-		yield return E.Break;
-	}
+    IEnumerator OnInteractHotspotNotes(IHotspot hotspot)
+    {
+        G.Counternotes.Visible = true;
+        yield return E.Break;
+    }
 
-	IEnumerator OnLookAtHotspotNotes( IHotspot hotspot )
-	{
+    IEnumerator OnLookAtHotspotNotes(IHotspot hotspot)
+    {
 
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotCabinet( IHotspot hotspot )
-	{
-		yield return C.Plr.ChangeRoom(R.KitchenCabinet);
-		yield return E.Break;
-	}
+    IEnumerator OnInteractHotspotCabinet(IHotspot hotspot)
+    {
+        yield return C.Plr.ChangeRoom(R.KitchenCabinet);
+        yield return E.Break;
+    }
 }

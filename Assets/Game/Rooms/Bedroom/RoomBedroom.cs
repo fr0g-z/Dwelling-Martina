@@ -6,11 +6,11 @@ using static GlobalScript;
 
 public class RoomBedroom : RoomScript<RoomBedroom>
 {
-	bool saidLine = false;
+    bool saidLine = false;
     int m_windowLookCount = 0;
     IEnumerator OnEnterRoomAfterFade()
     {
-		Audio.Play("Gamesoundtrack");
+        Audio.Play("Gamesoundtrack");
 
         // Move player to starting point
         C.Plr.SetPosition(Point("Character"));
@@ -40,7 +40,7 @@ public class RoomBedroom : RoomScript<RoomBedroom>
         // ⭐ Easter egg trigger
         if (m_windowLookCount == 5)
         {
-            C.player_invis.Say("...wait what?");
+            yield return C.player_invis.Say("...wait what?");
 
             // Show your GIF
             Prop("Cateasteregg").Show();
@@ -49,53 +49,53 @@ public class RoomBedroom : RoomScript<RoomBedroom>
             Audio.Play("pipe");
 
             // Optional: hide again after a moment
-             yield return E.Wait(2.0f);
-             Prop("Cateasteregg").Hide();
+            yield return E.Wait(2.0f);
+            Prop("Cateasteregg").Hide();
         }
 
         yield return E.Break;
     }
 
-    IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotWindow(IHotspot hotspot)
+    {
         Audio.Play("window");
         yield return C.player_invis.Say("The Window is boarded shut");
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnLookAtPropFeather( IProp prop )
-	{
-		yield return C.player_invis.Say("A Feather, why is this here?");
-		
-		yield return E.Break;
-	}
+    IEnumerator OnLookAtPropFeather(IProp prop)
+    {
+        yield return C.player_invis.Say("A Feather, why is this here?");
 
-	IEnumerator OnInteractPropFeather( IProp prop )
-	{
-		yield return C.Display("You pick up the feather");
-		Audio.Play("Bucket");
-		prop.Disable();
-		I.Feather.AddAsActive();
+        yield return E.Break;
+    }
+
+    IEnumerator OnInteractPropFeather(IProp prop)
+    {
+        yield return C.Display("You pick up the feather");
+        Audio.Play("Bucket");
+        prop.Disable();
+        I.Feather.AddAsActive();
         yield return C.player_invis.Say("A white Feather...its dirty i should wash my hands");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
+    {
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Hallway);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotFloordrawing( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotFloordrawing(IHotspot hotspot)
+    {
         G.Floordrawing.Visible = true;
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotHanginpic( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHanginpic(IHotspot hotspot)
+    {
         G.Walldrawing.Visible = true;
         yield return E.Break;
-	}
+    }
 }

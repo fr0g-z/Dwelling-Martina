@@ -9,26 +9,25 @@ public class RoomCage : RoomScript<RoomCage>
 {
 
 
-	IEnumerator OnInteractHotspotBack( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotBack(IHotspot hotspot)
+    {
         yield return C.Plr.ChangeRoom(R.Kitchen);
         yield return E.Break;
-	}
+    }
 
-    IEnumerator OnUseInvPropDoorclose(IProp prop, IInventory item)
+    public IEnumerator OnUseInvPropDoorclose(IProp prop, IInventory item)
     {
         if (item == I.Keyundercouch)
         {
-            C.player_invis.Say("i remember this bird..why is it here?");
+            yield return C.player_invis.Say("i remember this bird..why is it here?");
             prop.Disable();
             Prop("Dooropen").Enable();
             item.Remove();
             I.Feather.AddAsActive();
-            yield return E.Break;
         }
         else
         {
-            C.player_invis.Say("That won't work.");
+            yield return C.player_invis.Say("That won't work.");
         }
     }
 }

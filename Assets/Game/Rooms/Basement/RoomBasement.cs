@@ -8,15 +8,15 @@ public class RoomBasement : RoomScript<RoomBasement>
 {
 
 
-	IEnumerator OnLookAtHotspotUpstairs( IHotspot hotspot )
-	{
+    IEnumerator OnLookAtHotspotUpstairs(IHotspot hotspot)
+    {
 
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotUpstairs( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotUpstairs(IHotspot hotspot)
+    {
         yield return C.Plr.ChangeRoom(R.UnderTable);
         yield return E.Break;
-	}
+    }
 }

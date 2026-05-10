@@ -6,15 +6,14 @@ using static GlobalScript;
 
 public class RoomMom_room : RoomScript<RoomMom_room>
 {
-    
+
 
     bool saidLine = false;
 
     IEnumerator OnEnterRoomAfterFade()
     {
 
-        // Say the line only once
-        if (!saidLine)
+               if (!saidLine)
         {
             saidLine = true;
             yield return C.player_invis.Say("maybe mom has something i can change into..");
@@ -23,22 +22,22 @@ public class RoomMom_room : RoomScript<RoomMom_room>
         yield return E.Break;
     }
 
-    IEnumerator OnInteractHotspotHallway( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
+    {
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Hallway_2);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotCloset( IHotspot hotspot )
-	{
-		yield return C.Plr.ChangeRoom(R.Closet);
-		yield return E.Break;
-	}
+    IEnumerator OnInteractHotspotCloset(IHotspot hotspot)
+    {
+        yield return C.Plr.ChangeRoom(R.Closet);
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotNote( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotNote(IHotspot hotspot)
+    {
         G.BedNote.Visible = true;
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 }

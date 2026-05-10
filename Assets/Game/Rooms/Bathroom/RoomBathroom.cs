@@ -13,48 +13,48 @@ public class RoomBathroom : RoomScript<RoomBathroom>
         Audio.Stop("drippingwater");
         Audio.Play("Dooropen");
         yield return C.Plr.ChangeRoom(R.Hallway_2);
-		yield return E.Break;
-	}
+        yield return E.Break;
+    }
 
-	IEnumerator OnInteractHotspotPillbox( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotPillbox(IHotspot hotspot)
+    {
         Audio.Play("pills");
         G.Pills.Visible = true;
 
-       yield return E.Break;
-	}
-
-	IEnumerator OnLookAtHotspotPillbox( IHotspot hotspot )
-    {
-		
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotSink( IHotspot hotspot )
-	{
+    IEnumerator OnLookAtHotspotPillbox(IHotspot hotspot)
+    {
+
+        yield return E.Break;
+    }
+
+    IEnumerator OnInteractHotspotSink(IHotspot hotspot)
+    {
 
         Audio.Play("drippingwater");
         yield return C.player_invis.Say("The water isnt turning on...");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotShower( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotShower(IHotspot hotspot)
+    {
         yield return C.player_invis.Say("The water splashed me...i need to change now");
-		ShowerSplash.ShowerSplashed = true;
+        ShowerSplash.ShowerSplashed = true;
         yield return E.Break;
-	}
+    }
 
 
-	IEnumerator OnInteractHotspotMirror( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotMirror(IHotspot hotspot)
+    {
         G.Bathmirror.Visible = true;
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnLookAtHotspotMirror( IHotspot hotspot )
-	{
-        C.player_invis.Say("Its covered...");
+    IEnumerator OnLookAtHotspotMirror(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("Its covered...");
         yield return E.Break;
-	}
+    }
 }
