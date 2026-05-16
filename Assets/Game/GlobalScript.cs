@@ -243,6 +243,22 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
     /// </summary>
     public IEnumerator UnhandledInteract(IQuestClickable mouseOver)
     {
+
+        // Suppress if the clicked thing is null or a GUI
+        if (mouseOver == null)
+            yield break;
+
+        // Suppress fallback dialogue when any GUI is being clicked
+        if (E.GetMouseOverType() == eQuestClickableType.Gui)
+            yield break;
+
+        // Suppress if any GUI is currently visible/open
+        foreach (var gui in PowerQuest.Get.GetGuis())
+        {
+            if (gui.Visible && gui.Clickable)
+                yield break;
+        }
+
         // Suppress fallback dialogue when blocking GUIs are open
         if (G.Deathdoc.Visible || G.Pills.Visible)
             yield break;

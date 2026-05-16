@@ -105,7 +105,7 @@ Transform:
   m_LocalScale: {x: 0.5194762, y: 0.49906373, z: 1}
   m_Children: []
   m_Father: {fileID: 1735897075749972428}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5581339227133157450
 MonoBehaviour:
@@ -575,87 +575,6 @@ PolygonCollider2D:
       - {x: 634.03577, y: 574.77875}
       - {x: 939.45953, y: 509.19226}
       - {x: 838.7373, y: 4.6662674}
---- !u!1 &5864117489378854893
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4488853810805237589}
-  - component: {fileID: 6104337260733741425}
-  - component: {fileID: 2159502245184165372}
-  m_Layer: 0
-  m_Name: HotspotPlant
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4488853810805237589
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5864117489378854893}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1735897075749972428}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6104337260733741425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5864117489378854893}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b0df7c458d97544b909b49c6789dea5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_data:
-    m_description: Plant
-    m_cursor: 
-    m_clickable: 1
-    m_baseline: 0
-    m_walkToPoint: {x: 0, y: 0}
-    m_lookAtPoint: {x: 0, y: 0}
-    m_scriptName: Plant
---- !u!60 &2159502245184165372
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5864117489378854893}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -60, y: -60}
-      - {x: -60, y: 60}
-      - {x: 60, y: 60}
-      - {x: 60, y: -60}
 --- !u!1 &6797714088757000959
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,7 +772,6 @@ Transform:
   - {fileID: 4282590114190044395}
   - {fileID: 8929991071319704087}
   - {fileID: 2836127798335453145}
-  - {fileID: 4488853810805237589}
   - {fileID: 1672611404778001172}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -893,7 +811,6 @@ MonoBehaviour:
   - {fileID: 9121454909529165747}
   - {fileID: 9012743067426204030}
   - {fileID: 3024196025846488321}
-  - {fileID: 6104337260733741425}
   m_propComponents:
   - {fileID: 5581339227133157450}
   m_regionComponents: []
