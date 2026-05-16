@@ -34,27 +34,26 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
     IEnumerator OnLookAtHotspotUndertable(IHotspot hotspot)
     {
-        Audio.Play("");
+       
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotUndertable(IHotspot hotspot)
     {
-		Audio.Play("");
+		
         yield return C.Plr.ChangeRoom(R.UnderTable);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotCage(IHotspot hotspot)
     {
-		Audio.Play("");
         yield return C.Plr.ChangeRoom(R.Cage);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotNotes(IHotspot hotspot)
     {
-		Audio.Play("");
+		Audio.Play("paper");
         G.Counternotes.Visible = true;
         yield return E.Break;
     }
@@ -67,14 +66,14 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
     IEnumerator OnInteractHotspotCabinet(IHotspot hotspot)
     {
-		Audio.Play("");
+		Audio.Play("DoorOpen");
         yield return C.Plr.ChangeRoom(R.KitchenCabinet);
         yield return E.Break;
     }
 
 	IEnumerator OnInteractHotspotFruitbowl( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("fruit");
         yield return E.Break;
 	}
 
@@ -86,7 +85,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotChairs( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("pillow");
         yield return E.Break;
 	}
 
@@ -98,7 +97,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotCooker( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("stove");
         yield return E.Break;
 	}
 
@@ -134,7 +133,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotPlates( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("plate");
         yield return E.Break;
 	}
 
@@ -146,7 +145,8 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotCabinets( IHotspot hotspot )
 	{
-        Audio.Play("");
+        yield return C.Plr.ChangeRoom(R.KitchenCabinet);
+        Audio.Play("DoorOpen");
         yield return E.Break;
 	}
 

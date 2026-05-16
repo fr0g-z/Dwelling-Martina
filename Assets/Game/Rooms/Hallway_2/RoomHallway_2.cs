@@ -12,6 +12,7 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
     IEnumerator OnEnterRoomAfterFade()
     {
+        
         if (I.MumsPin.Owned && m_mumsPinDialogueShown == false)
         {
             m_mumsPinDialogueShown = true;
@@ -60,15 +61,35 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
     IEnumerator OnInteractHotspotClock(IHotspot hotspot)
     {
-        Audio.Play("");
+        
         yield return C.Plr.ChangeRoom(R.Clock);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotPainting(IHotspot hotspot)
     {
-        Audio.Play("");
+        Audio.Play("frame");
         G.Painting.Visible = true;
         yield return E.Break;
     }
+
+	IEnumerator OnInteractHotspotPlant( IHotspot hotspot )
+	{
+        Audio.Play("plant");
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotPlant( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("Don't steal that plant!");
+
+        // Show your GIF
+        Prop("florian").Show();
+
+       
+        // Optional: hide again after a moment
+        yield return E.Wait(2.0f);
+        Prop("florian").Hide();
+        yield return E.Break;
+	}
 }

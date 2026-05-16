@@ -30,7 +30,7 @@ public class RoomHallway : RoomScript<RoomHallway>
 
 	IEnumerator OnInteractHotspotFrames( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("frame");
         yield return E.Break;
 	}
 

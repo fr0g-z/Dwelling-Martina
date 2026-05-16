@@ -23,7 +23,8 @@ public class RoomCloset : RoomScript<RoomCloset>
     }
     IEnumerator OnInteractHotspotMoms_room( IHotspot hotspot )
 	{
-		yield return C.Plr.ChangeRoom(R.Mom_room);
+        Audio.Play("closetc");
+        yield return C.Plr.ChangeRoom(R.Mom_room);
 		yield return E.Break;
 	}
 

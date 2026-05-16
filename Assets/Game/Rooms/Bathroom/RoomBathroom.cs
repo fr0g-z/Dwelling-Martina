@@ -40,6 +40,7 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnInteractHotspotShower(IHotspot hotspot)
     {
+        Audio.Play("splash");
         yield return C.player_invis.Say("The water splashed me...i need to change now");
         ShowerSplash.ShowerSplashed = true;
         yield return E.Break;
@@ -48,7 +49,7 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnInteractHotspotMirror(IHotspot hotspot)
     {
-        Audio.Play("");
+        Audio.Play("mirror");
         G.Bathmirror.Visible = true;
         yield return E.Break;
     }
@@ -61,7 +62,7 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
 	IEnumerator OnInteractHotspotToilet( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("toilet");
 		yield return E.Break;
 	}
 

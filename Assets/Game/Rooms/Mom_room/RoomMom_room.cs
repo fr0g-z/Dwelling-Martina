@@ -31,22 +31,22 @@ public class RoomMom_room : RoomScript<RoomMom_room>
 
     IEnumerator OnInteractHotspotCloset(IHotspot hotspot)
     {
-        Audio.Play("");
+        Audio.Play("closeto");
         yield return C.Plr.ChangeRoom(R.Closet);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotNote(IHotspot hotspot)
     {
-        Audio.Play("");
+        
         G.BedNote.Visible = true;
         yield return E.Break;
     }
 
 	IEnumerator OnInteractHotspotLight( IHotspot hotspot )
 	{
-
-		yield return E.Break;
+        Audio.Play("lightnotworking");
+        yield return E.Break;
 	}
 
 	IEnumerator OnLookAtHotspotLight( IHotspot hotspot )
@@ -57,7 +57,7 @@ public class RoomMom_room : RoomScript<RoomMom_room>
 
 	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("window");
 		yield return E.Break;
 	}
 
