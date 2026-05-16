@@ -33,3 +33,5 @@ MonoBehaviour:
   m_colorRegexes: []
   m_regexFoldOut: 0
   m_regexError: 
+  m_scriptBtnUsedCol: {r: 1, g: 1, b: 1, a: 1}
+  m_scriptBtnUnusedCol: {r: 0.8, g: 0.8, b: 0.8, a: 1}

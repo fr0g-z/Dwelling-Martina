@@ -162,6 +162,7 @@ MonoBehaviour:
   - {fileID: 4589970487134787824}
   m_animations: []
   m_sprites:
+  - {fileID: 21300000, guid: b1a85aa16f6b9074caaa8ce9f657390f, type: 3}
   - {fileID: 21300000, guid: fba752c446196654d95cf646dd42caed, type: 3}
   - {fileID: 21300000, guid: 21cb92ff8166a31438cda79d9d5c005f, type: 3}
   m_variantShouldOverrideArt: 0
@@ -380,8 +381,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: fba752c446196654d95cf646dd42caed, type: 3}
+  m_SortingOrder: 8
+  m_Sprite: {fileID: 21300000, guid: b1a85aa16f6b9074caaa8ce9f657390f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

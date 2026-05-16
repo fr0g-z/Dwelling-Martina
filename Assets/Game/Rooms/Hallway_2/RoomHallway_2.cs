@@ -60,12 +60,14 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
 
     IEnumerator OnInteractHotspotClock(IHotspot hotspot)
     {
+        Audio.Play("");
         yield return C.Plr.ChangeRoom(R.Clock);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotPainting(IHotspot hotspot)
     {
+        Audio.Play("");
         G.Painting.Visible = true;
         yield return E.Break;
     }

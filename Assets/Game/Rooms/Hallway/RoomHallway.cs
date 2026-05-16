@@ -27,4 +27,16 @@ public class RoomHallway : RoomScript<RoomHallway>
         yield return C.Plr.ChangeRoom(R.Hallway_2);
         yield return E.Break;
     }
+
+	IEnumerator OnInteractHotspotFrames( IHotspot hotspot )
+	{
+        Audio.Play("");
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotFrames( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("So many memories..");
+        yield return E.Break;
+	}
 }

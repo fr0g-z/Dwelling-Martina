@@ -26,7 +26,7 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnLookAtHotspotPillbox(IHotspot hotspot)
     {
-
+        yield return C.player_invis.Say("These are my moms..");
         yield return E.Break;
     }
 
@@ -48,13 +48,26 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnInteractHotspotMirror(IHotspot hotspot)
     {
+        Audio.Play("");
         G.Bathmirror.Visible = true;
         yield return E.Break;
     }
 
     IEnumerator OnLookAtHotspotMirror(IHotspot hotspot)
     {
-        yield return C.player_invis.Say("Its covered...");
+        yield return C.player_invis.Say("It's covered with...news paper?");
         yield return E.Break;
     }
+
+	IEnumerator OnInteractHotspotToilet( IHotspot hotspot )
+	{
+        Audio.Play("");
+		yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotToilet( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("Wow it's the only thing that works in here");
+        yield return E.Break;
+	}
 }

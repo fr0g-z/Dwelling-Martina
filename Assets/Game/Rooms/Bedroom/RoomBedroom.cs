@@ -89,13 +89,63 @@ public class RoomBedroom : RoomScript<RoomBedroom>
 
     IEnumerator OnInteractHotspotFloordrawing(IHotspot hotspot)
     {
+        Audio.Play("");
         G.Floordrawing.Visible = true;
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotHanginpic(IHotspot hotspot)
     {
+        Audio.Play("");
         G.Walldrawing.Visible = true;
         yield return E.Break;
     }
+
+	IEnumerator OnLookAtHotspotLights( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("It's broken..i'll get shocked");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotLights( IHotspot hotspot )
+	{
+        Audio.Play("");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotPillow( IHotspot hotspot )
+	{
+        Audio.Play("");
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotPillow( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("This chair was always so comfy!");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotOutlet( IHotspot hotspot )
+	{
+        Audio.Play("");
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotOutlet( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("I don't even use this... how did it break?");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotChest( IHotspot hotspot )
+	{
+        Audio.Play("lockeddoor");
+        yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotChest( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("It's locked..my toys are in here..");
+        yield return E.Break;
+	}
 }

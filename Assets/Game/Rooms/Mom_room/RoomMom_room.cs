@@ -31,13 +31,52 @@ public class RoomMom_room : RoomScript<RoomMom_room>
 
     IEnumerator OnInteractHotspotCloset(IHotspot hotspot)
     {
+        Audio.Play("");
         yield return C.Plr.ChangeRoom(R.Closet);
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotNote(IHotspot hotspot)
     {
+        Audio.Play("");
         G.BedNote.Visible = true;
         yield return E.Break;
     }
+
+	IEnumerator OnInteractHotspotLight( IHotspot hotspot )
+	{
+
+		yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotLight( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("It doesn't turn on...");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
+	{
+        Audio.Play("");
+		yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
+	{
+
+        yield return C.player_invis.Say("It's locked..like everything else");
+        yield return E.Break;
+	}
+
+	IEnumerator OnInteractHotspotLoxkchest( IHotspot hotspot )
+	{
+        Audio.Play("Lockeddoor");
+		yield return E.Break;
+	}
+
+	IEnumerator OnLookAtHotspotLoxkchest( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("This is probably locked too..");
+        yield return E.Break;
+	}
 }
