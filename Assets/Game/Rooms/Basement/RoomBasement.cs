@@ -19,4 +19,10 @@ public class RoomBasement : RoomScript<RoomBasement>
         yield return C.Plr.ChangeRoom(R.UnderTable);
         yield return E.Break;
     }
+
+	void OnEnterRoom()
+	{
+        Audio.Stop("Gamesoundtrack");
+        Audio.Play("mombreathing");
+	}
 }

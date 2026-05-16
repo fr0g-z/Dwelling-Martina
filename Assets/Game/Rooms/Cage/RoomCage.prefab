@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_data:
-    m_description: Doorclose
+    m_description: Door
     m_cursor: 
     m_visible: 1
     m_clickable: 1
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_data:
-    m_description: Dooropen
+    m_description: Door
     m_cursor: 
     m_visible: 0
     m_clickable: 0
@@ -456,7 +456,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1452564811
   m_SortingLayer: 1
-  m_SortingOrder: -480
+  m_SortingOrder: -501
   m_Sprite: {fileID: 21300000, guid: b4cba1ac19661a54a9c35443cacd2be5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

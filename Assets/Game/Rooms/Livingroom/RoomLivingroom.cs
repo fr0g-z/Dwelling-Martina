@@ -19,13 +19,13 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
     {
         if (ItemsPlaced.AllItemsPlaced)
         {
-            Audio.Play("Dooropen");
+            Audio.Play("escape");
             yield return C.Plr.ChangeRoom(R.END);
             yield return E.Break;
         }
         else
         {
-            Audio.Play("lockeddoor");
+            Audio.Play("lock");
             yield return C.player_invis.Say("The door is locked.");
         }
         yield return E.Break;
@@ -84,7 +84,7 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 	IEnumerator OnInteractHotspotLight( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("lightnotworking");
 		yield return E.Break;
 	}
 
@@ -96,7 +96,7 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 	IEnumerator OnInteractHotspotBox( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("box");
 		yield return E.Break;
 	}
 
@@ -108,7 +108,7 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 	IEnumerator OnInteractHotspotCouch( IHotspot hotspot )
 	{
-        Audio.Play("");
+        Audio.Play("pillow");
 		yield return E.Break;
 	}
 
@@ -120,7 +120,16 @@ public class RoomLivingroom : RoomScript<RoomLivingroom>
 
 	IEnumerator OnInteractHotspotPlant( IHotspot hotspot )
 	{
-        //floarian
-		yield return E.Break;
+        yield return C.player_invis.Say("Don't steal that plant!");
+
+        // Show your GIF
+        Prop("florian").Show();
+
+
+        // Optional: hide again after a moment
+        yield return E.Wait(2.0f);
+        Prop("florian").Hide();
+        yield return E.Break;
+      
 	}
 }

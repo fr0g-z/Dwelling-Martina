@@ -92,4 +92,10 @@ public class RoomHallway_2 : RoomScript<RoomHallway_2>
         Prop("florian").Hide();
         yield return E.Break;
 	}
+
+	IEnumerator OnLookAtHotspotPainting( IHotspot hotspot )
+	{
+        yield return C.player_invis.Say("I remember this");
+        yield return E.Break;
+	}
 }

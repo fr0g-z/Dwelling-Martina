@@ -21,6 +21,7 @@ public class RoomCage : RoomScript<RoomCage>
         {
             yield return C.player_invis.Say("i remember this bird..why is it here?");
             prop.Disable();
+            Audio.Play("cageopen");
             Prop("Dooropen").Enable();
             item.Remove();
             I.Feather.AddAsActive();

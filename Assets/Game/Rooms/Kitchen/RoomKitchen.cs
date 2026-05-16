@@ -145,7 +145,7 @@ public class RoomKitchen : RoomScript<RoomKitchen>
 
 	IEnumerator OnInteractHotspotCabinets( IHotspot hotspot )
 	{
-        yield return C.Plr.ChangeRoom(R.KitchenCabinet);
+        yield return C.Plr.ChangeRoom(R.Cabnetempty);
         Audio.Play("DoorOpen");
         yield return E.Break;
 	}
