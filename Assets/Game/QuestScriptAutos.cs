@@ -80,6 +80,7 @@ namespace PowerScript
 		public static IRoom Cage           { get { return PowerQuest.Get.GetRoom("Cage"); } }
 		public static IRoom UnderCouch     { get { return PowerQuest.Get.GetRoom("UnderCouch"); } }
 		public static IRoom Cabnetempty    { get { return PowerQuest.Get.GetRoom("Cabnetempty"); } }
+		public static IRoom BADending      { get { return PowerQuest.Get.GetRoom("BADending"); } }
 		// #ROOM# - Do not edit this line, it's used by the system to insert rooms for easy access
 	}
 
