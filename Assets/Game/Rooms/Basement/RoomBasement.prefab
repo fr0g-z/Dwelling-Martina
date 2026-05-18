@@ -310,6 +310,9 @@ MonoBehaviour:
   m_animations: []
   m_sprites:
   - {fileID: 21300000, guid: 051413730160d79438abcc91edcb5262, type: 3}
+  - {fileID: -5645421639178154313, guid: ba815adabd529254dbc0fb9277cbc138, type: 3}
+  - {fileID: -5645421639178154313, guid: a0ad86de3e986f74aac32972416703a6, type: 3}
+  - {fileID: 21300000, guid: dec2bf56d44c3dd4c97e6d772cc6ca0a, type: 3}
   m_variantShouldOverrideArt: 0
 --- !u!1 &9031509892471780083
 GameObject:

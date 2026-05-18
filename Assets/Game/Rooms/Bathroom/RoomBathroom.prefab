@@ -158,13 +158,15 @@ MonoBehaviour:
   - {fileID: 4934866625270567502}
   m_propComponents:
   - {fileID: 7827230370540771786}
+  - {fileID: 0}
   m_regionComponents: []
   m_walkableAreas:
   - {fileID: 7557839005243215842}
-  m_animations: []
+  m_animations:
+  - {fileID: 7400000, guid: 41b1aaaa5607af443a171952e4db24a2, type: 2}
   m_sprites:
   - {fileID: 21300000, guid: 8d2925a7d4abdd242bf761b174568a5a, type: 3}
-  - {fileID: 21300000, guid: 2cda05b35f1996b439e20465310dc9dc, type: 3}
+  - {fileID: -5984525962507100866, guid: f115172dbbbbd2a48a3dc255d8e5bc64, type: 3}
   m_variantShouldOverrideArt: 0
 --- !u!1 &2562818246101334173
 GameObject:
