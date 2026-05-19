@@ -7,7 +7,6 @@ using static GlobalScript;
 public class RoomBathroom : RoomScript<RoomBathroom>
 {
 
-
     IEnumerator OnInteractHotspotHallway(IHotspot hotspot)
     {
         Audio.Stop("drippingwater");
@@ -20,32 +19,31 @@ public class RoomBathroom : RoomScript<RoomBathroom>
     {
         Audio.Play("pills");
         G.Pills.Visible = true;
-
         yield return E.Break;
     }
 
     IEnumerator OnLookAtHotspotPillbox(IHotspot hotspot)
     {
-        yield return C.player_invis.Say("These are my moms..");
+        yield return C.player_invis.Say("Mum's pills. There are so many of them now.");
+        yield return C.player_invis.Say("She never used to need these.");
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotSink(IHotspot hotspot)
     {
-
         Audio.Play("drippingwater");
-        yield return C.player_invis.Say("The water isnt turning on...");
+        yield return C.player_invis.Say("The water won't come on. Just that constant dripping.");
         yield return E.Break;
     }
 
     IEnumerator OnInteractHotspotShower(IHotspot hotspot)
     {
         Audio.Play("splash");
-        yield return C.player_invis.Say("The water splashed me...i need to change now");
+        yield return C.player_invis.Say("The water is freezing cold.");
+        yield return C.player_invis.Say("I should go change, Ithink theres some clothes in Mum's room.");
         ShowerSplash.ShowerSplashed = true;
         yield return E.Break;
     }
-
 
     IEnumerator OnInteractHotspotMirror(IHotspot hotspot)
     {
@@ -56,19 +54,20 @@ public class RoomBathroom : RoomScript<RoomBathroom>
 
     IEnumerator OnLookAtHotspotMirror(IHotspot hotspot)
     {
-        yield return C.player_invis.Say("It's covered with...news paper?");
+        yield return C.player_invis.Say("She covered it with newspaper.");
+        yield return C.player_invis.Say("Every single mirror in the house.");
         yield return E.Break;
     }
 
-	IEnumerator OnInteractHotspotToilet( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotToilet(IHotspot hotspot)
+    {
         Audio.Play("toilet");
-		yield return E.Break;
-	}
-
-	IEnumerator OnLookAtHotspotToilet( IHotspot hotspot )
-	{
-        yield return C.player_invis.Say("Wow it's the only thing that works in here");
         yield return E.Break;
-	}
+    }
+
+    IEnumerator OnLookAtHotspotToilet(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("At least something still works in here.");
+        yield return E.Break;
+    }
 }

@@ -101,7 +101,7 @@ public class RoomClock_ : MonoBehaviour
             if (minuteHand != null) minuteHand.localRotation = Quaternion.Euler(0, 0, targetMinuteAngle);
             if (secretDoor != null) secretDoor.SetActive(true);
             if (doorAudio != null && audioSource != null) audioSource.PlayOneShot(doorAudio);
-            I.MumsPin.AddAsActive();
+            I.MumsPin.Add();
 
         }
     }

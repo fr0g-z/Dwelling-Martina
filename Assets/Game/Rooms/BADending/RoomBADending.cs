@@ -4,12 +4,11 @@ using PowerTools.Quest;
 using PowerScript;
 using static GlobalScript;
 
-public class RoomEND : RoomScript<RoomEND>
+public class RoomBADending : RoomScript<RoomBADending>
 {
-    public void OnEnterRoom()
+    void OnEnterRoom()
     {
-        Audio.Stop("Gamesoundtrack");
-
+        Audio.Stop("mombreathing");
     }
     IEnumerator OnEnterRoomAfterFade()
     {

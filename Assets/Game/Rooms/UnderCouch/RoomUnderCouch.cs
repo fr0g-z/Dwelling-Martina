@@ -7,7 +7,6 @@ using static GlobalScript;
 public class RoomUnderCouch : RoomScript<RoomUnderCouch>
 {
 
-
     IEnumerator OnInteractHotspotLeaveRoom(IHotspot hotspot)
     {
         yield return E.ChangeRoom(R.Livingroom);
@@ -18,7 +17,8 @@ public class RoomUnderCouch : RoomScript<RoomUnderCouch>
     {
         yield return C.Display("You pick up a key");
         prop.Disable();
-        yield return C.player_invis.Say("I wonder whats this for?");
+        yield return C.player_invis.Say("A small key. Hidden under here on purpose.");
+        yield return C.player_invis.Say("What was she keeping locked up?");
         I.Keyundercouch.AddAsActive();
         yield return E.Break;
     }

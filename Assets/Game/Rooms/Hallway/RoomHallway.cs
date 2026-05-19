@@ -7,7 +7,6 @@ using static GlobalScript;
 public class RoomHallway : RoomScript<RoomHallway>
 {
 
-
     IEnumerator OnInteractHotspotBedroom(IHotspot hotspot)
     {
         Audio.Play("Dooropen");
@@ -28,15 +27,16 @@ public class RoomHallway : RoomScript<RoomHallway>
         yield return E.Break;
     }
 
-	IEnumerator OnInteractHotspotFrames( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotFrames(IHotspot hotspot)
+    {
         Audio.Play("frame");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnLookAtHotspotFrames( IHotspot hotspot )
-	{
-        yield return C.player_invis.Say("So many memories..");
+    IEnumerator OnLookAtHotspotFrames(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("There used to be three of us in these photos.");
+        yield return C.player_invis.Say("Dad's face has been turned away in every single one.");
         yield return E.Break;
-	}
+    }
 }

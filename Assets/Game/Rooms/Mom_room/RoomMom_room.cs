@@ -7,16 +7,15 @@ using static GlobalScript;
 public class RoomMom_room : RoomScript<RoomMom_room>
 {
 
-
     bool saidLine = false;
 
     IEnumerator OnEnterRoomAfterFade()
     {
-
-               if (!saidLine)
+        if (!saidLine)
         {
             saidLine = true;
-            yield return C.player_invis.Say("maybe mom has something i can change into..");
+            yield return C.player_invis.Say("Mum's room.");
+            yield return C.player_invis.Say("Why's the window boarded shut..?");
         }
 
         yield return E.Break;
@@ -38,45 +37,43 @@ public class RoomMom_room : RoomScript<RoomMom_room>
 
     IEnumerator OnInteractHotspotNote(IHotspot hotspot)
     {
-        
         G.BedNote.Visible = true;
         yield return E.Break;
     }
 
-	IEnumerator OnInteractHotspotLight( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotLight(IHotspot hotspot)
+    {
         Audio.Play("lightnotworking");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnLookAtHotspotLight( IHotspot hotspot )
-	{
-        yield return C.player_invis.Say("It doesn't turn on...");
+    IEnumerator OnLookAtHotspotLight(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("She's been sitting in the dark.");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotWindow( IHotspot hotspot )
-	{
+    IEnumerator OnInteractHotspotWindow(IHotspot hotspot)
+    {
         Audio.Play("window");
-		yield return E.Break;
-	}
-
-	IEnumerator OnLookAtHotspotWindow( IHotspot hotspot )
-	{
-
-        yield return C.player_invis.Say("It's locked..like everything else");
         yield return E.Break;
-	}
+    }
 
-	IEnumerator OnInteractHotspotLoxkchest( IHotspot hotspot )
-	{
+    IEnumerator OnLookAtHotspotWindow(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("Locked from the inside. She doesn't want to see out.");
+        yield return E.Break;
+    }
+
+    IEnumerator OnInteractHotspotLoxkchest(IHotspot hotspot)
+    {
         Audio.Play("Lockeddoor");
-		yield return E.Break;
-	}
-
-	IEnumerator OnLookAtHotspotLoxkchest( IHotspot hotspot )
-	{
-        yield return C.player_invis.Say("This is probably locked too..");
         yield return E.Break;
-	}
+    }
+
+    IEnumerator OnLookAtHotspotLoxkchest(IHotspot hotspot)
+    {
+        yield return C.player_invis.Say("Locked. Whatever's in there, she doesn't want anyone finding it.");
+        yield return E.Break;
+    }
 }

@@ -10,7 +10,7 @@ public class GuiINSTRUCTIONS : GuiScript<GuiINSTRUCTIONS>
 
 	IEnumerator OnAnyClick( IGuiControl control )
 	{
-        G.Floordrawing.Visible = false;
+        G.INSTRUCTIONS.Visible = false;
         yield return E.Break;
 	}
 }

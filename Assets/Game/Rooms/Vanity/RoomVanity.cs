@@ -11,15 +11,15 @@ public class RoomVanity : RoomScript<RoomVanity>
 
     IEnumerator OnEnterRoomAfterFade()
     {
-        // Sync prop visibility with saved state on every room entry
         Prop("Feather").Visible = ItemsPlaced.FeatherPlaced;
         Prop("SecretDoll").Visible = ItemsPlaced.SecretDollPlaced;
         Prop("Teddybear").Visible = ItemsPlaced.TeddyPlaced;
         Prop("MumsPin").Visible = ItemsPlaced.PinPlaced;
 
-        // Disable hotspots for slots that are already occupied
         if (ItemsPlaced.FeatherPlaced || ItemsPlaced.SecretDollPlaced)
             Hotspot("Feather").Disable();
+        else if (!ItemsPlaced.TeddyPlaced || !ItemsPlaced.PinPlaced)
+            Hotspot("Feather").Disable(); // locked until Past and Present are placed first
 
         if (ItemsPlaced.TeddyPlaced)
             Hotspot("TeddyBear").Disable();
@@ -27,53 +27,30 @@ public class RoomVanity : RoomScript<RoomVanity>
         if (ItemsPlaced.PinPlaced)
             Hotspot("Pin").Disable();
 
-        // Only play intro line if puzzle is still fresh
         if (!ItemsPlaced.AllItemsPlaced && !ItemsPlaced.SecretSolution)
-            yield return C.player_invis.Say("looks like i need three items to put here...but what?");
+        {
+            if (!ItemsPlaced.TeddyPlaced && !ItemsPlaced.PinPlaced)
+            {
+                yield return C.player_invis.Say("Mum's vanity. She used to sit here every single morning.");
+                yield return C.player_invis.Say("She'd hum while she got ready. I'd watch from the doorway.");
+                yield return C.player_invis.Say("There are three empty spaces. Like she was waiting for something to fill them.");
+            }
+            else if (ItemsPlaced.TeddyPlaced && ItemsPlaced.PinPlaced)
+            {
+                yield return C.player_invis.Say("Just one space left.");
+                yield return C.player_invis.Say("This is the part I've been avoiding.");
+            }
+            else
+            {
+                yield return C.player_invis.Say("Something still feels unfinished.");
+            }
+        }
 
         yield return E.Break;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    // Feather Slot — accepts Feather OR SecretDoll, never both
-
-    IEnumerator OnUseInvHotspotFeather(IHotspot hotspot, IInventory item)
-    {
-        if (item.ScriptName == "Feather")
-        {
-            item.Remove();
-            ItemsPlaced.FeatherPlaced = true;
-            Prop("Feather").Show();
-            hotspot.Disable(); // hide hotspot prompt now slot is filled
-            yield return C.player_invis.Say("Future.");
-            yield return CheckPuzzleComplete();
-        }
-        else if (item.ScriptName == "SecretDoll")
-        {
-            item.Remove();
-            ItemsPlaced.SecretDollPlaced = true;
-            Prop("SecretDoll").Show();
-            hotspot.Disable(); // hide hotspot prompt now slot is filled
-            yield return C.player_invis.Say("Future.");
-            yield return CheckPuzzleComplete();
-        }
-        else
-        {
-            yield return C.player_invis.Say("That doesn't belong here.");
-        }
-
-        yield return E.Break;
-    }
-
-    // Clicking the empty Feather hotspot with no item
-    IEnumerator OnInteractHotspotFeather(IHotspot hotspot)
-    {
-        yield return C.player_invis.Say("I should place something here.");
-        yield return E.Break;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////
-    // TeddyBear Slot
+    // TeddyBear Slot — Past
 
     IEnumerator OnUseInvHotspotTeddyBear(IHotspot hotspot, IInventory item)
     {
@@ -82,8 +59,18 @@ public class RoomVanity : RoomScript<RoomVanity>
             item.Remove();
             ItemsPlaced.TeddyPlaced = true;
             Prop("Teddybear").Show();
-            hotspot.Disable(); // hide hotspot prompt now slot is filled
+            hotspot.Disable();
+
+            yield return C.player_invis.Say("Mr. Bear.");
+            yield return C.player_invis.Say("I used to bring him everywhere. Mum would pretend to be embarrassed.");
+            yield return C.player_invis.Say("She kept him. She kept everything.");
+            yield return E.Wait(1.5f);
             yield return C.player_invis.Say("Past.");
+
+            // If Pin is already placed, both are done — unlock the final slot
+            if (ItemsPlaced.PinPlaced)
+                Hotspot("Feather").Enable();
+
             yield return CheckPuzzleComplete();
         }
         else
@@ -94,15 +81,15 @@ public class RoomVanity : RoomScript<RoomVanity>
         yield return E.Break;
     }
 
-    // Clicking the empty TeddyBear hotspot with no item
     IEnumerator OnInteractHotspotTeddyBear(IHotspot hotspot)
     {
-        yield return C.player_invis.Say("I should place something here.");
+        if (!ItemsPlaced.TeddyPlaced)
+            yield return C.player_invis.Say("Something from before. Something she refused to let go of.");
         yield return E.Break;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    // Pin Slot
+    // Pin Slot — Present
 
     IEnumerator OnUseInvHotspotPin(IHotspot hotspot, IInventory item)
     {
@@ -111,8 +98,28 @@ public class RoomVanity : RoomScript<RoomVanity>
             item.Remove();
             ItemsPlaced.PinPlaced = true;
             Prop("MumsPin").Show();
-            hotspot.Disable(); // hide hotspot prompt now slot is filled
+            hotspot.Disable();
+
+            yield return C.player_invis.Say("Her pin. She wore this every day for as long as I can remember.");
+            yield return C.player_invis.Say("She's not wearing it now. She's not wearing anything.");
+
+            if (ItemsPlaced.TeddyPlaced)
+            {
+                yield return C.player_invis.Say("She stopped getting dressed. Stopped eating. Stopped everything.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("One more space. The one I keep walking away from.");
+            }
+            else
+            {
+                yield return C.player_invis.Say("She's still in there. Still waiting.");
+            }
+
             yield return C.player_invis.Say("Present.");
+
+            // If Teddy is already placed, both are done — unlock the final slot
+            if (ItemsPlaced.TeddyPlaced)
+                Hotspot("Feather").Enable();
+
             yield return CheckPuzzleComplete();
         }
         else
@@ -123,17 +130,121 @@ public class RoomVanity : RoomScript<RoomVanity>
         yield return E.Break;
     }
 
-    // Clicking the empty Pin hotspot with no item
     IEnumerator OnInteractHotspotPin(IHotspot hotspot)
     {
-        yield return C.player_invis.Say("I should place something here.");
+        if (!ItemsPlaced.PinPlaced)
+            yield return C.player_invis.Say("Something of hers. Something she stopped needing.");
         yield return E.Break;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    // Prop Interactions — clicking a placed prop returns it to inventory
-    // Only works if puzzle is not yet solved
-    // Note: props need colliders enabled in the Unity editor to be clickable
+    // Feather Slot — Future. The final choice.
+    // First placement: shows the item, says the lines, returns item to inventory.
+    // Second placement: the real decision. Says "I have made my choice." Triggers ending.
+
+    bool m_featherPreviewed = false;
+    bool m_dollPreviewed = false;
+
+    IEnumerator OnUseInvHotspotFeather(IHotspot hotspot, IInventory item)
+    {
+        if (item.ScriptName == "Feather")
+        {
+            if (!m_featherPreviewed)
+            {
+                // ── FIRST PLACEMENT — preview only, item returned ──
+                m_featherPreviewed = true;
+                Prop("Feather").Show();
+
+                yield return C.player_invis.Say("The feather.");
+                yield return C.player_invis.Say("From the bird that never got out.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("It died in there. Locked away until there was nothing left.");
+                yield return C.player_invis.Say("But it left something behind.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("If I place this... I'm choosing to go.");
+                yield return C.player_invis.Say("I'm choosing to stop being the thing that keeps me here.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("I'm not ready yet.");
+                yield return C.player_invis.Say("Let me think.");
+
+                // Return item — prop stays visible as a preview
+                Prop("Feather").Hide();
+                // item was never removed, so it stays in inventory automatically
+            }
+            else
+            {
+                // ── SECOND PLACEMENT — the real choice ──
+                item.Remove();
+                ItemsPlaced.FeatherPlaced = true;
+                Prop("Feather").Show();
+                hotspot.Disable();
+
+                yield return C.player_invis.Say("I have made my choice.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("Future.");
+                yield return CheckPuzzleComplete();
+            }
+        }
+        else if (item.ScriptName == "SecretDoll")
+        {
+            if (!m_dollPreviewed)
+            {
+                // ── FIRST PLACEMENT — preview only, item returned ──
+                m_dollPreviewed = true;
+                Prop("SecretDoll").Show();
+
+                yield return C.player_invis.Say("The doll.");
+                yield return C.player_invis.Say("I made her look like Mum. So Mum would never feel alone.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("If I place this... I'm choosing to stay.");
+                yield return C.player_invis.Say("Not alive. Not free. Just... here. Caught.");
+                yield return E.Wait(2f);  
+                yield return C.player_invis.Say("Let me think.");
+
+                // Return item — prop hides
+                Prop("SecretDoll").Hide();
+                // item was never removed, stays in inventory
+            }
+            else
+            {
+                // ── SECOND PLACEMENT — the real choice ──
+                item.Remove();
+                ItemsPlaced.SecretDollPlaced = true;
+                Prop("SecretDoll").Show();
+                hotspot.Disable();
+
+                yield return C.player_invis.Say("I have made my choice.");
+                yield return E.Wait(1.5f);
+                yield return C.player_invis.Say("Future.");
+                yield return CheckPuzzleComplete();
+            }
+        }
+        else
+        {
+            yield return C.player_invis.Say("That doesn't belong here.");
+        }
+
+        yield return E.Break;
+    }
+
+    IEnumerator OnInteractHotspotFeather(IHotspot hotspot)
+    {
+        if (ItemsPlaced.TeddyPlaced && ItemsPlaced.PinPlaced)
+        {
+            if (m_featherPreviewed || m_dollPreviewed)
+                yield return C.player_invis.Say("I know what I need to do. I just have to do it.");
+            else
+                yield return C.player_invis.Say("The last space. Whatever I leave here decides everything.");
+        }
+        else
+        {
+            yield return C.player_invis.Say("I can't think about this yet. Not until the other two are in place.");
+        }
+        yield return E.Break;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // Prop Interactions — picking items back up
 
     IEnumerator OnInteractPropFeather(IProp prop)
     {
@@ -148,8 +259,7 @@ public class RoomVanity : RoomScript<RoomVanity>
         prop.Hide();
         Hotspot("Feather").Enable();
         I.Feather.AddAsActive();
-        yield return C.player_invis.Say("I picked the feather back up.");
-
+        yield return C.player_invis.Say("No. Not yet. I'm not ready.");
         yield return E.Break;
     }
 
@@ -164,10 +274,9 @@ public class RoomVanity : RoomScript<RoomVanity>
 
         ItemsPlaced.SecretDollPlaced = false;
         prop.Hide();
-        Hotspot("Feather").Enable(); // re-enable the shared feather slot
+        Hotspot("Feather").Enable();
         I.SecretDoll.AddAsActive();
-        yield return C.player_invis.Say("I picked the doll back up.");
-
+        yield return C.player_invis.Say("No. Not yet. I'm not ready.");
         yield return E.Break;
     }
 
@@ -184,8 +293,7 @@ public class RoomVanity : RoomScript<RoomVanity>
         prop.Hide();
         Hotspot("TeddyBear").Enable();
         I.TeddyBear.AddAsActive();
-        yield return C.player_invis.Say("I picked the teddy back up.");
-
+        yield return C.player_invis.Say("I picked Mr. Bear back up. I'm not done yet.");
         yield return E.Break;
     }
 
@@ -202,24 +310,30 @@ public class RoomVanity : RoomScript<RoomVanity>
         prop.Hide();
         Hotspot("Pin").Enable();
         I.MumsPin.AddAsActive();
-        yield return C.player_invis.Say("I picked the pin back up.");
-
+        yield return C.player_invis.Say("I picked the pin back up. Not yet.");
         yield return E.Break;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////
-    // Puzzle Completion — called after every successful placement
+    // Puzzle Completion
 
     IEnumerator CheckPuzzleComplete()
     {
         if (ItemsPlaced.SecretSolution)
         {
-            yield return C.player_invis.Say("Something opened... somewhere else.");
+            // Bad ending — the child chooses to stay, tethered by the mother's grief
+            yield return C.player_invis.Say("Something shifted. Deep in the house.");
+            yield return E.Wait(1.5f);
+            yield return C.player_invis.Say("Like a door closing.");
+            yield return C.player_invis.Say("That's okay. I didn't want to leave anyway.");
             Audio.Play("DoorOpen");
         }
         else if (ItemsPlaced.AllItemsPlaced)
         {
-            yield return C.player_invis.Say("Something opened!");
+            // Good ending — acceptance, release
+            yield return C.player_invis.Say("Something opened.");
+            yield return E.Wait(1.5f);
+            yield return C.player_invis.Say("It feels like the first breath after a very long time underwater.");
             Audio.Play("DoorOpen");
         }
     }

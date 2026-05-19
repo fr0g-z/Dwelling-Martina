@@ -77,18 +77,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -101.634, y: 448.64304}
-      - {x: -118.94401, y: 607.736}
-      - {x: -62.068005, y: 609.08203}
-      - {x: -62.068005, y: 625.046}
-      - {x: 77.241005, y: 627.51904}
-      - {x: 77.382, y: 622.715}
-      - {x: 84.659004, y: 622.57306}
-      - {x: 87.513, y: 573.116}
-      - {x: 126.698006, y: 573.116}
-      - {x: 126.698006, y: 451.11603}
-      - {x: 67.34901, y: 418.96802}
-      - {x: -76.906006, y: 416.49503}
+    - - {x: -144.70398, y: 451.25333}
+      - {x: -165.1948, y: 538.8232}
+      - {x: 126.698006, y: 542.739}
+      - {x: 265.04398, y: 372.80698}
+      - {x: 167.84563, y: 326.3023}
+      - {x: -1.2072659, y: 289.8954}
 --- !u!1 &486026694474608362
 GameObject:
   m_ObjectHideFlags: 0
@@ -260,7 +254,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1119559910927832723}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -283,7 +277,7 @@ MonoBehaviour:
     m_description: Place Item Here
     m_cursor: 
     m_clickable: 1
-    m_baseline: 0
+    m_baseline: 1
     m_walkToPoint: {x: 0, y: 0}
     m_lookAtPoint: {x: 0, y: 0}
     m_scriptName: Pin
@@ -329,7 +323,6 @@ GameObject:
   - component: {fileID: 1623841756596568282}
   - component: {fileID: 511921111240950432}
   - component: {fileID: 758374450748423249}
-  - component: {fileID: 389341095202860212}
   m_Layer: 0
   m_Name: PropMumsPin
   m_TagString: Untagged
@@ -367,14 +360,14 @@ MonoBehaviour:
     m_description: MumsPin
     m_cursor: 
     m_visible: 0
-    m_clickable: 1
+    m_clickable: 0
     m_animation: MumsPin
     m_alpha: 1
     m_position: {x: 0, y: 0}
     m_baseline: 0
     m_baselineFixed: 0
     m_walkToPoint: {x: 0, y: 0}
-    m_lookAtPoint: {x: -2.5879211, y: 0.000030517578}
+    m_lookAtPoint: {x: -24.288292, y: -0.85095215}
     m_scriptName: MumsPin
   m_parallaxDepth: 0
   m_parallaxAlignment: {x: 0, y: 0}
@@ -463,40 +456,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &389341095202860212
-PolygonCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1162913311842342909}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 384, y: 216}
-    newSize: {x: 3839.9998, y: 2160}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Points:
-    m_Paths:
-    - - {x: -112.188, y: 1453.9562}
-      - {x: -114.19984, y: 1489.6626}
-      - {x: 7.1938868, y: 1486.0095}
-      - {x: 9.515454, y: 1453.7935}
-    - - {x: -16.194878, y: 499.04153}
-      - {x: -43.45148, y: 501.3505}
-      - {x: -50.99921, y: 531.09436}
-      - {x: -12.642043, y: 531.09436}
-      - {x: -15.731234, y: 499.04153}
 --- !u!1 &3605992479343321468
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,7 +1393,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1452564811
   m_SortingLayer: 1
-  m_SortingOrder: 2594
+  m_SortingOrder: 2570
   m_Sprite: {fileID: 21300000, guid: 30076d355b0a9c049ab08f06198eb054, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

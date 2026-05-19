@@ -7,10 +7,9 @@ using static GlobalScript;
 public class RoomInsidelockbox : RoomScript<RoomInsidelockbox>
 {
 
-
     IEnumerator OnLookAtHotspotDeathdoc(IHotspot hotspot)
     {
-
+        yield return C.player_invis.Say("There's a document in here.");
         yield return E.Break;
     }
 
@@ -28,13 +27,11 @@ public class RoomInsidelockbox : RoomScript<RoomInsidelockbox>
 
     IEnumerator OnLookAtHotspotLeavescene(IHotspot hotspot)
     {
-
         yield return E.Break;
     }
 
     IEnumerator OnUseInvHotspotLeavescene(IHotspot hotspot, IInventory item)
     {
-
         yield return E.Break;
     }
 

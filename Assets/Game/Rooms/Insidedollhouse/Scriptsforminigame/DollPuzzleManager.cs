@@ -21,8 +21,8 @@ public class DollPuzzleManager : MonoBehaviour
     public Dictionary<GameObject, int> targetSlots = new Dictionary<GameObject, int>();
 
     // --- PERSISTENCE ---
-    public bool puzzleCompletedPersist = false;                     // remembers if puzzle done
-    public Dictionary<int, GameObject> persistedDollSlots = new Dictionary<int, GameObject>();   // remembers doll positions
+    public bool puzzleCompletedPersist = false;
+    public Dictionary<int, GameObject> persistedDollSlots = new Dictionary<int, GameObject>();
 
     private bool puzzleComplete = false;
 
@@ -32,11 +32,11 @@ public class DollPuzzleManager : MonoBehaviour
 
         targetSlots = new Dictionary<GameObject, int>()
         {
-            {slot1, 1},
-            {slot5, 3}
+            { slot1, 1 },
+            { slot5, 3 }
         };
 
-        // Restore puzzle completion
+        // Restore puzzle completion state on room re-entry
         if (puzzleCompletedPersist)
         {
             puzzleComplete = true;
@@ -61,7 +61,7 @@ public class DollPuzzleManager : MonoBehaviour
                 {
                     doll.transform.position = slot.transform.position;
                     currentDollSlots[dollID] = slot;
-                    doll.SetLastSlot(slot); // Update lastSlot in drag script
+                    doll.SetLastSlot(slot);
                 }
             }
         }
@@ -89,7 +89,6 @@ public class DollPuzzleManager : MonoBehaviour
 
     private void CheckPuzzleComplete()
     {
-                
         if (puzzleComplete) return;
 
         int correctCount = 0;
@@ -115,23 +114,56 @@ public class DollPuzzleManager : MonoBehaviour
 
     private void PuzzleComplete()
     {
+        // Hide the flap so the reward is visible
         if (flapSprite != null)
             flapSprite.SetActive(false);
 
         if (dollsprite != null)
-            StartCoroutine(hidedollafterdelay(1f));
+            StartCoroutine(HideDollAfterDelay(4f));
 
-        //Example calls from your original manager
-        I.SecretDoll.AddAsActive();
-        C.player_invis.Say("The Roof Opened!!");
-        Debug.Log("Puzzle Complete!");
+        // Set the flag first so the coroutine below sees it as true
         DollHouseDone.DollhouseDone = true;
+
+        Debug.Log("Puzzle Complete — running dialogue and item grant.");
+
+        // Run dialogue and item grant as a coroutine on this MonoBehaviour
+        StartCoroutine(PuzzleCompleteDialogue());
     }
 
-    private IEnumerator hidedollafterdelay(float delay)
+    private IEnumerator HideDollAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        dollsprite.SetActive(false);
+        if (dollsprite != null)
+            dollsprite.SetActive(false);
+    }
+
+    private IEnumerator PuzzleCompleteDialogue()
+    {
+        // Small pause so the flap hide animation settles
+        yield return new WaitForSeconds(0.5f);
+
+        yield return C.player_invis.Say("That's how we were.");
+        yield return C.player_invis.Say("Before everything changed.");
+
+        yield return new WaitForSeconds(1.5f);
+
+        yield return C.player_invis.Say("There's something hidden inside.");
+
+        yield return new WaitForSeconds(1.5f);
+
+        yield return C.player_invis.Say("A doll.");
+        yield return C.player_invis.Say("I made this. I carved her face from wood and painted it to look like Mum.");
+
+        yield return new WaitForSeconds(1.5f);
+
+        yield return C.player_invis.Say("I made it so she'd always have someone.");
+        yield return C.player_invis.Say("So she'd never be alone, even when I wasn't there.");
+
+        yield return new WaitForSeconds(1.5f);
+
+        yield return C.player_invis.Say("I didn't know then what 'not being there' would really mean.");
+
+        I.SecretDoll.AddAsActive();
     }
 
     private DollDrag FindDollByID(int dollID)

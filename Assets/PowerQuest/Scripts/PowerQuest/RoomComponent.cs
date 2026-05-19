@@ -50,8 +50,8 @@ public partial class RoomComponent : MonoBehaviour
 	public void OnLoadComplete()
 	{
 		m_hotspotComponents.ForEach(item=>item.OnLoadComplete());
-		m_propComponents.ForEach(item=>item.OnLoadComplete());
-		m_regionComponents.ForEach(item=>item.OnLoadComplete());
+        m_propComponents.ForEach(item => item.OnLoadComplete());
+        m_regionComponents.ForEach(item=>item.OnLoadComplete());
 				
 		if ( PowerQuest.Get.GetPixelCamEnabled() )
 		{
