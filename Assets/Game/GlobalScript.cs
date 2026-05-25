@@ -46,6 +46,8 @@ public partial class GlobalScript : GlobalScriptBase<GlobalScript>
     /// <summary>Called before fade-in when entering any room. Non-blocking only.</summary>
     public void OnEnterRoom()
     {
+        if (R.Current.ScriptName != "Title")
+            G.InventoryBar.Visible = true;
     }
 
     /// <summary>Called after fade-in completes when entering any room.</summary>
